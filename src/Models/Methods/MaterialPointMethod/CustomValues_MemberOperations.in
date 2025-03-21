@@ -2,7 +2,9 @@
   /* Affectation */
   template <typename U,template<typename> class... D>
   inline CustomValues_t& operator=(CustomValues_t<U,D...> const& a) {
-    if(this != (CustomValues_t*) &a) {
+    //if(this != (CustomValues_t*) &a) // warning
+    //if(this != static_cast<CustomValues_t*>(&a)) // comilation error
+    {
       T* u = (T*) this;
       U const* v = (U const*) &a;
   

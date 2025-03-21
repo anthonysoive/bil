@@ -130,7 +130,7 @@ void (Material_Scan)(Material_t* mat,DataFile_t* datafile,Geometry_t* geom)
           char* c = String_FindAndSkipToken(line,"=") ;
           
           String_ScanStringUntil(c,codename + 1,"(" String_SpaceChars) ;
-          //String_Scan(line,"%*s = %s",codename + 1) ;
+          //String_Scan(line,"%*[^= ] = %s",codename + 1) ;
         } else {
           String_Scan(line,"%s",codename + 1) ;
         }

@@ -193,7 +193,7 @@ double* MacroGradient(Element_t* el,double t)
     int i ;
     
     for(i = 0 ; i < 9 ; i++) {
-      int idx = floor(fctindex[i] + 0.5) ;
+      int idx = (int) floor(fctindex[i] + 0.5) ;
       
       if(0 < idx && idx < nf + 1) {
         Function_t* macrogradfct = fct + idx - 1 ;

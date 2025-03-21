@@ -1761,7 +1761,7 @@ double** (Element_ConvertToNodalUnknown)(Element_t const* el,double* f,int shift
 
 
 
-double   (Element_IntegrateOverElement)(Element_t* el,IntFct_t* intfct,double* f,int shift)
+double   (Element_IntegrateOverElement)(Element_t const* el,IntFct_t* intfct,double* f,int shift)
 /** Integrate f over the element through the integration points. 
  *  Return the integration result. */
 {
@@ -1824,7 +1824,7 @@ double   (Element_IntegrateOverElement)(Element_t* el,IntFct_t* intfct,double* f
 
 
 
-double*  (Element_ComputeIsoShapeFctInActualSpace)(Element_t* el,double* x)
+double*  (Element_ComputeIsoShapeFctInActualSpace)(Element_t const* el,double* x)
 /* fonction d'interpolation (h) et ses derivees (dh) en x */
 {
   double* a = Element_ComputeCoordinateInReferenceFrame(el,x) ;
@@ -1858,7 +1858,7 @@ void (Element_CheckNumberingOfOverlappingNodes)(Element_t const* el,const int nf
 }
 
 
-double (Element_ComputeUnknown)(Element_t* el,double const* const* u,IntFct_t* intfct,int p,int inc)
+double (Element_ComputeUnknown)(Element_t const* el,double const* const* u,IntFct_t* intfct,int p,int inc)
 /** Compute the unknown located at "inc" at the interpolation point "p" */
 {
 #define U(n)   (u[n][Element_GetNodalUnknownPosition(el,n,inc)])
@@ -1877,7 +1877,7 @@ double (Element_ComputeUnknown)(Element_t* el,double const* const* u,IntFct_t* i
 
 
 
-double* (Element_ComputeDisplacementVector)(Element_t* el,double const* const* u,IntFct_t* intfct,int p,int inc)
+double* (Element_ComputeDisplacementVector)(Element_t const* el,double const* const* u,IntFct_t* intfct,int p,int inc)
 /** Compute the displacement vector located at 
  *  "inc,inc+1,inc+2" at the interpolation point "p" */
 {
@@ -1926,7 +1926,7 @@ double* (Element_ComputeDisplacementVector)(Element_t* el,double const* const* u
 
 
 
-double* (Element_ComputeUnknownGradient)(Element_t* el,double const* const* u,IntFct_t* intfct,int p,int inc)
+double* (Element_ComputeUnknownGradient)(Element_t const* el,double const* const* u,IntFct_t* intfct,int p,int inc)
 /** Compute the unknown gradient located at "inc" at the interpolation point "p" */
 {
 #define U(n)   (u[n][Element_GetNodalUnknownPosition(el,n,inc)])
@@ -2003,7 +2003,7 @@ double* (Element_ComputeUnknownGradient)(Element_t* el,double const* const* u,In
 
 
 
-double* (Element_ComputeLinearStrainTensor)(Element_t* el,double const* const* u,IntFct_t* intfct,int p,int inc)
+double* (Element_ComputeLinearStrainTensor)(Element_t const* el,double const* const* u,IntFct_t* intfct,int p,int inc)
 /** Compute the 3D linearized strain tensor for the displacement vector 
  *  located at "inc" and at the interpolation point "p" */
 {
@@ -2163,7 +2163,7 @@ double* (Element_ComputeLinearStrainTensor)(Element_t* el,double const* const* u
 
 
 
-double* (Element_ComputeInternodeDistances)(Element_t* el)
+double* (Element_ComputeInternodeDistances)(Element_t const* el)
 /** Compute the intercell distances */
 {
   int dim = Element_GetDimensionOfSpace(el) ;

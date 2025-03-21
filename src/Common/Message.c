@@ -83,6 +83,7 @@ void (Message_Initialize)(Message_t* msg)
     clock_t start = clock() ;
   
     Message_GetLaunchClock(msg) = start ;
+    Message_GetSavedClock(msg) = start ;
   }
   
   {
@@ -264,6 +265,20 @@ double (Message_CPUTime)(void)
 {
   Message_t* msg = Message_GetInstance() ;
   double start = (double) Message_GetLaunchClock(msg) ;
+  double end   = (double) clock() ;
+  double t_cpu = end - start ;
+  double elapsed = (t_cpu) / CLOCKS_PER_SEC ;
+  
+  Message_GetSavedClock(msg) = clock();
+  
+  return(elapsed) ;
+}
+
+
+double (Message_CPUTimeInterval)(void)
+{
+  Message_t* msg = Message_GetInstance() ;
+  double start = (double) Message_GetSavedClock(msg) ;
   double end   = (double) clock() ;
   double t_cpu = end - start ;
   double elapsed = (t_cpu) / CLOCKS_PER_SEC ;

@@ -2955,8 +2955,8 @@ int (mesh1dnew)(double* point, double* l_c, int n_reg, Node_t* no)
       if(l <= l_c[reg] || l <= l_c[reg + 1]) {
         n = 1 ;
       } else {
-        if(a == 1.) n = floor(l/l_c[reg] + 0.5) ;
-        else n = floor(log(b)/log(a) + 0.5) + 1 ;
+        if(a == 1.) n = (int) floor(l/l_c[reg] + 0.5) ;
+        else n = (int) floor(log(b)/log(a) + 0.5) + 1 ;
       }
 
       ne[reg] = n ;

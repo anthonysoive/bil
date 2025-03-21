@@ -5,7 +5,7 @@
 #include "CommonModel.h"
 
 #ifdef HAVE_AUTODIFF
-#define USE_AUTODIFF
+//#define USE_AUTODIFF
 #endif
 
 
@@ -58,7 +58,7 @@
 
 #include "BaseName.h"
 #include "CustomValues.h"
-#include "MaterialPointModel.h"
+#include "MaterialPointMethod.h"
 
 #define ImplicitValues_t BaseName(_ImplicitValues_t)
 #define ExplicitValues_t BaseName(_ExplicitValues_t)
@@ -79,6 +79,12 @@ struct ConstantValues_t;
 template<typename T>
 struct OtherValues_t;
 
+
+
+
+#define Values_t    BaseName(_Values_t)
+#define Values_d    BaseName(_Values_d)
+
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
@@ -92,15 +98,19 @@ using Values_d = Values_t<double> ;
 
 
 
-struct MPM_t: public MaterialPointModel_t<Values_t> {
-  MaterialPointModel_SetInputs_t<Values_t> SetInputs;
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
   template<typename T>
-  MaterialPointModel_Integrate_t<Values_t,T> Integrate;
-  MaterialPointModel_Initialize_t<Values_t>  Initialize;
-  MaterialPointModel_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointModel_SetTransferMatrix_t<Values_t> SetTransferMatrix;
-  MaterialPointModel_SetIndexes_t SetIndexes;
-  MaterialPointModel_SetIncrements_t SetIncrements;
+  MaterialPointMethod_Integrate_t<Values_t,T> Integrate;
+  Values_t<double>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<double>& val) {return(Integrate<double>(el,t,dt,val_n,val));}
+  #ifdef USE_AUTODIFF
+  Values_t<real>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<real>& val) {return(Integrate<real>(el,t,dt,val_n,val));}
+  #endif
+  MaterialPointMethod_Initialize_t<Values_t>  Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
+  MaterialPointMethod_SetIndexes_t SetIndexes;
+  MaterialPointMethod_SetIncrements_t SetIncrements;
 } ;
 
 
@@ -160,6 +170,8 @@ struct ExplicitValues_t {
 /* We define some names for constant terms (v0 must be used as pointer below) */
 template<typename T = double>
 struct ConstantValues_t {};
+
+static MPM_t mpm;
 
 
 
@@ -724,7 +736,7 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   IntFct_t* intfct = Element_GetIntFct(el) ;
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
   
-  MaterialPointModel_DefineNbOfInternalValues(MPM_t,el,NbOfIntPoints);
+  mpm.DefineNbOfInternalValues(el,NbOfIntPoints);
 
   /* Continuity of unknowns across zero-thickness element */
   {
@@ -792,7 +804,7 @@ int ComputeInitialState(Element_t* el,double t)
  *  Return 0 if succeeded and -1 if failed
  */ 
 {
-  int i = MaterialPointModel_ComputeInitialStateByFEM(MPM_t,el,t);
+  int i = mpm.ComputeInitialStateByFEM(el,t);
   
   return(i);
 }
@@ -804,7 +816,7 @@ int  ComputeExplicitTerms(Element_t* el,double t)
  *  whatever they are, nodal values or implicit terms.
  *  Return 0 if succeeded and -1 if failed */
 {
-  int i = MaterialPointModel_ComputeExplicitTermsByFEM(MPM_t,el,t);
+  int i = mpm.ComputeExplicitTermsByFEM(el,t);
   
   return(i);
 }
@@ -814,7 +826,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 /** Compute the (current) implicit terms 
  *  Return 0 if succeeded and -1 if failed */
 {
-  int i = MaterialPointModel_ComputeImplicitTermsByFEM(MPM_t,el,t,dt);
+  int i = mpm.ComputeImplicitTermsByFEM(el,t,dt);
   
   return(i);
 }
@@ -824,7 +836,7 @@ int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) 
  *  Return 0 if succeeded and -1 if failed */
 {
-  int i = MaterialPointModel_ComputePoromechanicalMatrixByFEM(MPM_t,el,t,dt,k,E_MECH);
+  int i = mpm.ComputePoromechanicalMatrixByFEM(el,t,dt,k,E_MECH);
   
   return(i);
 }
@@ -842,19 +854,27 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
   }
   /* 1. Mechanics */
   if(Element_EquationIsActive(el,E_MECH)) {
-    MaterialPointModel_ComputeMechanicalEquilibriumResiduByFEM(MPM_t,el,t,dt,r,E_MECH,Stress,BodyForce);
+    int istress = Values_Index(Stress[0]);
+    int ibforce = Values_Index(BodyForce[0]);
+    mpm.ComputeMechanicalEquilibriumResiduByFEM(el,t,dt,r,E_MECH,istress,ibforce);
   }
   /* 2. Conservation of total mass */
   if(Element_EquationIsActive(el,E_MASS)) {
-    MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_MASS,Mass_total,MassFlow_total);
+    int imass = Values_Index(Mass_total);
+    int iflow = Values_Index(MassFlow_total[0]);
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_MASS,imass,iflow);
   }
   /* 3. Conservation of salt */
   if(Element_EquationIsActive(el,E_SALT)) {  
-    MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_SALT,Mass_salt,MassFlow_salt);
+    int imass = Values_Index(Mass_salt);
+    int iflow = Values_Index(MassFlow_salt[0]);
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_SALT,imass,iflow);
   }
   /* 4. Entropy balance */
   if(Element_EquationIsActive(el,E_THER)) {  
-    MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_THER,Entropy_total,HeatFlow);
+    int imass = Values_Index(Entropy_total);
+    int iflow = Values_Index(HeatFlow[0]);
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_THER,imass,iflow);
   }
   
   return(0);

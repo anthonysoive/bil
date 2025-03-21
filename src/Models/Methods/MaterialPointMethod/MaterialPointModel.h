@@ -179,7 +179,8 @@ int MPM_t::SetTransferMatrix(Element_t* el,double const& dt,int const& p,Values_
  * (https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html#Statement-Exprs) */
  
 /*
-ConstitutiveIntegrator_t<MaterialPointModel_TypeOfValue(std::remove_reference_t<decltype(mpm)>),std::remove_reference_t<decltype(mpm)>> MaterialPointModel_ci(&mpm);
+MaterialPointModel_TypeOfValue(std::remove_reference_t<decltype(mpm)>)<double> MaterialPointModel_val;\
+ConstitutiveIntegrator_t<std::remove_reference_t<decltype(mpm)>> MaterialPointModel_ci(&mpm);
 */
 
 #define MaterialPointModel_InitializeValues(MPM,el,t,i) \

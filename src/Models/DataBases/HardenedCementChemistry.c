@@ -22,17 +22,17 @@ static void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t*)
 static void (HardenedCementChemistry_UpdateChemicalConstants)(HardenedCementChemistry_t*) ;
 
 
-static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_CO2_H2O_1)      (HardenedCementChemistry_t*) ;
+//static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_CO2_H2O_1)      (HardenedCementChemistry_t*) ;
 
 static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_CO2_H2O_0)      (HardenedCementChemistry_t*) ;
 
-static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_H2O_1)      (HardenedCementChemistry_t*) ;
+//static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_H2O_1)      (HardenedCementChemistry_t*) ;
 
 static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_H2O_0)      (HardenedCementChemistry_t*) ;
 
-static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O_1)(HardenedCementChemistry_t*) ;
+//static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O_1)(HardenedCementChemistry_t*) ;
 
-static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O_2)(HardenedCementChemistry_t*) ;
+//static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O_2)(HardenedCementChemistry_t*) ;
 
 static void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O_0)(HardenedCementChemistry_t*) ;
 
@@ -1351,7 +1351,7 @@ void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_Cl_H2O)(
 
 /* Not used */
 
-
+#if 0
 void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_CO2_H2O_1)(HardenedCementChemistry_t* hcc)
 {
   /* Inputs */
@@ -1768,6 +1768,7 @@ void (HardenedCementChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O_2)(H
     HardenedCementChemistry_GetWaterSiliconRatioInCSH(hcc) = z_csh ;
   }
 }
+#endif
 
 
 

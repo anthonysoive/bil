@@ -198,7 +198,7 @@ Materials_t* (Materials_Create)(DataFile_t* datafile,Geometry_t* geom,Fields_t* 
         char*  line = DataFile_ReadLineFromCurrentFilePosition(datafile) ;
       
         if(!strncmp(line,"Model",5)) {
-          sscanf(line,"%*s = %s",codename + 1) ;
+          sscanf(line,"%*[^= ] = %s",codename + 1) ;
         } else {
           sscanf(line,"%s",codename + 1) ;
         }

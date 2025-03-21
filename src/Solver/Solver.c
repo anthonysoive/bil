@@ -103,7 +103,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         double fill = Options_GetFillFactor(options) ;
         Matrix_t* matrix = Solver_GetMatrix(solver) ;
         int nnz = Matrix_GetNbOfNonZeroValues(matrix) ;
-        int lwork = floor(fill*nnz) ;
+        int lwork = (int) floor(fill*nnz) ;
 
         Solver_AppendGenericWorkSpace(solver,getree) ;
         Solver_AppendGenericWorkSpace(solver,gR) ;
@@ -147,11 +147,11 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         double fill6 = sp_ienv(6);
         double fill7 = sp_ienv(7);
         double fill8 = sp_ienv(8);
-        int lwork6 = (fill6 < 0) ? floor(-fill6*nnz) : fill6 ;
-        int lwork7 = (fill7 < 0) ? floor(-fill7*nnz) : fill7 ;
-        int lwork8 = (fill8 < 0) ? floor(-fill8*nnz) : fill8 ;
+        int lwork6 = (fill6 < 0) ? (int) floor(-fill6*nnz) : fill6 ;
+        int lwork7 = (fill7 < 0) ? (int) floor(-fill7*nnz) : fill7 ;
+        int lwork8 = (fill8 < 0) ? (int) floor(-fill8*nnz) : fill8 ;
         int lwork678 = lwork6 + lwork7 + lwork8 ;
-        int lwork = (fill > 0) ? floor(fill*nnz) : lwork678 ;
+        int lwork = (fill > 0) ? (int) floor(fill*nnz) : lwork678 ;
 
         Solver_AppendGenericWorkSpace(solver,getree) ;
         Solver_AppendGenericWorkSpace(solver,gcolcnt_h) ;

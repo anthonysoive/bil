@@ -360,7 +360,7 @@ double courbe_nor(const double a,Curve_t const* cb)
   else {
     double da = (a2 - a1)/ni ;
     double r  = (a - a1)/da ;
-    int i  = floor(r) ;
+    int i  = (int) floor(r) ;
     double a0 = a1 + i*da ;
     double dv = (Curve_GetYValue(cb)[i+1] - Curve_GetYValue(cb)[i])/da ;
     double v  = Curve_GetYValue(cb)[i] + dv*(a - a0) ;
@@ -422,7 +422,7 @@ double courbe_log(const double a,Curve_t const* cb)
     double dloga = (loga2 - loga1)/ni ;
     double loga  = log10(a) ;
     double r  = (loga - loga1)/dloga ;
-    int    i  = floor(r) ;
+    int    i  = (int) floor(r) ;
     if(i >= ni) arret("courbe_log: loga = %g; loga2 = %g",loga,loga2) ;
     double loga0 = loga1 + i*dloga ;
     double dv = (Curve_GetYValue(cb)[i+1] - Curve_GetYValue(cb)[i])/dloga ;

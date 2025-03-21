@@ -16,21 +16,21 @@ Mesh
 
 Material
 Model = Chloricem
-porosity = 0.121
-kl_int = 1.4e-17
-N_CH = 1.64
-N_CSH = 0.635
-C_Na = -1
-C_K = -1
-frac = 0.8
-phi_r = 0.70
+InitialPorosity = 0.121
+IntrinsicPermeability = 1.4e-17
+InitialContent_portlandite = 1.64
+InitialContent_csh = 0.635
+InitialConcentration_sodium = -1
+InitialConcentration_potassium = -1
+FractionalLengthOfPoreBodies = 0.8
+PorosityFractionAtVanishingPermeability = 0.70
 Curves = sat  p_c = Range{x1 = 0 , x2 = 1 , n = 2}  s_l = Expressions(1){s_l = 1}
 Curves = relpermCN  s_l = Range{x1 = 0 , x2 = 1 , n = 101} kl_r = Mualem_liq(1){m = 0.45}
 Curves = V_CSH  x = Range{x1 = 0 , x2 = 0.85 , n=2} v_csh = Expressions(1){x0 = 0 ; v0 = 5.44e-2 ; x1 = 0.85 ; v1 = 8.14e-2 ;  v_csh = (x1 - x)/(x1 - x0)*v0 + (x - x0)/(x1 - x0)*v1}
-porosity_min = 0.01
+MinimumPorosity = 0.01
 Curves = Adscl  x = Range{x1 = 0.5 , x2 = 1.5 , n = 100}  alpha = Expressions(1){alpha = 3.192 ;}  beta = Expressions(1){beta = 26.6 ;}
-Rate_Calcite = 1.e-6
-Rate_FriedelSalt = 1.e-6
+PrecipitationRate_calcite = 1.e-6
+PrecipitationRate_friedelsalt = 1.e-6
 Curves = Adsna  x = Range{x1 = 0 , x2 = 1 , n = 2} adsna = Expressions(1){adsna = 0;}
 Curves = Adsk   x = Range{x1 = 0 , x2 = 1 , n = 2} adsk = Expressions(1){adsk = 0;}
 

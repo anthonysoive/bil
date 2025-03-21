@@ -34,7 +34,7 @@
 
 #include "BaseName.h"
 #include "CustomValues.h"
-#include "MaterialPointModel.h"
+#include "MaterialPointMethod.h"
 
 #define ImplicitValues_t BaseName(_ImplicitValues_t)
 #define ExplicitValues_t BaseName(_ExplicitValues_t)
@@ -55,6 +55,12 @@ struct ConstantValues_t;
 template<typename T>
 struct OtherValues_t;
 
+
+
+
+#define Values_t    BaseName(_Values_t)
+#define Values_d    BaseName(_Values_d)
+
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
@@ -68,12 +74,12 @@ using Values_d = Values_t<double> ;
 
 
 
-struct MPM_t: public MaterialPointModel_t<Values_t> {
-  MaterialPointModel_SetInputs_t<Values_t> SetInputs;
-  MaterialPointModel_Integrate_t<Values_t> Integrate;
-  MaterialPointModel_Initialize_t<Values_t>  Initialize;
-  MaterialPointModel_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointModel_SetTransferMatrix_t<Values_t> SetTransferMatrix;
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
+  MaterialPointMethod_Integrate_t<Values_t> Integrate;
+  MaterialPointMethod_Initialize_t<Values_t>  Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
 } ;
 
 
@@ -118,6 +124,9 @@ struct OtherValues_t {
   T MassDensity_liquid;
   T Porosity;
 };
+
+
+static MPM_t mpm;
 
 
 
@@ -426,7 +435,7 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
     IntFct_t* intfct = Element_GetIntFct(el) ;
     int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
   
-    MaterialPointModel_DefineNbOfInternalValues(MPM_t,el,NbOfIntPoints);
+    mpm.DefineNbOfInternalValues(el,NbOfIntPoints);
   }
   
   return(0) ;
@@ -464,7 +473,7 @@ int  ComputeLoads(Element_t* el,double t,double dt,Load_t* cg,double* r)
 
 int ComputeInitialState(Element_t* el)
 {
-  int i = MaterialPointModel_ComputeInitialStateByFEM(MPM_t,el,t);
+  int i = mpm.ComputeInitialStateByFEM(el,t);
   
   return(i);
 }
@@ -473,7 +482,7 @@ int ComputeInitialState(Element_t* el)
 int  ComputeExplicitTerms(Element_t* el,double t)
 /** Compute the explicit terms */
 {
-  int i = MaterialPointModel_ComputeExplicitTermsByFEM(MPM_t,el,t);
+  int i = mpm.ComputeExplicitTermsByFEM(el,t);
   
   return(i);
 }
@@ -482,7 +491,7 @@ int  ComputeExplicitTerms(Element_t* el,double t)
 
 int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 {
-  int i = MaterialPointModel_ComputeImplicitTermsByFEM(MPM_t,el,t,dt);
+  int i = mpm.ComputeImplicitTermsByFEM(el,t,dt);
   
   return(i);
 }
@@ -492,7 +501,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) */
 {
-  int i = MaterialPointModel_ComputePoromechanicalMatrixByFEM(MPM_t,el,t,dt,k,E_MECH);
+  int i = mpm.ComputePoromechanicalMatrixByFEM(el,t,dt,k,E_MECH);
   
   return(i);
 }
@@ -510,9 +519,17 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
     for(int i = 0 ; i < ndof ; i++) r[i] = 0 ;
   }
   /* 1. Mechanics */
-  MaterialPointModel_ComputeMechanicalEquilibriumResiduByFEM(MPM_t,el,t,dt,r,E_MECH,Stress,BodyForce);
+  {
+    int istress = Values_Index(Stress[0]);
+    int ibforce = Values_Index(BodyForce[0]);
+    mpm.ComputeMechanicalEquilibriumResiduByFEM(el,t,dt,r,E_MECH,istress,ibforce);
+  }
   /* 2. Conservation of total mass */
-  MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_MASS,Mass_liquid,MassFlow_liquid);
+  {
+    int imass = Values_Index(Mass_liquid);
+    int iflow = Values_Index(MassFlow_liquid[0]);
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_MASS,imass,iflow);
+  }
   
   return(0);
 }

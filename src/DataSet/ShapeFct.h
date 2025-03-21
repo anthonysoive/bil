@@ -35,8 +35,8 @@ extern void        (ShapeFct_ComputeValuesAtPoint)(int,int,double*,double*,doubl
 
 
 struct ShapeFct_s {           /* Shape function */
-  unsigned int dim ;    /* Sub-dimension (0,1,2,3) */
-  unsigned int nn ;     /* Number of nodes */
+  int dim ;                   /* Sub-dimension (0,1,2,3) */
+  int nn ;                    /* Number of nodes */
   double* a ;                 /* Reference coordinates */
   double* h ;                 /* Values of shape functions */
   double* dh ;                /* Values of function gradients */

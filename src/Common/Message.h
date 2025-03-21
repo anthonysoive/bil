@@ -21,6 +21,7 @@ extern int    (Message_Direct)(const char*,...) ;
 extern void   (Message_Initialize)(Message_t*) ;
 extern char*  (Message_LaunchDate)(void) ;
 extern double (Message_CPUTime)(void) ;
+extern double (Message_CPUTimeInterval)(void) ;
 extern int    (Message_SetVerbosity)(const int) ;
 
 
@@ -29,6 +30,7 @@ extern int    (Message_SetVerbosity)(const int) ;
 #define Message_GetLaunchDate(MSG)            ((MSG)->launchdate)
 #define Message_GetVerbosity(MSG)             ((MSG)->verbosity)
 #define Message_GetDelete(MSG)                ((MSG)->Delete)
+#define Message_GetSavedClock(MSG)            ((MSG)->savedclock)
 
 
 #include <stdlib.h>
@@ -54,6 +56,7 @@ extern int    (Message_SetVerbosity)(const int) ;
 
 struct Message_s {            /* message */
   clock_t  launchclock ;      /* Start up processor clock time */
+  clock_t  savedclock ;       /* The last saved processor clock time */
   time_t*  launchtime ;       /* Start up time */
   char*    launchdate ;       /* Start up date */
   /* Verbosity level

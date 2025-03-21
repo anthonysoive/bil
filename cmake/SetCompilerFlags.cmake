@@ -7,7 +7,7 @@ set(WFLAGSmini
 )
 
 set(WFLAGS
-    "${WFLAGSmini} -Wformat=2 -Wconversion -Wsign-conversion -Wtrampolines -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wpointer-arith -Wshadow"
+    "${WFLAGSmini} -Wformat=2 -Wconversion -Wtrampolines -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wpointer-arith -Wshadow -Wsign-conversion"
 )
 
 set(WFLAGS1
@@ -21,7 +21,7 @@ set(WCFLAGS
 
 # Warning flags for C++
 set(WCXXFLAGS
-    "${WFLAGS} -Wnon-virtual-dtor -Wzero-as-null-pointer-constant -Wunused -Woverloaded-virtual -Wfloat-conversion -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference"
+    "${WFLAGS} -Wnon-virtual-dtor -Wzero-as-null-pointer-constant -Woverloaded-virtual -Wfloat-conversion -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference -Wno-unused"
 )
     
 

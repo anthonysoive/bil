@@ -195,20 +195,16 @@ _INLINE_ double*  (FEM_ComputeStiffnessMatrix)(FEM_t* fem,IntFct_t* fi,const dou
     for(i = 0 ; i < ndof*ndof ; i++) kr[i] = zero ;
   }
   
-  {
-    unsigned int i ;
-    
-    for(i = 0 ; i < nn ; i++) {
+  {    
+    for(int i = 0 ; i < nn ; i++) {
       x[i] = Element_GetNodeCoordinate(el,i) ;
     }
   }
   
   /* One node mesh: for this special element the displacement u_i stands for strain_ii */
-  if(nn == 1 && dim_e == 3) {
-    unsigned int i,j ;
-    
-    for(i = 0 ; i < dim ; i++) {
-      for(j = 0 ; j < dim ; j++) {
+  if(nn == 1 && dim_e == 3) {    
+    for(int i = 0 ; i < dim ; i++) {
+      for(int j = 0 ; j < dim ; j++) {
         KR(i,j) = C(i,i,j,j) ;
       }
     }
@@ -221,20 +217,18 @@ _INLINE_ double*  (FEM_ComputeStiffnessMatrix)(FEM_t* fem,IntFct_t* fi,const dou
   if(Element_HasZeroThickness(el)) {
     if(dim_h == dim - 1) {
       /* Assuming that the numbering of the element is formed with the nf first nodes  */
-      if(nn > nf) {
-        unsigned int p ;
-      
+      if(nn > nf) {      
         /* Check the numbering */
         Element_CheckNumberingOfOverlappingNodes(el,nf) ;
 
-        for(p = 0 ; p < np ; p++ , c += dec) {
+        for(int p = 0 ; p < np ; p++ , c += dec) {
           double* h  = IntFct_GetFunctionAtPoint(fi,p) ;
           double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
           double d   = Element_ComputeJacobianDeterminant(el,dh,nf,dim_h) ;
           double a   = weight[p]*d ;
           double* norm = Element_ComputeNormalVector(el,dh,nf,dim_h) ;
           double r[9] = {0,0,0,0,0,0,0,0,0} ;
-          unsigned int i,j,k,l ;
+          int i,j,k,l ;
 
           if(Symmetry_IsCylindrical(sym) || Symmetry_IsSpherical(sym)) {
             double radius = zero ;
@@ -290,10 +284,8 @@ _INLINE_ double*  (FEM_ComputeStiffnessMatrix)(FEM_t* fem,IntFct_t* fi,const dou
 
   
   /* Loop on integration points */
-  {
-    unsigned int    p ;
-    
-    for(p = 0 ; p < np ; p++ , c += dec) {
+  {    
+    for(int p = 0 ; p < np ; p++ , c += dec) {
       double* h  = IntFct_GetFunctionAtPoint(fi,p) ;
       double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
       double d   = Element_ComputeJacobianDeterminant(el,dh,nf,dim_h) ;
@@ -301,7 +293,7 @@ _INLINE_ double*  (FEM_ComputeStiffnessMatrix)(FEM_t* fem,IntFct_t* fi,const dou
       double* caj = Element_ComputeInverseJacobianMatrix(el,dh,nf,dim_h) ;
       double jcj[3][3][3][3],jc[3][3],cj[3][3] ;
       double radius ;
-      unsigned int    i,j,k,l,r,s ;
+      int    i,j,k,l,r,s ;
     
       /* The radius in axisymmetrical or spherical case */
       if(Symmetry_IsCylindrical(sym) || Symmetry_IsSpherical(sym)) {
@@ -1927,7 +1919,7 @@ _INLINE_ double* (FEM_ComputeSurfaceLoadResidu)(FEM_t* fem,IntFct_t* intfct,Load
   double** u = Element_ComputePointerToCurrentNodalUnknowns(el) ;
   Geometry_t* geom = Element_GetGeometry(el) ;
   int nn  = Element_GetNbOfNodes(el) ;
-  unsigned short int dim = Geometry_GetDimension(geom) ;
+  int dim = Geometry_GetDimension(geom) ;
   int dim_e = Element_GetDimension(el) ;
   Symmetry_t sym = Geometry_GetSymmetry(geom) ;
   Node_t** no = Element_GetPointerToNode(el) ;

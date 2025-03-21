@@ -137,13 +137,15 @@ static double  saturationdegree(double,double,Curve_t*) ;
 #define RelativePermeabilityToLiquid(pc)  (Curve_ComputeValue(relativepermliqcurve,pc))
 #define RelativePermeabilityToGas(pc)     (Curve_ComputeValue(relativepermgascurve,pc))
 
-#define TortuosityToGas(f,sg)     (0.1) //((sg > 0) ? pow(f,aa)*pow(sg,bb) : 0)
-//#define TortuosityToGas(f,sg)   ((sg > 0) ? pow(f*sg,4./3) : 0) // After HYDRUS
+//#define TortuosityToGas(f,sg)     (0.1) //((sg > 0) ? pow(f,aa)*pow(sg,bb) : 0)
+#define TortuosityToGas(f,sg)   ((sg > 0) ? pow(f*sg,4./3) : 0) // After HYDRUS
 #define aa                        (0.33)  /* 1/3 Millington, Thiery 1.74 */
 #define bb                        (2.33)   /* 7/3 Millington, Thiery 3.2 */
 
-#define KappaSuction(p)    ((kappasuctioncurve) ? Curve_ComputeValue(kappasuctioncurve,p) : kappa_s)
-#define Kappa(s)           ((kappacurve) ? Curve_ComputeValue(kappacurve,s) : kappa)
+#define KappaSuction1(p)    (Curve_ComputeValue(kappasuctioncurve1,p))
+#define KappaSuction2(s)    (Curve_ComputeValue(kappasuctioncurve2,s))
+#define KappaSuction(p,s)   (KappaSuction1(p) * KappaSuction2(s))
+#define Kappa(s)           (Curve_ComputeValue(kappacurve,s))
 
 
 
@@ -167,7 +169,7 @@ static double  saturationdegree(double,double,Curve_t*) ;
 /* Gas property
  * -------------- */
  /* Molar mass of the inert gas */
-#define M_AIR          (28.97*gr)
+//#define M_AIR          (28.97*gr)
 
 
 
@@ -193,15 +195,16 @@ static Plasticity_t* plasty ;
 static Curve_t* saturationcurve ;
 static Curve_t* relativepermliqcurve ;
 static Curve_t* relativepermgascurve ;
-static Curve_t* kappasuctioncurve ;
+static Curve_t* kappasuctioncurve1 ;
+static Curve_t* kappasuctioncurve2 ;
 static Curve_t* kappacurve ;
-static double  kappa ;
-static double  kappa_s ;
+//static double  kappa_s ;
 static double  p_atm ;
 static double  p_v0 ;
 static double  RT ;
 static double  p_c3 ;
 static double  henry ;
+static double  M_AIR ; 
 
 
 #include "PhysicalConstant.h"
@@ -334,6 +337,8 @@ int pm(const char *s)
     return (29) ;
   } else if(!strcmp(s,"dissolved_air_diffusion_coefficient"))       { 
     return (30) ;
+  } else if(!strcmp(s,"molar_mass_of_dry_gas"))       { 
+    return (31) ;
   } else return(-1) ;
 }
 
@@ -348,14 +353,15 @@ void GetProperties(Element_t* el)
   kg_int  = Element_GetPropertyValue(el,"kg_int") ;
   mu_l    = Element_GetPropertyValue(el,"mu_l") ;
   mu_g    = Element_GetPropertyValue(el,"mu_g") ;
+  M_AIR    = Element_GetPropertyValue(el,"molar_mass_of_dry_gas") ;
   rho_l0  = Element_GetPropertyValue(el,"rho_l") ;
   sig0    = &Element_GetPropertyValue(el,"initial_stress") ;
-  kappa   = Element_GetPropertyValue(el,"slope_of_swelling_line") ;
+  //kappa   = Element_GetPropertyValue(el,"slope_of_swelling_line") ;
   //mu      = Element_GetPropertyValue(el,"shear_modulus") ;
   poisson = Element_GetPropertyValue(el,"poisson") ;
   phi0    = Element_GetPropertyValue(el,"initial_porosity") ;
   e0      = phi0/(1 - phi0) ;
-  kappa_s = Element_GetPropertyValue(el,"kappa_s") ;
+  //kappa_s = Element_GetPropertyValue(el,"kappa_s") ;
   d_vap   = Element_GetPropertyValue(el,"vapor_diffusion_coefficient") ;
   d_airliq= Element_GetPropertyValue(el,"dissolved_air_diffusion_coefficient") ;
   p_c3    = Element_GetPropertyValue(el,"minimum_suction") ;
@@ -369,7 +375,8 @@ void GetProperties(Element_t* el)
   saturationcurve = Element_FindCurve(el,"sl") ;
   relativepermliqcurve = Element_FindCurve(el,"kl") ;
   relativepermgascurve = Element_FindCurve(el,"kg") ;
-  kappasuctioncurve = Element_FindCurve(el,"kappa_s") ;
+  kappasuctioncurve1 = Element_FindCurve(el,"kappa_s_p") ;
+  kappasuctioncurve2 = Element_FindCurve(el,"kappa_s_s") ;
   kappacurve = Element_FindCurve(el,"kappa") ;
   
   ComputePhysicoChemicalProperties(TEMPERATURE) ;
@@ -415,7 +422,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 /** Read the material properties in the stream file ficd 
  *  Return the nb of (scalar) properties of the model */
 {
-  int  NbOfProp = 31 ;
+  int  NbOfProp = 32 ;
   int i ;
 
   /* Par defaut tout a 0 */
@@ -454,9 +461,9 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
         double pc0    = Material_GetPropertyValue(mat,"initial_pre-consolidation_pressure") ;
         double coh    = Material_GetPropertyValue(mat,"suction_cohesion_coefficient") ;
         double p_ref  = Material_GetPropertyValue(mat,"reference_consolidation_pressure") ;
+        double kappa  = Material_GetPropertyValue(mat,"slope_of_swelling_line") ;
         Curve_t* lc   = Material_FindCurve(mat,"lc") ;
         
-        kappa   = Material_GetPropertyValue(mat,"slope_of_swelling_line") ;
         phi0    = Material_GetPropertyValue(mat,"initial_porosity") ;
         e0      = phi0/(1 - phi0) ;
         
@@ -764,7 +771,6 @@ int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 
   /* We skip if the element is a submanifold */
   if(Element_IsSubmanifold(el)) return(0) ;
-  
   
   /*
     Input data
@@ -1110,8 +1116,8 @@ int ComputeTangentCoefficients(Element_t* el,double t,double dt,double* c)
           double  p_gn    = FEM_ComputeUnknown(fem,u_n,intfct,p,U_p_g) ;
           double  pc_n    = p_gn - p_ln ;
           double signet_n = (sig_n[0] + sig_n[4] + sig_n[8])/3. + p_gn ;
-          double kappa1   = Kappa(pc_n) ;
-          double bulk     = - signet_n*(1 + e0)/kappa1 ;
+          double kappa   = Kappa(pc_n) ;
+          double bulk     = - signet_n*(1 + e0)/kappa ;
           //double lame     = bulk - 2*shear/3. ;
           //double poisson  = 0.5 * lame / (lame + mu) ;
           //double young    = 2 * mu * (1 + poisson) ;
@@ -1439,10 +1445,10 @@ void  ComputeSecondaryVariables(Element_t* el,double t,double dt,double* x_n,dou
         double trde      = deps[0] + deps[4] + deps[8] ;
         double dlns      = log((pc + p_atm)/(pc_n + p_atm)) ;
         double signet_n  = (sig_n[0] + sig_n[4] + sig_n[8])/3. + p_gn ;
-        double kappa1    = Kappa(pc_n) ;
-        double bulk      = - signet_n*(1 + e0)/kappa1 ;
-        double kappa1_s1  = KappaSuction(-signet_n) ;
-        double dsigm     = bulk*trde - signet_n*kappa1_s1/kappa1*dlns ;
+        double kappa     = Kappa(pc_n) ;
+        double bulk      = - signet_n*(1 + e0)/kappa ;
+        double kappa_s   = KappaSuction(-signet_n, pc_n) ;
+        double dsigm     = bulk*trde - signet_n*kappa_s/kappa*dlns ;
         //double lame      = bulk - 2*mu/3. ;
         //double poisson   = 0.5 * lame / (lame + mu) ;
         //double young     = 2 * mu * (1 + poisson) ;

@@ -55,14 +55,14 @@ extern void        (Element_MakeEquationContinuousAcrossZeroThicknessElement)(El
 extern int         (Element_FindNodeIndex)                         (Element_t const*,const Node_t*) ;
 extern double*     (Element_ComputeCoordinateVector)               (Element_t const*,double*) ;
 extern void        (Element_CopyCurrentSolutionIntoPreviousSolution)(Element_t const*) ;
-extern double      (Element_IntegrateOverElement)                  (Element_t*,IntFct_t*,double*,int);
-extern double*     (Element_ComputeIsoShapeFctInActualSpace)       (Element_t*,double*);
+extern double      (Element_IntegrateOverElement)                  (Element_t const*,IntFct_t*,double*,int);
+extern double*     (Element_ComputeIsoShapeFctInActualSpace)       (Element_t const*,double*);
 extern void        (Element_CheckNumberingOfOverlappingNodes)      (Element_t const*,const int) ;
-extern double      (Element_ComputeUnknown)                        (Element_t*,double const* const*,IntFct_t*,int,int);
-extern double*     (Element_ComputeDisplacementVector)             (Element_t*,double const* const*,IntFct_t*,int,int);
-extern double*     (Element_ComputeUnknownGradient)                (Element_t*,double const* const*,IntFct_t*,int,int);
-extern double*     (Element_ComputeLinearStrainTensor)             (Element_t*,double const* const*,IntFct_t*,int,int);
-extern double*     (Element_ComputeInternodeDistances)             (Element_t*);
+extern double      (Element_ComputeUnknown)                        (Element_t const*,double const* const*,IntFct_t*,int,int);
+extern double*     (Element_ComputeDisplacementVector)             (Element_t const*,double const* const*,IntFct_t*,int,int);
+extern double*     (Element_ComputeUnknownGradient)                (Element_t const*,double const* const*,IntFct_t*,int,int);
+extern double*     (Element_ComputeLinearStrainTensor)             (Element_t const*,double const* const*,IntFct_t*,int,int);
+extern double*     (Element_ComputeInternodeDistances)             (Element_t const*);
 
 
 
@@ -482,9 +482,9 @@ struct Element_s {
   short int* EquationPosition ; /* local position of equations at nodes */
   //int    RegionTag ;
   int    MaterialIndex ;
-  unsigned int Dimension ;              /* dimension of the element (0,1,2,3) */
+  int Dimension ;              /* dimension of the element (0,1,2,3) */
   unsigned int ElementIndex ;
-  unsigned int NbOfNodes ;
+  int NbOfNodes ;
   /* n_vi and n_ve must be kept for old methods! */
   int n_vi ;                  /* Nb of implicit terms */
   int n_ve ;                  /* Nb of explicit terms */

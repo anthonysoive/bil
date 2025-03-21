@@ -231,5 +231,7 @@
 #include "CustomValues.h"
 #include "LocalSpaceTime.h"
 #include "LocalVariables.h"
+#include "MaterialPointMethod.h"
+#include "MaterialPointMethodCRTP.h"
 #include "MaterialPointModel.h"
 #include "PredefinedPoromechanicalMethodsByFEM.h"

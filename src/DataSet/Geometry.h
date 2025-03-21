@@ -71,7 +71,7 @@ extern Geometry_t*  (Geometry_New)   (void) ;
 #include "Periodicities.h"
 
 struct Geometry_s {
-  unsigned int dim ;    /* Dimension (1,2,3) */
+  int dim ;    /* Dimension (1,2,3) */
   Symmetry_t symmetry ;       /* Symmetry */
   CoorSys_t coorsys ;         /* Coordinate system */
   Periodicities_t* periodicities ;

@@ -297,7 +297,7 @@ enum {
 
 #include "BaseName.h"
 #include "CustomValues.h"
-#include "MaterialPointModel.h"
+#include "MaterialPointMethod.h"
 
 
 #define ImplicitValues_t BaseName(_ImplicitValues_t)
@@ -318,6 +318,8 @@ template<typename T>
 struct OtherValues_t;
 
 
+#define Values_t    BaseName(_Values_t)
+#define Values_d    BaseName(_Values_d)
 
 
 template<typename T>
@@ -330,14 +332,14 @@ using Values_d = Values_t<double> ;
 
 #define MPM_t      BaseName(_MPM_t)
 
-struct MPM_t: public MaterialPointModel_t<Values_t> {
-  MaterialPointModel_SetInputs_t<Values_t> SetInputs;
-  MaterialPointModel_Integrate_t<Values_t> Integrate;
-  MaterialPointModel_Initialize_t<Values_t> Initialize;
-  MaterialPointModel_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointModel_SetFluxes_t<Values_t> SetFluxes;
-  MaterialPointModel_SetIndexes_t SetIndexes;
-  MaterialPointModel_SetIncrements_t SetIncrements;
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
+  MaterialPointMethod_Integrate_t<Values_t> Integrate;
+  MaterialPointMethod_Initialize_t<Values_t> Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetFluxes_t<Values_t> SetFluxes;
+  MaterialPointMethod_SetIndexes_t SetIndexes;
+  MaterialPointMethod_SetIncrements_t SetIncrements;
 } ;
 
 
@@ -433,6 +435,8 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialVolume_solidtotal;
 };
+
+static MPM_t mpm;
 
 
 
@@ -561,6 +565,8 @@ struct ConstantValues_t {
 /* Molar volume of CH solid */
 #define V_CH           MolarVolumeOfCementHydrate(CH)
 /* Below is how to manage dissolution/precipitation kinetics */
+#define CHSolidContent_kin(n_chn,s_ch,dt) \
+        MAX(n_chn + dt*a_2*dn1_caoh2sdt(1 - n_chn/n_ch0,c_2)*log(s_ch), 0.)
 #if defined (U_ZN_Ca_S)
   /* Definition of U_Calcium = ZN_Ca_S in the next lines: 
    * ZN_Ca_S = N/N0 + log(S) 
@@ -575,7 +581,7 @@ struct ConstantValues_t {
           (((s_cc) > (s_ch)) ? 0 : CalciumContentInCcH(zn_ca_s))
   /* Current solid content of CH */
   #define CHSolidContent(zn_ca_s,n_chn,n_ccn,s_ch,s_cc,dt) \
-          (((s_cc) > (s_ch)) ? CHSolidContent_kin1(n_chn,s_ch,dt) : \
+          (((s_cc) > (s_ch)) ? CHSolidContent_kin(n_chn,s_ch,dt) : \
           CalciumContentInCcH(zn_ca_s))
 #elif defined (U_LogS_CH)
   /* Definition of U_Calcium = LogS_CH in the next lines:
@@ -587,7 +593,7 @@ struct ConstantValues_t {
   #define Log10SaturationIndexOfCH(logs_ch)            (logs_ch)
   /* Current solid content of CH */
   #define CHSolidContent(logs_ch,n_chn,n_ccn,s_ch,s_cc,dt) \
-          CHSolidContent_kin1(n_chn,s_ch,dt)
+          CHSolidContent_kin(n_chn,s_ch,dt)
 #endif
 
 
@@ -708,7 +714,7 @@ static int     pm(const char* s) ;
 static void    GetProperties(Element_t*,double) ;
 
 static double  dn1_caoh2sdt(double const,double const) ;
-static double  CHSolidContent_kin1(double const,double const,double const) ;
+//static double  CHSolidContent_kin1(double const,double const,double const) ;
 
 static void    ComputePhysicoChemicalProperties(double) ;
 
@@ -725,12 +731,6 @@ static double  saturationdegree(double const,double const,Curve_t const*) ;
 
 
 /* Internal parameters */
-static double phi0 ;
-static double phi_min ;
-static double kl_int ;
-static double kg_int ;
-static double frac ;
-static double phi_r ;
 static Curve_t* saturationcurve ;
 static Curve_t* relativepermliqcurve ;
 static Curve_t* relativepermgascurve ;
@@ -739,10 +739,6 @@ static Curve_t* molarvolumeofcshcurve ;
 static Curve_t* adsorbedchloridecurve_a ;
 static Curve_t* adsorbedchloridecurve_b ;
 #endif
-static double a_2,c_2 ;
-static double rate_cc ;
-static double n_ch0,n_csh0,c_na0,c_k0 ;
-static double rate_friedelsalt ;
 
 static double p_g0 ;
 static double p_l0 ;
@@ -754,8 +750,6 @@ static double d_vap ;
 static double mu_l ;
 static double mu_g ;
 
-static double p_c3 ;
-
 static double RT ;
 
 static double K_w ;
@@ -764,6 +758,31 @@ static double rho_l0 ;
 
 static CementSolutionDiffusion_t* csd = NULL ;
 static HardenedCementChemistry_t* hcc = NULL ;
+
+/* The parameters below are read in the input data file */
+
+#define Parameters_t    BaseName(_Parameters_t)
+
+struct Parameters_t {
+  double phi0;
+  double phi_min;
+  double kl_int;
+  double kg_int;
+  double frac;
+  double phi_r;
+  double a_2;
+  double c_2 ;
+  double rate_calcite;
+  double n_ch0;
+  double n_csh0;
+  double c_na0;
+  double c_k0;
+  double rate_friedelsalt;
+  double p_c3;
+  double R_CH;
+  double D;
+  double Tau;
+};
 
 
 
@@ -808,49 +827,55 @@ void ComputePhysicoChemicalProperties(double TK)
 
 int pm(const char* s)
 {
-       if(!strcmp(s,"porosity"))          return (0) ;
-  else if(!strcmp(s,"k_int"))             return (1) ;
-  else if(!strcmp(s,"kl_int"))            return (1) ;
-  else if(!strcmp(s,"N_CH"))              return (2) ;
-  else if(!strcmp(s,"N_CSH"))             return (4) ;
-  else if(!strcmp(s,"C_K"))               return (5) ;
-  else if(!strcmp(s,"C_Na"))              return (6) ;
-  else if(!strcmp(s,"A_2"))               return (8) ;
-  else if(!strcmp(s,"C_2"))               return (9) ;
-  else if(!strcmp(s,"Radius_CH"))         return (10) ;
-  else if(!strcmp(s,"D"))                 return (11) ;
-  else if(!strcmp(s,"Tau"))               return (12) ;
-  else if(!strcmp(s,"frac"))              return (13) ;
-  else if(!strcmp(s,"phi_r"))             return (14) ;
-  else if(!strcmp(s,"porosity_min"))      return (15) ;
-  else if(!strcmp(s,"Rate_Calcite"))      return (16) ;
-  else if(!strcmp(s,"kg_int"))            return (17) ;
-  else if(!strcmp(s,"p_c3"))              return (18) ;
-  else if(!strcmp(s,"Rate_FriedelSalt"))  return (19) ;
-  else return(-1) ;
+#define Parameters_Index(V)  CustomValues_Index(Parameters_t,V,double)
+  if(!strcmp(s,"InitialPorosity")) {
+    return (Parameters_Index(phi0)) ;
+  } else if(!strcmp(s,"IntrinsicPermeability")) {
+    return (Parameters_Index(kl_int)) ;
+  } else if(!strcmp(s,"IntrinsicPermeability_liquid")) {
+    return (Parameters_Index(kl_int)) ;
+  } else if(!strcmp(s,"IntrinsicPermeability_gas")) {
+    return (Parameters_Index(kg_int)) ;
+  } else if(!strcmp(s,"InitialContent_portlandite")) {
+    return (Parameters_Index(n_ch0)) ;
+  } else if(!strcmp(s,"InitialContent_csh")) {
+    return (Parameters_Index(n_csh0)) ;
+  } else if(!strcmp(s,"InitialConcentration_potassium")) {
+    return (Parameters_Index(c_k0)) ;
+  } else if(!strcmp(s,"InitialConcentration_sodium")) {
+    return (Parameters_Index(c_na0)) ;
+  } else if(!strcmp(s,"DissolutionRate_portlandite")) {
+    return (Parameters_Index(a_2)) ;
+  } else if(!strcmp(s,"DissolutionKineticCoef_portlandite")) {
+    return (Parameters_Index(c_2)) ;
+  } else if(!strcmp(s,"CrystalRadius_portlandite")) {
+    return (Parameters_Index(R_CH)) ;
+  } else if(!strcmp(s,"DiffusionCoefficientInCalcite_co2")) {
+    return (Parameters_Index(D)) ;
+  } else if(!strcmp(s,"CharacteristicTimeOfCO2DiffusionInCalcite")) {
+    return (Parameters_Index(Tau)) ;
+  } else if(!strcmp(s,"FractionalLengthOfPoreBodies")) {
+    return (Parameters_Index(frac)) ;
+  } else if(!strcmp(s,"PorosityFractionAtVanishingPermeability")) {
+    return (Parameters_Index(phi_r)) ;
+  } else if(!strcmp(s,"MinimumPorosity")) {
+    return (Parameters_Index(phi_min)) ;
+  } else if(!strcmp(s,"PrecipitationRate_calcite")) {
+    return (Parameters_Index(rate_calcite)) ;
+  } else if(!strcmp(s,"CapillaryPressureLimitOfAsymptoticSaturation")) {
+    return (Parameters_Index(p_c3)) ;
+  } else if(!strcmp(s,"PrecipitationRate_friedelsalt")) {
+    return (Parameters_Index(rate_friedelsalt)) ;
+  } else return(-1) ;
+#undef Parameters_Index
 }
 
 
 void GetProperties(Element_t* el,double t)
 {
-/* Access to Properties */
-#define GetProperty(a)  (Element_GetProperty(el)[pm(a)])
-  phi0     = GetProperty("porosity") ;
-  kl_int   = GetProperty("kl_int") ;
-  kg_int   = GetProperty("kg_int") ;
-  a_2      = GetProperty("A_2") ;
-  c_2      = GetProperty("C_2") ;
-  n_ch0    = GetProperty("N_CH") ;
-  n_csh0   = GetProperty("N_CSH") ;
-  c_na0    = GetProperty("C_Na") ;
-  c_k0     = GetProperty("C_K") ;
-  frac     = GetProperty("frac") ;
-  phi_r    = GetProperty("phi_r") ;
-  phi_min  = GetProperty("porosity_min") ;
-  rate_cc  = GetProperty("Rate_Calcite") ;
-  p_c3     = GetProperty("p_c3") ;
-  rate_friedelsalt  = GetProperty("Rate_FriedelSalt") ;
-  
+  /* To retrieve the material properties */
+  //Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+
   saturationcurve         = Element_FindCurve(el,"s_l") ;
   relativepermliqcurve    = Element_FindCurve(el,"kl_r") ;
 #ifdef E_AIR
@@ -861,7 +886,6 @@ void GetProperties(Element_t* el,double t)
   adsorbedchloridecurve_a = Element_FindCurve(el,"alpha") ;
   adsorbedchloridecurve_b = Element_FindCurve(el,"beta") ;
 #endif
-#undef GetProperty
 }
 
 
@@ -962,57 +986,83 @@ int SetModelProp(Model_t* model)
 int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 /* Lecture des donnees materiaux dans le fichier ficd */
 {
-  int  NbOfProp = 20 ;
+  int  NbOfProp = ((int) sizeof(Parameters_t)/sizeof(double)) ;
   
   InternationalSystemOfUnits_UseAsLength("decimeter") ;
   InternationalSystemOfUnits_UseAsMass("hectogram") ;
 
   Material_ScanProperties(mat,datafile,pm) ;
+  
     
   /* Default initialization */
   {
-    double h   = 5.6e-6 * (mol/dm2/sec) ;  /* (mol/dm2/s) these MT p 223 */
-    double R_0 = Material_GetProperty(mat)[pm("Radius_CH")] ; /* (dm) */
-    double D   = Material_GetProperty(mat)[pm("D")] ; /* (mol/dm/s) */
+    double n_csh0 = Material_GetProperty(mat)[pm("InitialContent_csh")] ;
     
-    if(R_0 == 0.) R_0 = 40.e-5 * dm ;
-    
-    if(D == 0.) D = 7e-15 * (mol/dm/sec) ;
-    
-    /* Initial (or reference) CH molar content */
-    n_ch0 = Material_GetProperty(mat)[pm("N_CH")] ;
-    
-    {
-      double t_ch = Material_GetProperty(mat)[pm("Tau")] ; /* (s) */
-      
-      if(t_ch == 0) {
-        t_ch = R_0/(3*h*V_CH) ;     /* (s) approx 721.5 s */
-        /* t_ch = R_0*R_0/(3*V_CH*D) ; */ /* (s) approx 2.3e8 s */
-        Material_GetProperty(mat)[pm("Tau")] = t_ch ;
-      }
-      
-      a_2 = n_ch0/t_ch ;  /* (mol/dm3/s) M. Thiery, PhD thesis, p 227 */
+    if(n_csh0 == 0) {
+      n_csh0 = 1. ;
+      Material_GetProperty(mat)[pm("InitialContent_csh")] = n_csh0 ;
     }
-    
-    c_2 = h*R_0/D ;     /* (no dim) M. Thiery, PhD thesis p 228 */
-  
-    Material_GetProperty(mat)[pm("A_2")] = a_2 ;
-    Material_GetProperty(mat)[pm("C_2")] = c_2 ;
   }
   
   {
-    /* Initial (or reference) CSH molar content */
-    n_csh0 = Material_GetProperty(mat)[pm("N_CSH")] ;
-    if(n_csh0 == 0) n_csh0 = 1. ;
+    double n_ch0 = Material_GetProperty(mat)[pm("InitialContent_portlandite")] ;
     
-    Material_GetProperty(mat)[pm("N_CSH")] = n_csh0 ;
+    if(n_ch0 == 0) {
+      n_ch0 = 1. ;
+      Material_GetProperty(mat)[pm("InitialContent_portlandite")] = n_ch0 ;
+    }
   }
   
   {
-    frac = Material_GetProperty(mat)[pm("frac")] ;
-    if(frac == 0) frac = 0.8 ;
+    double R_0 = Material_GetProperty(mat)[pm("CrystalRadius_portlandite")] ; /* (dm) */
     
-    Material_GetProperty(mat)[pm("frac")] = frac ;
+    if(R_0 == 0.) {
+      R_0 = 40.e-5 * dm ;
+      Material_GetProperty(mat)[pm("CrystalRadius_portlandite")] = R_0 ;
+    }
+  }
+  
+  {
+    double D   = Material_GetProperty(mat)[pm("DiffusionCoefficientInCalcite_co2")] ; /* (mol/dm/s) */
+    
+    if(D == 0.) {
+      D = 7e-15 * (mol/dm/sec) ;
+      Material_GetProperty(mat)[pm("DiffusionCoefficientInCalcite_co2")] = D;
+    }
+  }
+  
+  {
+    double h   = 5.6e-6 * (mol/dm2/sec) ;  /* (mol/dm2/s) these MT p 223 */
+    double R_0 = Material_GetProperty(mat)[pm("CrystalRadius_portlandite")] ; /* (dm) */
+    double t_ch = Material_GetProperty(mat)[pm("CharacteristicTimeOfCO2DiffusionInCalcite")] ; /* (s) */
+
+    if(t_ch == 0) {
+      t_ch = R_0/(3*h*V_CH) ;     /* (s) approx 721.5 s */
+      Material_GetProperty(mat)[pm("CharacteristicTimeOfCO2DiffusionInCalcite")] = t_ch ;
+    }
+  }
+  
+  {
+    double h   = 5.6e-6 * (mol/dm2/sec) ;  /* (mol/dm2/s) these MT p 223 */
+    double R_0 = Material_GetProperty(mat)[pm("CrystalRadius_portlandite")] ; /* (dm) */
+    double D   = Material_GetProperty(mat)[pm("DiffusionCoefficientInCalcite_co2")] ; /* (mol/dm/s) */
+    double n_ch0 = Material_GetProperty(mat)[pm("InitialContent_portlandite")] ;
+    double t_ch = Material_GetProperty(mat)[pm("CharacteristicTimeOfCO2DiffusionInCalcite")] ; /* (s) */
+      
+    double a_2 = n_ch0/t_ch ;  /* (mol/dm3/s) M. Thiery, PhD thesis, p 227 */
+    double c_2 = h*R_0/D ;     /* (no dim) M. Thiery, PhD thesis p 228 */
+  
+    Material_GetProperty(mat)[pm("DissolutionRate_portlandite")] = a_2 ;
+    Material_GetProperty(mat)[pm("DissolutionKineticCoef_portlandite")] = c_2 ;
+  }
+  
+  {
+    double frac = Material_GetProperty(mat)[pm("FractionalLengthOfPoreBodies")] ;
+    
+    if(frac == 0) {
+      frac = 0.8 ;
+      Material_GetProperty(mat)[pm("FractionalLengthOfPoreBodies")] = frac ;
+    }
   }
   
   
@@ -1108,7 +1158,7 @@ int PrintModelChar(Model_t* model,FILE *ficd)
 #ifdef E_AIR
   printf("\t- Gas pressure                     (p_g)\n") ;
 #endif
-  printf("\t- Electric potential               (psi) \n") ;
+  printf("\t- Electric potential x F/RT        (psi) \n") ;
   printf("\t- Carbon dioxide gas concentration (c_co2 or logc_co2)\n") ;
   printf("\t- Potassium concentration          (c_k or logc_k)\n") ;
   printf("\t- Sodium concentration             (c_na or logc_na)\n") ;
@@ -1144,7 +1194,7 @@ int PrintModelChar(Model_t* model,FILE *ficd)
   fprintf(ficd,"porosity = 0.38   # Porosity\n") ;
   fprintf(ficd,"kl_int = 1.4e-17   # Intrinsic permeability (dm2)\n") ;
   fprintf(ficd,"N_CH = 3.9        # Initial content in Ca(OH)2 (mol/L)\n") ;
-  fprintf(ficd,"Radius_CH = 40.e-5  # Portlandite crystal radius \n") ;
+  fprintf(ficd,"CrystalRadius_portlandite = 40.e-5  # Portlandite crystal radius \n") ;
   fprintf(ficd,"N_CSH = 2.4        # Initial content in CSH (mol/L)\n") ;
   fprintf(ficd,"C_Na = 0.019      # Total content in Na (mol/L)\n") ;
   fprintf(ficd,"C_K  = 0.012      # Total content in K  (mol/L)\n") ;
@@ -1165,7 +1215,7 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
 {
   int nn = Element_GetNbOfNodes(el) ;
   
-  MaterialPointModel_DefineNbOfInternalValues(MPM_t,el,nn);
+  mpm.DefineNbOfInternalValues(el,nn);
   
   #if 0
   {
@@ -1206,7 +1256,7 @@ int ComputeInitialState(Element_t* el)
     int nn = Element_GetNbOfNodes(el) ;
 
     for(int i = 0 ; i < nn ; i++) {
-      Values_d val = MaterialPointModel_InitializeValues(MPM_t,el,0,i);
+      Values_d& val = *mpm.InitializeValues(el,0,i);
       
       #ifdef U_LogC_Na
         LogC_Na(i)  = val.U_sodium ;
@@ -1233,7 +1283,7 @@ int ComputeInitialState(Element_t* el)
   }
   
   {
-    int i = MaterialPointModel_ComputeInitialStateByFVM(MPM_t,el,0);
+    int i = mpm.ComputeInitialStateByFVM(el,0);
   
     return(i);
   }
@@ -1243,7 +1293,7 @@ int ComputeInitialState(Element_t* el)
 
 int  ComputeExplicitTerms(Element_t* el,double t)
 {
-  int i = MaterialPointModel_ComputeExplicitTermsByFVM(MPM_t,el,t);
+  int i = mpm.ComputeExplicitTermsByFVM(el,t);
   
   return(i);
 }
@@ -1252,7 +1302,7 @@ int  ComputeExplicitTerms(Element_t* el,double t)
 
 int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 {
-  int i = MaterialPointModel_ComputeImplicitTermsByFVM(MPM_t,el,t,dt);
+  int i = mpm.ComputeImplicitTermsByFVM(el,t,dt);
   
   return(i);
 }
@@ -1261,7 +1311,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 
 int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 {
-  int i = MaterialPointModel_ComputeMassConservationMatrixByFVM(MPM_t,el,t,dt,k);
+  int i = mpm.ComputeMassConservationMatrixByFVM(el,t,dt,k);
 
 
 /* On output SetTangentMatrix has computed the derivatives wrt
@@ -1356,60 +1406,78 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
   /* 1. Conservation of Carbon: (N_C - N_Cn) + dt * div(W_C) = 0 */
   #ifdef E_CARBON
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_CARBON,Mole_carbon,MolarFlow_carbon);
+    int imass = Values_Index(Mole_carbon);
+    int iflow = Values_Index(MolarFlow_carbon[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_CARBON,imass,iflow);
   }
   #endif
   
   /* 2. Conservation of charge: div(W_q) = 0 */
   {
-    MaterialPointModel_ComputeFluxResiduByFVM(MPM_t,el,t,dt,r,E_CHARGE,MolarFlow_charge);
+    int iflow = Values_Index(MolarFlow_charge[0]);
+    mpm.ComputeFluxResiduByFVM(el,t,dt,r,E_CHARGE,iflow);
   }
   
   /* 3. Conservation of total mass: (M_tot - M_totn) + dt * div(W_tot) = 0 */
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_MASS,Mass_total,MassFlow_total);
+    int imass = Values_Index(Mass_total);
+    int iflow = Values_Index(MassFlow_total[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_MASS,imass,iflow);
   }
   
   /* 4. Conservation of Calcium: (N_Ca - N_Can) + dt * div(W_Ca) = 0 */
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_CALCIUM,Mole_calcium,MolarFlow_calcium);
+    int imass = Values_Index(Mole_calcium);
+    int iflow = Values_Index(MolarFlow_calcium[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_CALCIUM,imass,iflow);
   }
   
   /* 5. Conservation of Sodium: (N_Na - N_Nan) + dt * div(W_Na) = 0 */
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_SODIUM,Mole_sodium,MolarFlow_sodium);
+    int imass = Values_Index(Mole_sodium);
+    int iflow = Values_Index(MolarFlow_sodium[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_SODIUM,imass,iflow);
   }
   
   /* 6. Conservation of Potassium: (N_K - N_Kn) + dt * div(W_K) = 0 */
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_POTASSIUM,Mole_potassium,MolarFlow_potassium);
+    int imass = Values_Index(Mole_potassium);
+    int iflow = Values_Index(MolarFlow_potassium[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_POTASSIUM,imass,iflow);
   }
 
   /* 7. Conservation of Silicon: (N_Si - N_Sin) + dt * div(W_Si) = 0 */
   #ifdef E_SILICON
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_SILICON,Mole_silicon,MolarFlow_silicon);
+    int imass = Values_Index(Mole_silicon);
+    int iflow = Values_Index(MolarFlow_silicon[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_SILICON,imass,iflow);
   }
   #endif
 
   /* 8. Conservation of Chlorine: (N_Cl - N_Cln) + dt * div(W_Cl) = 0 */
   #ifdef E_CHLORINE
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_CHLORINE,Mole_chlorine,MolarFlow_chlorine);
+    int imass = Values_Index(Mole_chlorine);
+    int iflow = Values_Index(MolarFlow_chlorine[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_CHLORINE,imass,iflow);
   }
   #endif
   
   /* 9. Electroneutrality */
   #ifdef E_ENEUTRAL
   {
-    MaterialPointModel_ComputeBodyForceResiduByFVM(MPM_t,el,t,dt,r,E_ENEUTRAL,Mole_charge);
+    int imass = Values_Index(Mole_charge);
+    mpm.ComputeBodyForceResiduByFVM(el,t,dt,r,E_ENEUTRAL,imass);
   }
   #endif
 
   /* 10.  Conservation of dry air mass: (M_Air - M_Airn) + dt * div(W_Air) = 0 */
   #ifdef E_AIR
   {
-    MaterialPointModel_ComputeMassConservationResiduByFVM(MPM_t,el,t,dt,r,E_AIR,Mass_air,MassFlow_air);
+    int imass = Values_Index(Mass_air);
+    int iflow = Values_Index(MassFlow_air[0]);
+    mpm.ComputeMassConservationResiduByFVM(el,t,dt,r,E_AIR,imass,iflow);
   }
   #endif
 
@@ -1441,7 +1509,7 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
   {
     int i;
     int j = FVM_FindLocalCellIndex(fvm,s) ;
-    Values_d val = MaterialPointModel_OutputValues(MPM_t,el,t,j) ;
+    Values_d& val = *mpm.OutputValues(el,t,j) ;
 
     /* Macros */
 #define ptC(CPD)   &(HardenedCementChemistry_GetAqueousConcentrationOf(hcc,CPD))
@@ -1618,7 +1686,6 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
       double phi        = val.Porosity ;
       double coeff_permeability = PermeabilityCoefficient(el,phi) ;
       double taul       = TortuosityToLiquid(phi,s_l) ;
-      //double k_l  = (kl_int/mu_l)*RelativePermeabilityToLiquid(s_l)*coeff_permeability ;
 
       Result_Store(r + i++,&taul,"tortuosity to liquid",1) ;
       Result_Store(r + i++,&coeff_permeability,"permeability coef",1) ;
@@ -1905,6 +1972,20 @@ Values_d* MPM_t::SetInputs(Element_t* el,const double& t,const int& n,double con
 Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values_d const& val_n,Values_d& val)
 /** Compute the secondary variables from the primary ones. */
 {
+  /* Parameters */
+  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  double phi0     = param.phi0 ;
+  double n_ch0    = param.n_ch0 ;
+  double n_csh0   = param.n_csh0 ;
+  double kl_int   = param.kl_int ;
+  double kg_int   = param.kg_int ;
+  double phi_min  = param.phi_min ;
+  double rate_cc  = param.rate_calcite ;
+  double rate_friedelsalt  = param.rate_friedelsalt ;
+  double p_c3     = param.p_c3 ;
+  double a_2      = param.a_2 ;
+  double c_2      = param.c_2 ;
+  
   #ifdef E_CARBON
   double logc_co2   = val.U_carbon ;
   #else
@@ -2365,6 +2446,12 @@ Values_d*  MPM_t::SetFluxes(Element_t* el,double const& t,int const& i,int const
 
 Values_d*  MPM_t::Initialize(Element_t* el,double const& t,Values_d& val)
 {
+  /* Parameters */
+  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  double n_ch0    = param.n_ch0 ;
+  double n_csh0   = param.n_csh0 ;
+  double c_na0    = param.c_na0 ;
+  double c_k0     = param.c_k0 ;
   double c_na_tot = c_na0 ;
   double c_k_tot  = c_k0 ;
 
@@ -2625,6 +2712,9 @@ int concentrations_oh_na_k(double c_co2,double u_calcium,double u_silicon,double
 double PermeabilityCoefficient_KozenyCarman(Element_t const* el,double const phi)
 /* Kozeny-Carman model */
 {
+  /* To retrieve the material properties */
+  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  double phi0     = param.phi0 ;
   double coeff_permeability ;
   
   {
@@ -2648,11 +2738,15 @@ double PermeabilityCoefficient_VermaPruess(Element_t const* el,double const phi)
  * phi_r = fraction of initial porosity (phi/phi0) at which permeability is 0 
  */
 {
+  /* To retrieve the material properties */
+  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  double phi0     = param.phi0 ;
+  double frac     = param.frac ;
+  double phi_r    = param.phi_r ;
   double coeff_permeability ;
   
   {
     double phi_c = phi0 * phi_r ;
-    //double w = 1 + (1/frac)/(1/phi_r - 1) ;
     double w = 1 + (phi_r/frac)/(1 - phi_r) ;
     double t = (phi - phi_c)/(phi0 - phi_c) ;
     double verma_pruess = (t > 0) ? t*t*(1 - frac + (frac/(w*w)))/(1 - frac + frac*(pow(t/(t + w - 1),2.))) : 0 ;
@@ -2756,7 +2850,7 @@ double TortuosityToGas(double const phi,double const s_l)
 
 
 
-
+#if 0
 double CHSolidContent_kin1(double const n_chn,double const s_ch,double const dt)
 {
   double av         = 1 - n_chn/n_ch0 ;
@@ -2766,6 +2860,7 @@ double CHSolidContent_kin1(double const n_chn,double const s_ch,double const dt)
   
   return(n_ch_ki) ;
 }
+#endif
 
 
 

@@ -134,7 +134,7 @@ double* (FVM_ComputeSurfaceLoadResidu)(FVM_t* fvm,Load_t* load,double t,double d
   Element_t* el = FVM_GetElement(fvm) ;
   double** u = Element_ComputePointerToCurrentNodalUnknowns(el) ;
   Geometry_t* geom = Element_GetGeometry(el) ;
-  unsigned int dim = Geometry_GetDimension(geom) ;
+  auto dim = Geometry_GetDimension(geom) ;
   Symmetry_t sym = Geometry_GetSymmetry(geom) ;
   Node_t* *no = Element_GetPointerToNode(el) ;
   Field_t* field = Load_GetField(load) ;
@@ -540,7 +540,7 @@ double*  (FVM_ComputeMassAndIsotropicConductionMatrix)(FVM_t* fvm,double* c,int 
 double* (FVM_ComputeCellVolumes)(FVM_t* fvm)
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimension(el) ;
+  auto dim = Element_GetDimension(el) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
   int nn = Element_GetNbOfNodes(el) ;
   double* volume = FVM_GetCellVolumes(fvm) ;
@@ -600,9 +600,8 @@ double* (FVM_ComputeCellVolumes)(FVM_t* fvm)
       double* x1 = Element_GetNodeCoordinate(el,1) ;
       double* x2 = Element_GetNodeCoordinate(el,2) ;
       double a = 0,b = 0,c = 0 ;
-      int i ;
       
-      for(i = 0 ; i < dim ; i++) {
+      for(int i = 0 ; i < dim ; i++) {
         c += (x1[i] - x0[i])*(x1[i] - x0[i]) ;
         b += (x2[i] - x0[i])*(x2[i] - x0[i]) ;
         a += (x2[i] - x1[i])*(x2[i] - x1[i]) ;
@@ -668,7 +667,7 @@ double* (FVM_ComputeCellSurfaceAreas)(FVM_t* fvm)
 {
 #define AREA(i,j)     area[nn*(i) + (j)]
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimension(el) ;
+  auto dim = Element_GetDimension(el) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
   int nn = Element_GetNbOfNodes(el) ;
   double* area = FVM_GetCellSurfaceAreas(fvm) ;
@@ -824,7 +823,7 @@ double* (FVM_ComputeIntercellDistances)(FVM_t* fvm)
 /** Compute the intercell distances */
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
+  auto dim = Element_GetDimensionOfSpace(el) ;
   int nn  = Element_GetNbOfNodes(el) ;
   double* dist = FVM_GetIntercellDistances(fvm) ;
   int    i ;
@@ -870,7 +869,7 @@ double* (FVM_ComputeTheNodalFluxVector)(FVM_t* fvm,double* w)
 {
   #define W(i,j)    w[(i)*nn + (j)]
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimension(el) ;
+  auto dim = Element_GetDimension(el) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
   int nn = Element_GetNbOfNodes(el) ;
   size_t SizeNeeded = 3*nn*sizeof(double) ;
@@ -1094,12 +1093,12 @@ double* (FVM_ComputeGradient)(FVM_t* fvm,double* u,IntFct_t* intfct,int p,int sh
 //#define DH(n,i)  (dh[(n)*dim_h + (i)])
 #define CJ(i,j)  (cj[(i)*3 + (j)])
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
-  int dim_e = Element_GetDimension(el) ;
+  auto dim = Element_GetDimensionOfSpace(el) ;
+  auto dim_e = Element_GetDimension(el) ;
   size_t SizeNeeded = 3*sizeof(double) ;
   double* grad = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
   int nn = IntFct_GetNbOfFunctions(intfct) ;
-  int dim_h = IntFct_GetDimension(intfct) ;
+  auto dim_h = IntFct_GetDimension(intfct) ;
   
   
   /* One node mesh: for this special element the unknown stands for the gradient along x-axis */
@@ -1172,7 +1171,7 @@ double* (FVM_ComputeGradient)(FVM_t* fvm,double* u,IntFct_t* intfct,int p,int sh
 int (FVM_FindHalfSpace)(FVM_t* fvm,int i1,int i2,double* s)
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
+  auto dim = Element_GetDimensionOfSpace(el) ;
   double* x1 = Element_ComputePointerToNodalCoordinates(el)[i1] ;
   double* x2 = Element_ComputePointerToNodalCoordinates(el)[i2] ;
   double cos1 = 0 ;
@@ -1204,7 +1203,7 @@ double* (FVM_ComputeRelativeCellSurfaceAreas)(FVM_t* fvm)
 /** Compute the surface area gradients */
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
+  auto dim = Element_GetDimensionOfSpace(el) ;
   int nn  = Element_GetNbOfNodes(el) ;
   double* surface = FVM_ComputeCellSurfaceAreas(fvm) ;
   double* flow = surface ;
@@ -1235,7 +1234,7 @@ double* (FVM_ComputeNormalGradientMatrix)(FVM_t* fvm,int shift,double* c)
 /** Compute the c gradients normal to the cell surfaces */
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
+  auto dim = Element_GetDimensionOfSpace(el) ;
   int nn  = Element_GetNbOfNodes(el) ;
   size_t SizeNeeded = nn*nn*(sizeof(double)) ;
   double* grad = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;

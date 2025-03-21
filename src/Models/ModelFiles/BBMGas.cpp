@@ -5,6 +5,11 @@
 #include <math.h>
 #include "Context.h"
 #include "CommonModel.h"
+
+#ifdef HAVE_AUTODIFF
+//#define USE_AUTODIFF
+#endif
+
 #include "FEM.h"
 #include "Plasticity.h"
 
@@ -40,7 +45,7 @@
 
 #include "BaseName.h"
 #include "CustomValues.h"
-#include "MaterialPointModel.h"
+#include "MaterialPointMethod.h"
 
 
 #define ImplicitValues_t BaseName(_ImplicitValues_t)
@@ -64,6 +69,10 @@ template<typename T>
 struct OtherValues_t;
 
 
+
+#define Values_t    BaseName(_Values_t)
+#define Values_d    BaseName(_Values_d)
+
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
@@ -76,15 +85,19 @@ using Values_d = Values_t<double> ;
 
 
 
-struct MPM_t: public MaterialPointModel_t<Values_t> {
-  MaterialPointModel_SetInputs_t<Values_t> SetInputs;
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
   template<typename T>
-  MaterialPointModel_Integrate_t<Values_t,T> Integrate;
-  MaterialPointModel_Initialize_t<Values_t>  Initialize;
-  MaterialPointModel_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointModel_SetTransferMatrix_t<Values_t> SetTransferMatrix;
-  MaterialPointModel_SetIndexes_t SetIndexes;
-  MaterialPointModel_SetIncrements_t SetIncrements;
+  MaterialPointMethod_Integrate_t<Values_t,T> Integrate;
+  Values_t<double>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<double>& val) {return(Integrate<double>(el,t,dt,val_n,val));}
+  #ifdef USE_AUTODIFF
+  Values_t<real>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<real>& val) {return(Integrate<real>(el,t,dt,val_n,val));}
+  #endif
+  MaterialPointMethod_Initialize_t<Values_t>  Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
+  MaterialPointMethod_SetIndexes_t SetIndexes;
+  MaterialPointMethod_SetIncrements_t SetIncrements;
 } ;
 
 
@@ -109,16 +122,15 @@ struct ImplicitValues_t {
   T YieldCriterion;
   T PlasticMultiplier;
   T Porosity;
+  T MassDensity_liquid;
+  T MassDensity_gas;
+  T MassDensity_air;
 };
 
 
 
 template<typename T = double>
 struct OtherValues_t {
-  T SaturationDegree_liquid;
-  T MassDensity_liquid;
-  T MassDensity_gas;
-  T MassDensity_air;
 };
 
 
@@ -138,6 +150,9 @@ struct ExplicitValues_t {
 /* We define some names for constant terms (v0 must be used as pointer below) */
 template<typename T = double>
 struct ConstantValues_t {};
+
+
+static MPM_t mpm;
 
 
 
@@ -187,13 +202,15 @@ static double saturationdegree(double,double,Curve_t*) ;
 #define RelativePermeabilityToLiquid(pc)  (Curve_ComputeValue(relativepermliqcurve,pc))
 #define RelativePermeabilityToGas(pc)     (Curve_ComputeValue(relativepermgascurve,pc))
 
-#define TortuosityToGas(f,sg)     (0.1) //((sg > 0) ? pow(f,aa)*pow(sg,bb) : 0)
-//#define TortuosityToGas(f,sg)   ((sg > 0) ? pow(f*sg,4./3) : 0) // After HYDRUS
+//#define TortuosityToGas(f,sg)     (0.1) //((sg > 0) ? pow(f,aa)*pow(sg,bb) : 0)
+#define TortuosityToGas(f,sg)   ((sg > 0) ? pow(f*sg,4./3) : 0) // After HYDRUS
 #define aa                        (0.33)  /* 1/3 Millington, Thiery 1.74 */
 #define bb                        (2.33)   /* 7/3 Millington, Thiery 3.2 */
 
-#define KappaSuction(p)    ((kappasuctioncurve) ? Curve_ComputeValue(kappasuctioncurve,p) : kappa_s)
-#define Kappa(s)           ((kappacurve) ? Curve_ComputeValue(kappacurve,s) : kappa)
+#define KappaSuction1(p)    (Curve_ComputeValue(kappasuctioncurve1,p))
+#define KappaSuction2(s)    (Curve_ComputeValue(kappasuctioncurve2,s))
+#define KappaSuction(p,s)   (KappaSuction1(p) * KappaSuction2(s))
+#define Kappa(s)            (Curve_ComputeValue(kappacurve,s))
 
 
 
@@ -217,27 +234,22 @@ static double saturationdegree(double,double,Curve_t*) ;
 /* Gas property
  * -------------- */
  /* Molar mass of the inert gas */
-#define M_AIR          (28.97*gr)
+//#define M_AIR          (28.97*gr)
 
 
 
 /* Parameters */
-static double  e0 ;
-static double  phi0 ;
-static double  hardv0 ;
 static Elasticity_t* elasty ;
 static Plasticity_t* plasty ;
 static Curve_t* saturationcurve ;
 static Curve_t* relativepermliqcurve ;
 static Curve_t* relativepermgascurve ;
-static Curve_t* kappasuctioncurve ;
+static Curve_t* kappasuctioncurve1 ;
+static Curve_t* kappasuctioncurve2 ;
 static Curve_t* kappacurve ;
-static double  kappa ;
-static double  kappa_s ;
 static double  p_atm ;
 static double  p_v0 ;
 static double  RT ;
-static double  p_c3 ;
 
 /* The parameters below are read in the input data file */
 
@@ -268,6 +280,7 @@ struct Parameters_t {
   double SuctionCohesionCoefficient;
   double ReferenceConsolidationPressure;
   double MinimumSuction;
+  double MolarMassOfDryGas;
 };
 
 
@@ -306,6 +319,8 @@ int pm(const char *s)
 #define Parameters_Index(V)  CustomValues_Index(Parameters_t,V,double)
          if(!strcmp(s,"gravity"))    { 
     return (Parameters_Index(Gravity)) ;
+  } else if(!strcmp(s,"initial_porosity")) {
+    return(Parameters_Index(InitialPorosity)) ;
   } else if(!strcmp(s,"rho_s"))      { 
     return (Parameters_Index(MassDensity_solidskeleton)) ;
   } else if(!strcmp(s,"shear_modulus")) { 
@@ -323,24 +338,6 @@ int pm(const char *s)
     int j = (strlen(s) > 16) ? s[16] - '1' : 0 ;
     
     return(Parameters_Index(InitialStress[3*i + j])) ;
-    
-    /* BBM */
-  } else if(!strcmp(s,"slope_of_swelling_line")) {
-    return(Parameters_Index(SlopeOfElasticLoadingLine)) ;
-  } else if(!strcmp(s,"slope_of_virgin_consolidation_line")) {
-    return(Parameters_Index(SlopeOfVirginConsolidationLine)) ;
-  } else if(!strcmp(s,"slope_of_critical_state_line"))  {
-    return(Parameters_Index(SlopeOfCriticalStateLine)) ;
-  } else if(!strcmp(s,"initial_pre-consolidation_pressure")) {
-    return(Parameters_Index(InitialPreconsolidationPressure)) ;
-  } else if(!strcmp(s,"initial_porosity")) {
-    return(Parameters_Index(InitialPorosity)) ;
-  } else if(!strcmp(s,"kappa_s")) {
-    return(Parameters_Index(SlopeOfElasticWettingDryingLine)) ;
-  } else if(!strcmp(s,"suction_cohesion_coefficient")) {
-    return(Parameters_Index(SuctionCohesionCoefficient)) ;
-  } else if(!strcmp(s,"reference_consolidation_pressure")) {
-    return(Parameters_Index(ReferenceConsolidationPressure)) ;
   } else if(!strcmp(s,"kg_int"))      { 
     return (Parameters_Index(IntrinsicPermeability_gas)) ;
   } else if(!strcmp(s,"mu_g"))       { 
@@ -355,6 +352,24 @@ int pm(const char *s)
     return (Parameters_Index(HenryConstant)) ;
   } else if(!strcmp(s,"dissolved_air_diffusion_coefficient"))       { 
     return (Parameters_Index(DiffusionCoefficient_dissolvedair)) ;
+  } else if(!strcmp(s,"molar_mass_of_dry_gas"))       { 
+    return (Parameters_Index(MolarMassOfDryGas)) ;
+    
+    /* BBM */
+  } else if(!strcmp(s,"slope_of_swelling_line")) {
+    return(Parameters_Index(SlopeOfElasticLoadingLine)) ;
+  } else if(!strcmp(s,"slope_of_virgin_consolidation_line")) {
+    return(Parameters_Index(SlopeOfVirginConsolidationLine)) ;
+  } else if(!strcmp(s,"slope_of_critical_state_line"))  {
+    return(Parameters_Index(SlopeOfCriticalStateLine)) ;
+  } else if(!strcmp(s,"initial_pre-consolidation_pressure")) {
+    return(Parameters_Index(InitialPreconsolidationPressure)) ;
+  } else if(!strcmp(s,"kappa_s")) {
+    return(Parameters_Index(SlopeOfElasticWettingDryingLine)) ;
+  } else if(!strcmp(s,"suction_cohesion_coefficient")) {
+    return(Parameters_Index(SuctionCohesionCoefficient)) ;
+  } else if(!strcmp(s,"reference_consolidation_pressure")) {
+    return(Parameters_Index(ReferenceConsolidationPressure)) ;
   } else return(-1) ;
 #undef Parameters_Index
 }
@@ -362,23 +377,17 @@ int pm(const char *s)
 
 void GetProperties(Element_t* el,double t)
 {
-/* To retrieve the material properties */
-  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
-  
-  phi0    = param.InitialPorosity;
-  e0      = phi0/(1 - phi0) ;
-  kappa_s = param.SlopeOfElasticWettingDryingLine;
-  p_c3    = param.MinimumSuction;
-  
+  /* To retrieve the material properties */
+  //Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+
   plasty  = (Plasticity_t*) Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
   elasty  = Plasticity_GetElasticity(plasty) ;
-  
-  hardv0  = Plasticity_GetHardeningVariable(plasty)[0] ;
-  
+
   saturationcurve = Element_FindCurve(el,"sl") ;
   relativepermliqcurve = Element_FindCurve(el,"kl") ;
   relativepermgascurve = Element_FindCurve(el,"kg") ;
-  kappasuctioncurve = Element_FindCurve(el,"kappa_s") ;
+  kappasuctioncurve1 = Element_FindCurve(el,"kappa_s_p") ;
+  kappasuctioncurve2 = Element_FindCurve(el,"kappa_s_s") ;
   kappacurve = Element_FindCurve(el,"kappa") ;
   
   ComputePhysicoChemicalProperties(TEMPERATURE) ;
@@ -463,10 +472,9 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
         double coh    = Material_GetPropertyValue(mat,"suction_cohesion_coefficient") ;
         double p_ref  = Material_GetPropertyValue(mat,"reference_consolidation_pressure") ;
         Curve_t* lc   = Material_FindCurve(mat,"lc") ;
-        
-        kappa   = Material_GetPropertyValue(mat,"slope_of_swelling_line") ;
-        phi0    = Material_GetPropertyValue(mat,"initial_porosity") ;
-        e0      = phi0/(1 - phi0) ;
+        double phi0    = Material_GetPropertyValue(mat,"initial_porosity") ;
+        double e0      = phi0/(1 - phi0) ;
+        double kappa   = Material_GetPropertyValue(mat,"slope_of_swelling_line") ;
         
         Plasticity_SetTo(plasty,BBM) ;
         Plasticity_SetParameters(plasty,kappa,lambda,M,pc0,e0,coh,p_ref,lc) ;
@@ -532,7 +540,7 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   IntFct_t* intfct = Element_GetIntFct(el) ;
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
   
-  MaterialPointModel_DefineNbOfInternalValues(MPM_t,el,NbOfIntPoints);
+  mpm.DefineNbOfInternalValues(el,NbOfIntPoints);
   
   return(0) ;
 }
@@ -577,7 +585,7 @@ int ComputeInitialState(Element_t* el,double t)
  *  Return 0 if succeeded and -1 if failed
  */ 
 {
-  int i = MaterialPointModel_ComputeInitialStateByFEM(MPM_t,el,t);
+  int i = mpm.ComputeInitialStateByFEM(el,t);
   
   return(i);
 }
@@ -589,7 +597,7 @@ int  ComputeExplicitTerms(Element_t* el,double t)
  *  whatever they are, nodal values or implicit terms.
  *  Return 0 if succeeded and -1 if failed */
 {
-  int i = MaterialPointModel_ComputeExplicitTermsByFEM(MPM_t,el,t);
+  int i = mpm.ComputeExplicitTermsByFEM(el,t);
   
   return(i);
 }
@@ -599,7 +607,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 /** Compute the (current) implicit terms 
  *  Return 0 if succeeded and -1 if failed */
 {
-  int i = MaterialPointModel_ComputeImplicitTermsByFEM(MPM_t,el,t,dt);
+  int i = mpm.ComputeImplicitTermsByFEM(el,t,dt);
   
   return(i);
 }
@@ -609,7 +617,7 @@ int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) 
  *  Return 0 if succeeded and -1 if failed */
 {
-  int i = MaterialPointModel_ComputePoromechanicalMatrixByFEM(MPM_t,el,t,dt,k,E_MECH);
+  int i = mpm.ComputePoromechanicalMatrixByFEM(el,t,dt,k,E_MECH);
   
   return(i);
 }
@@ -627,15 +635,21 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
   }
   /* 1. Mechanics */
   {
-    MaterialPointModel_ComputeMechanicalEquilibriumResiduByFEM(MPM_t,el,t,dt,r,E_MECH,Stress,BodyForce);
+    int istress = Values_Index(Stress[0]);
+    int ibforce = Values_Index(BodyForce[0]);
+    mpm.ComputeMechanicalEquilibriumResiduByFEM(el,t,dt,r,E_MECH,istress,ibforce);
   }
   /* 2. Conservation of total mass */
   {
-    MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_MASS,Mass_total,MassFlow_total);
+    int imass = Values_Index(Mass_total);
+    int iflow = Values_Index(MassFlow_total[0]);
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_MASS,imass,iflow);
   }
   /* 3. Conservation of air */
-  {  
-    MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_AIR,Mass_air,MassFlow_air);
+  {
+    int imass = Values_Index(Mass_air);
+    int iflow = Values_Index(MassFlow_air[0]);
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_AIR,imass,iflow);
   }
   
   return(0);
@@ -671,6 +685,11 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
   GetProperties(el,t) ;
 
   {
+    /* To retrieve the material properties */
+    Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+    double phi0    = param.InitialPorosity;
+    double e0      = phi0/(1 - phi0) ;
+    double p_c3    = param.MinimumSuction;
     /* Interpolation functions at s */
     double* a = Element_ComputeCoordinateInReferenceFrame(el,s) ;
     int p = IntFct_ComputeFunctionIndexAtPointOfReferenceFrame(intfct,a) ;
@@ -697,7 +716,7 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     CustomValues_t<double,ExplicitValues_t>* val2 = (CustomValues_t<double,ExplicitValues_t>*) vex0 ;
     int    i ;
     
-    for(i = 0 ; i < dim ; i++) {
+    for(int i = 0 ; i < dim ; i++) {
       dis[i] = Element_ComputeUnknown(el,u,intfct,p,U_DIS + i) ;
     }
     
@@ -784,6 +803,13 @@ int MPM_t::SetTangentMatrix(Element_t* el,double const& t,double const& dt,int c
     /* 1. Derivatives w.r.t. the strain tensor
      * --------------------------------------- */
     if(k == 0) {
+      /* Parameters */
+      Parameters_t& par = ((Parameters_t*) Element_GetProperty(el))[0] ;
+      double poisson = par.PoissonRatio;
+      double phi0    = par.InitialPorosity;
+      double p_c3    = par.MinimumSuction;
+      //double kappa   = par.SlopeOfElasticLoadingLine;
+      double e0      = phi0/(1 - phi0) ;
       double p_l = val.Pressure_liquid;
       double p_g = val.Pressure_gas;
       double pc  = p_g - p_l ;
@@ -796,9 +822,6 @@ int MPM_t::SetTangentMatrix(Element_t* el,double const& t,double const& dt,int c
         double crit = val.YieldCriterion ;
         
         {
-          /* Parameters */
-          Parameters_t& par = ((Parameters_t*) Element_GetProperty(el))[0] ;
-          double poisson = par.PoissonRatio;
           double* vi_n = Element_GetPreviousImplicitTerm(el) ;
           CustomValues_t<double,ImplicitValues_t>& val_n = ((CustomValues_t<double,ImplicitValues_t>*) vi_n)[p] ;
           double* sig_n   = val_n.Stress ;
@@ -900,10 +923,10 @@ int MPM_t::SetTangentMatrix(Element_t* el,double const& t,double const& dt,int c
 
 
 void MPM_t::SetIndexes(Element_t* el,int* ind) {
-  ind[0] = Values_Index(Strain[0]);
+  //ind[0] = Values_Index(Strain[0]);
     
-  for(int i = 1 ; i < 9 ; i++) {
-    ind[i] = ind[0] + i;
+  for(int i = 0 ; i < 9 ; i++) {
+    ind[i] = -1;
   }
     
   ind[9]  = Values_Index(Pressure_liquid);  
@@ -1007,16 +1030,17 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
   double mu_g    = par.Viscosity_gas;
   double rho_l0  = par.MassDensity_liquid;
   double* sig0   = par.InitialStress;
-  double kappa   = par.SlopeOfElasticLoadingLine;
+  //double kappa   = par.SlopeOfElasticLoadingLine;
   //mu      = par.shear_modulus;
   double poisson = par.PoissonRatio;
   double phi0    = par.InitialPorosity;
   double e0      = phi0/(1 - phi0) ;
-  double kappa_s = par.SlopeOfElasticWettingDryingLine;
+  //double kappa_s = par.SlopeOfElasticWettingDryingLine;
   double d_vap   = par.DiffusionCoefficient_watervapor;
   double d_airliq= par.DiffusionCoefficient_dissolvedair;
   double p_c3    = par.MinimumSuction;
   double henry   = par.HenryConstant;
+  double M_AIR   = par.MolarMassOfDryGas;
   /* Inputs 
    * ------*/
   int dim = Element_GetDimensionOfSpace(el) ;
@@ -1057,7 +1081,7 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
         double signet_n  = (sig_n[0] + sig_n[4] + sig_n[8])/3. + p_gn ;
         double kappa1    = Kappa(pc_n) ;
         double bulk      = - signet_n*(1 + e0)/kappa1 ;
-        double kappa1_s1  = KappaSuction(-signet_n) ;
+        double kappa1_s1  = KappaSuction(-signet_n,pc_n) ;
         T dsigm     = bulk*trde - signet_n*kappa1_s1/kappa1*dlns ;
         //double lame      = bulk - 2*mu/3. ;
         //double poisson   = 0.5 * lame / (lame + mu) ;
@@ -1238,6 +1262,7 @@ Values_d* MPM_t::Initialize(Element_t* el,double const& t,Values_d& val)
   Parameters_t& par = ((Parameters_t*) Element_GetProperty(el))[0] ;
   double* sig0   = par.InitialStress;
   DataFile_t* datafile = Element_GetDataFile(el) ;
+  double hardv0  = Plasticity_GetHardeningVariable(plasty)[0] ;
   
   /* Initial stresses, hardening variables */
   if(DataFile_ContextIsPartialInitialization(datafile)) {

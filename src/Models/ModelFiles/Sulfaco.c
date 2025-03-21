@@ -632,6 +632,9 @@ I_Straind,
 
 I_VarPHI_C,
 
+I_N_solidCa,
+I_N_liquidCa,
+
 I_Last
 } ;
 
@@ -2181,6 +2184,9 @@ void  ComputeSecondaryVariables(Element_t* el,double t,double dt,double* x_n,dou
   x[I_V_CSH     ] = v_csh ;
   
   x[I_V_Cem     ] = v_cem ;
+  
+  x[I_N_solidCa ] = n_ca_s;
+  x[I_N_liquidCa] = n_ca_l;
   
   
   /* Porosities */

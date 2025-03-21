@@ -26,13 +26,20 @@ kg_int = 1e-18       # permeabilite intrinseque au gaz
 mu_l = 0.001        # viscosite du liquide
 mu_g = 1.81e-5        # viscosite du gaz
 suction_cohesion_coefficient = 0.8
+poisson = 0.3
 vapor_diffusion_coefficient = 2.82e-5
-#Curves = wrc        # nom du fichier contenant p_c S_l k_rl LC
-Curves = wrc2   pc = Range{x1 = 0 , x2 = 30.e6, n = 171}  sl = Expressions(1){p0 = 1.e6 ; m = 0.6 ; sl = (1 + (pc/p0)**(1/(1-m)))**(-m)}
-Curves = krc2   pc = Range{x1 = 0 , x2 = 30.e6, n = 171}  kl = Expressions(1){s0 = 30.e6 ; kl = 10**(- 5*pc/s0)} kg = Expressions(1){kg = 1}
-Curves = lc   pc = Range{x1 = 0 , x2 = 1.e6, n = 200}  lc = Expressions(1){l0 = 0.065 ; k = 0.011 ; beta = 20.e-6 ; r = 0.75 ; lc = (l0 - k)/(l0*((1-r)*exp(-beta*pc) + r) - k)}
-Curves = kappa_s pnet = Range{x1 = 1.e3 , x2 = 10.e6, n = 400} kappa_s = Expressions(1){kappas0 = 0.1; alphas = 0.19; patm = 1.e5; kappa_s = kappas0*(1 + alphas*log(pnet/patm));}
-Curves = kappa suction = Range{x1 = 1.e3 , x2 = 10.e6, n = 400} kappa = Expressions(1){kappa0 = 0.011; alpha = 1.727; patm = 1.e5; kappa = kappa0*(1 + alpha*log(suction/patm+1));}
+molar_mass_of_dry_gas = 28.97e-3	# (28.97e-3 for air)    kg/mol
+henry_law_constant = 6.4e-6    # (6.4E-6)
+dissolved_air_diffusion_coefficient = 2.e-11	#(2E-9)
+minimum_suction = 1.e2		#Smooths the transition of the wrc towards S_r = 100% at pc < minimum_suction 
+
+Curves_log = wrc   pc = Range{x1 = 1.e2 , x2 = 380.e6, n = 771}  sl = Expressions(1){p0 = 6.4e6 ; m = 0.27 ; sl = (1 + (pc/p0)**(1/(1-m)))**(-m)}	#Van Genuchten's model, in case no wrc file is provided manually
+Curves_log = krc   pc = Range{x1 = 1.e2 , x2 = 240.e6, n = 771}  kl = Expressions(1){s0 = 0.07e6; sA = 0.12e6; sB = 60e6; k_s0 = 1.02e-11; k_sA = 4e-14; k_sB = 3e-15; kl = (pc > sA) ? 10**((log10(sA)-log10(pc))/(log10(sB)-log10(sA))*log10(k_sA/k_sB)-log10(k_s0/k_sA)) : (pc < s0) ? 1 : 10**((log10(s0)-log10(pc))/(log10(sA)-log10(s0))*log10(k_s0/k_sA))} kg = Expressions(1){kg = 1}	#Gas relative permeability law kg(pc) data should be provided manually
+Curves = lc    pc = Range{x1 = 1.e2 , x2 = 280.e6, n = 400}  lc = Expressions(1){lambda0 = 0.090 ; kappa_0 = 0.037 ; beta = 0.040 ; r = 0.698 ; lc = (lambda0 - kappa_0)/(lambda0*((1-r)*exp(-beta*pc/1e6) + r) - kappa_0)}
+Curves = kappa pc = Range{x1 = 1.e2 , x2 = 230.e6, n = 600} kappa = Expressions(1){kappa_0 = 0.037; alpha_il = -0.112; p_atm = 0.1e6; kappa = kappa_0*(1+alpha_il*log((pc+p_atm)/p_atm))}
+Curves = kappa_s_p p_net = Range{x1 = 1.e3 , x2 = 15.e6, n = 400} kappa_s_p = Expressions(1){kappa_s0 = 0.023; alpha_sp = -0.180; p_ref = 3.5e4; kappa_s_p = kappa_s0*(1+alpha_sp*log(p_net/p_ref))}
+Curves = kappa_s_s pc = Range{x1 = 1.e3 , x2 = 200.e6, n = 400} kappa_s_s = Expressions(1){kappa_s0 = 0.023; alpha_ss = 0.025; s_max = 90e6;  kappa_s_s = (pc < s_max) ? exp(alpha_ss*pc/1e6) : 0.001}
+
 
 
 Fields                # champs constants ou linéaires dans l'espace

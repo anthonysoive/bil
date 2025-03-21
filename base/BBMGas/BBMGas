@@ -26,6 +26,7 @@ kg_int = 1e-18       # permeabilite intrinseque au gaz
 mu_l = 0.001        # viscosite du liquide
 mu_g = 1.81e-5        # viscosite du gaz
 suction_cohesion_coefficient = 0.8
+poisson = 0.3
 vapor_diffusion_coefficient = 2.82e-5
 #Curves = wrc        # nom du fichier contenant p_c S_l k_rl LC
 Curves = wrc2   pc = Range{x1 = 0 , x2 = 30.e6, n = 171}  sl = Expressions(1){p0 = 1.e6 ; m = 0.6 ; sl = (1 + (pc/p0)**(1/(1-m)))**(-m)}

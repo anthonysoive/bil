@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include "Message.h"
 #include "Monolithic.h"
 #include "Context.h"
 #include "CommonModule.h"
@@ -70,12 +71,23 @@ int (Monolithic_Iterate)(DataSet_t* dataset,Solutions_t* sols,Solver_t* solver)
       
       while(IterProcess_LastIterationIsNotReached(iterprocess)) {
         IterProcess_IncrementIterationIndex(iterprocess) ;
+         
+        if(Options_IsToPrintOutAtEachIteration(options)) {
+          Message_Direct("Iteration: %d\n",IterProcess_GetIterationIndex(iterprocess));
+          Message_CPUTime();
+        }
         
         /*
          * 3.1.5.1 The implicit terms (constitutive equations)
          */
         {
           int i = Mesh_ComputeImplicitTerms(mesh,T_1,DT_1) ;
+          
+          if(Options_IsToPrintOutAtEachIteration(options)) {  
+            Message_Direct("Implicit terms:\n");
+            Message_Direct("CPU lap time %g seconds\n",Message_CPUTimeInterval());
+            Message_CPUTime();
+          }
           
           if(i != 0) {
             return(i) ;
@@ -97,6 +109,12 @@ int (Monolithic_Iterate)(DataSet_t* dataset,Solutions_t* sols,Solver_t* solver)
               Solver_Print(solver,debug) ;
             }
           }
+          
+          if(Options_IsToPrintOutAtEachIteration(options)) { 
+            Message_Direct("Residu:\n");
+            Message_Direct("CPU lap time %g seconds\n",Message_CPUTimeInterval());
+            Message_CPUTime();
+          }
         }
         
         /*
@@ -117,6 +135,12 @@ int (Monolithic_Iterate)(DataSet_t* dataset,Solutions_t* sols,Solver_t* solver)
               Solver_Print(solver,debug) ;
             }
           }
+          
+          if(Options_IsToPrintOutAtEachIteration(options)) {
+            Message_Direct("Matrix:\n");
+            Message_Direct("CPU lap time %g seconds\n",Message_CPUTimeInterval());
+            Message_CPUTime();
+          }
         }
         
         /*
@@ -127,6 +151,12 @@ int (Monolithic_Iterate)(DataSet_t* dataset,Solutions_t* sols,Solver_t* solver)
           
           if(i != 0) {
             return(i) ;
+          }
+          
+          if(Options_IsToPrintOutAtEachIteration(options)) {
+            Message_Direct("Solve:\n");
+            Message_Direct("CPU lap time %g seconds\n",Message_CPUTimeInterval());
+            Message_CPUTime();
           }
         }
         

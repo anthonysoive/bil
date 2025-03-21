@@ -312,7 +312,7 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       int    n_points ;
       double x_1,x_2 ;
         
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %d }",&x_1,&x_2,&n_points) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %d }",&x_1,&x_2,&n_points) ;
       
       CurvesFile_GetNbOfPoints(curvesfile) = n_points ;
 
@@ -355,35 +355,35 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
     if(String_Is(YMODEL,"Freundlich")) {
       double alpha,beta ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&alpha,&beta) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&alpha,&beta) ;
 
       PasteColumn(Freundlich,alpha,beta) ;
       
     } else if(String_Is(YMODEL,"Affine")) {
       double a,b ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&a,&b) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&a,&b) ;
 
       PasteColumn(Affine,a,b) ;
       
     } else if(String_Is(YMODEL,"Langmuir")) {
       double c0,ca_max ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&ca_max,&c0) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&ca_max,&c0) ;
 
       PasteColumn(Langmuir,ca_max,c0) ;
       
     } else if(String_Is(YMODEL,"LangmuirN")) {
       double n,x0,y0 ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %lf }",&y0,&x0,&n) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf }",&y0,&x0,&n) ;
 
       PasteColumn(LangmuirN,y0,x0,n) ;
       
     } else if(String_Is(YMODEL,"Mualem_wet") || String_Is(YMODEL,"Mualem_liq")){
       double m ;
       
-      sscanf(line,"{ %*s = %lf }",&m) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&m) ;
       
       PasteColumn(MualemVanGenuchten,m) ;
       
@@ -392,7 +392,7 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       FILE   *ftmp1 = tmpfile() ;
       double kh_max ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %lf , %*s = %lf }",&a_w,&m_w,&a_d,&m_d) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf }",&a_w,&m_w,&a_d,&m_d) ;
 
       /* Compute kh in the temporary file ftmp1 */
       {
@@ -451,49 +451,49 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
     } else if(String_Is(YMODEL,"Mualem_gas")){
       double m ;
       
-      sscanf(line,"{ %*s = %lf }",&m) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&m) ;
       
       PasteColumn(Mualem_gas,m) ;
       
     } else if(String_Is(YMODEL,"Van-Genuchten_gas")){
       double m,p,q ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %lf }",&m,&p,&q) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf }",&m,&p,&q) ;
       
       PasteColumn(VanGenuchten_gas,m,p,q) ;
       
     } else if(String_Is(YMODEL,"Van-Genuchten")){
       double a,m ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&a,&m) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&a,&m) ;
       
       PasteColumn(VanGenuchten,a,m) ;
       
     } else if(String_Is(YMODEL,"Nav-Genuchten")){
       double a,m ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&a,&m) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&a,&m) ;
       
       PasteColumn(NavGenuchten,a,m) ;
       
     } else if(String_Is(YMODEL,"Millington")){
       double b ;
       
-      sscanf(line,"{ %*s = %lf }",&b) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&b) ;
       
       PasteColumn(Millington,b) ;
       
     } else if(String_Is(YMODEL,"Monlouis-Bonnaire")){
       double m ;
       
-      sscanf(line,"{ %*s = %lf }",&m) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&m) ;
       
       PasteColumn(MonlouisBonnaire,m) ;
       
     } else if(String_Is(YMODEL,"Integral")){
       char   yname[Curve_MaxLengthOfCurveName] ;
       
-      sscanf(line,"{ %*s = %s }",yname) ;
+      sscanf(line,"{ %*[^= ] = %s }",yname) ;
       
       {
         Curves_t* curves = CurvesFile_GetCurves(curvesfile) ;
@@ -554,7 +554,7 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       double  y_Jen = 0.9 ;
       double  y_Tob = 1.8 ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&y_Tob,&y_Jen) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&y_Tob,&y_Jen) ;
       
       if(!strncmp(YLABEL,"X_CSH",5)) {
         PasteColumn(CSH3EndMembers,y_Tob,y_Jen,"X_CSH") ;
@@ -581,8 +581,8 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       double  x1,s1,n1 ;
       double  x2,s2,n2 ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %lf \
-                   , %*s = %lf , %*s = %lf , %*s = %lf }" \
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf \
+                   , %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf }" \
                    , &x1,&s1,&n1,&x2,&s2,&n2) ;
       
       if(!strncmp(YLABEL,"X_CSH",1)) {
@@ -594,14 +594,14 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
     } else if(String_Is(YMODEL,"Redlich-Kwong_CO2")) {
       double temperature ;
       
-      sscanf(line,"{ %*s = %lf }",&temperature) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&temperature) ;
       
       PasteColumn(RedlichKwongCO2,temperature) ;
       
     } else if(String_Is(YMODEL,"MolarDensityOfCO2")) {
       double temperature ;
       
-      sscanf(line,"{ %*s = %lf }",&temperature) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&temperature) ;
       
       PasteColumn(MolarDensityOfCO2,temperature) ;
       
@@ -609,7 +609,7 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       double pressure ;
       double temperature ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf }",&pressure,&temperature) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf }",&pressure,&temperature) ;
       
       PasteColumn(MolarVolumeOfCO2CH4Mixture,pressure,temperature) ;
       
@@ -618,14 +618,14 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       double temperature ;
       char gas[4] ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %s }",&pressure,&temperature,gas) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %s }",&pressure,&temperature,gas) ;
       
       PasteColumn(PartialFugacityOfCO2CH4Mixture,pressure,temperature,gas) ;
       
     } else if(String_Is(YMODEL,"MolarDensityOfPerfectGas")) {
       double temperature ;
       
-      sscanf(line,"{ %*s = %lf }",&temperature) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&temperature) ;
       
       PasteColumn(MolarDensityOfPerfectGas,temperature) ;
       
@@ -633,14 +633,14 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
               String_Is(YMODEL,"ViscosityOfCO2")) {
       double temperature ;
       
-      sscanf(line,"{ %*s = %lf }",&temperature) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&temperature) ;
       
       PasteColumn(FenghourCO2,temperature) ;
       
     } else if(String_Is(YMODEL,"KozenyCarman")) {
       double phi0 ;
       
-      sscanf(line,"{ %*s = %lf }",&phi0) ;
+      sscanf(line,"{ %*[^= ] = %lf }",&phi0) ;
       
       PasteColumn(PermeabilityCoefficient_KozenyCarman,phi0) ;
       
@@ -649,7 +649,7 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       double frac ;
       double phi_r ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %lf , %*s = %lf }",&phi0,&frac,&phi_r) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %lf , %*[^= ] = %lf }",&phi0,&frac,&phi_r) ;
       
       PasteColumn(PermeabilityCoefficient_VermaPruess,phi0,frac,phi_r) ;
       
@@ -665,7 +665,7 @@ int   (CurvesFile_WriteCurves)(CurvesFile_t* curvesfile)
       double tem ;
       char salt[30] ;
       
-      sscanf(line,"{ %*s = %lf , %*s = %s }",&tem,salt) ;
+      sscanf(line,"{ %*[^= ] = %lf , %*[^= ] = %s }",&tem,salt) ;
       
       PasteColumn(LinLee,tem,salt) ;
       

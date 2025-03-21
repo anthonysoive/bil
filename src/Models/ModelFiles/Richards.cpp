@@ -6,7 +6,7 @@
 #include "FEM.h"
 
 #ifdef HAVE_AUTODIFF
-//#define USE_AUTODIFF
+#define USE_AUTODIFF
 #endif
 
 #define TITLE   "Richards Equation (3D)"
@@ -30,7 +30,7 @@
 
 #include "BaseName.h"
 #include "CustomValues.h"
-#include "MaterialPointModel.h"
+#include "MaterialPointMethod.h"
 
 #define ImplicitValues_t BaseName(_ImplicitValues_t)
 #define ExplicitValues_t BaseName(_ExplicitValues_t)
@@ -51,6 +51,11 @@ template<typename T>
 struct OtherValues_t;
 
 
+
+#define Values_t    BaseName(_Values_t)
+#define Values_d    BaseName(_Values_d)
+
+
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
@@ -65,14 +70,18 @@ using Values_d = Values_t<double> ;
 #define MPM_t      BaseName(_MPM_t)
 
 
-struct MPM_t: public MaterialPointModel_t<Values_t> {
-  MaterialPointModel_SetInputs_t<Values_t> SetInputs;
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
   template<typename T>
-  MaterialPointModel_Integrate_t<Values_t,T> Integrate;
-  MaterialPointModel_Initialize_t<Values_t>  Initialize;
-  MaterialPointModel_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointModel_SetTransferMatrix_t<Values_t> SetTransferMatrix;
-  MaterialPointModel_SetIndexes_t SetIndexes;
+  MaterialPointMethod_Integrate_t<Values_t,T> Integrate;
+  Values_t<double>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<double>& val) {return(Integrate<double>(el,t,dt,val_n,val));}
+  #ifdef USE_AUTODIFF
+  Values_t<real>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<real>& val) {return(Integrate<real>(el,t,dt,val_n,val));}
+  #endif
+  MaterialPointMethod_Initialize_t<Values_t>  Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
+  MaterialPointMethod_SetIndexes_t SetIndexes;
   #ifndef USE_AUTODIFF
   void SetIncrements(Element_t* el,double* dui) { 
     ObVal_t* obval = Element_GetObjectiveValue(el);
@@ -117,6 +126,8 @@ template<typename T = double>
 struct OtherValues_t {
   T SaturationDegree_liquid;
 };
+
+static MPM_t mpm;
 
 
 
@@ -167,7 +178,7 @@ double* MacroGradient(Element_t* el,double t)
     
   for(int i = 0 ; i < 3 ; i++) {
     double fctindex = param.MacroFunctionIndex[i] ;
-    int idx = floor(fctindex + 0.5) ;
+    int idx = (int) floor(fctindex + 0.5) ;
     
     if(0 < idx && idx < nf + 1) {
       Function_t* macrogradfct = fct + idx - 1 ;
@@ -297,7 +308,7 @@ int DefineElementProp(Element_t *el,IntFcts_t *intfcts)
   IntFct_t *intfct = Element_GetIntFct(el) ;
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
     
-  MaterialPointModel_DefineNbOfInternalValues(MPM_t,el,NbOfIntPoints);
+  mpm.DefineNbOfInternalValues(el,NbOfIntPoints);
   
   /* Continuity of pressure across zero-thickness element */
   {
@@ -334,7 +345,7 @@ int  ComputeLoads(Element_t *el,double t,double dt,Load_t *cg,double *r)
 
 int ComputeInitialState(Element_t* el,double t)
 {
-  int i = MaterialPointModel_ComputeInitialStateByFEM(MPM_t,el,t);
+  int i = mpm.ComputeInitialStateByFEM(el,t);
   
   return(i);
 }
@@ -342,7 +353,7 @@ int ComputeInitialState(Element_t* el,double t)
 
 int  ComputeExplicitTerms(Element_t* el,double t)
 {
-  int i = MaterialPointModel_ComputeExplicitTermsByFEM(MPM_t,el,t);
+  int i = mpm.ComputeExplicitTermsByFEM(el,t);
   
   return(i);
 }
@@ -350,7 +361,7 @@ int  ComputeExplicitTerms(Element_t* el,double t)
 
 int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 {
-  int i = MaterialPointModel_ComputeImplicitTermsByFEM(MPM_t,el,t,dt);
+  int i = mpm.ComputeImplicitTermsByFEM(el,t,dt);
   
   return(i);
 }
@@ -358,7 +369,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 
 int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 {
-  int i = MaterialPointModel_ComputeMassConservationMatrixByFEM(MPM_t,el,t,dt,k);
+  int i = mpm.ComputeMassConservationMatrixByFEM(el,t,dt,k);
   
   #if 0
   {
@@ -383,7 +394,12 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
   }
   
   /* Conservation of liquid mass */
-  MaterialPointModel_ComputeMassConservationResiduByFEM(MPM_t,el,t,dt,r,E_LIQ,Mass_liquid,MassFlow_liquid);
+  {
+    int imass = Values_Index(Mass_liquid);
+    int iflow = Values_Index(MassFlow_liquid[0]);
+    
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_LIQ,imass,iflow);
+  }
   
   return(0);
 }
@@ -405,10 +421,8 @@ int  ComputeOutputs(Element_t *el,double t,double *s,Result_t *r)
   //if(Element_IsSubmanifold(el)) return(0) ;
 
   /* Initialization */
-  {
-    int    i ;
-    
-    for(i = 0 ; i < NbOfOutputs ; i++) {
+  {    
+    for(int i = 0 ; i < NbOfOutputs ; i++) {
       Result_SetValuesToZero(r + i) ;
     }
   }
@@ -431,7 +445,6 @@ int  ComputeOutputs(Element_t *el,double t,double *s,Result_t *r)
     double sl  = SaturationDegree(pc) ;
     
     double w_l[3] = {0,0,0} ;
-    int    i ;
     
     /* Averaging */
     for(int i = 0 ; i < np ; i++) {
@@ -439,11 +452,14 @@ int  ComputeOutputs(Element_t *el,double t,double *s,Result_t *r)
       
       for(int j = 0 ; j < 3 ; j++) w_l[j]  += val1[i].MassFlow_liquid[j]/np ;
     }
+    
+    {
+      int i = 0 ;
       
-    i = 0 ;
-    Result_Store(r + i++,&pl,"pressure",1) ;
-    Result_Store(r + i++,w_l,"flow",3) ;
-    Result_Store(r + i++,&sl,"saturation",1) ;
+      Result_Store(r + i++,&pl,"pressure",1) ;
+      Result_Store(r + i++,w_l,"flow",3) ;
+      Result_Store(r + i++,&sl,"saturation",1) ;
+    }
   }
   
   return(NbOfOutputs) ;

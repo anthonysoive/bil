@@ -285,7 +285,7 @@ double* (Elasticity_ComputeTransverselyIsotropicStiffnessTensor)(Elasticity_t* e
   double Poisson3   = Elasticity_GetPoissonRatio3(elasty) ;
   double Shear3     = Elasticity_GetShearModulus3(elasty) ;
   double Axis3      = Elasticity_GetAxis3(elasty) ;
-  short int axis_3  = floor(Axis3 + 0.5) ;
+  short int axis_3  = (short int) floor(Axis3 + 0.5) ;
   short int axis_1  = (axis_3 + 1) % 3 ;
   short int axis_2  = (axis_3 + 2) % 3 ;
   double twomu1     = Young/(1 + Poisson) ;
@@ -424,9 +424,9 @@ double* (Elasticity_ConvertStiffnessMatrixInto6x6Matrix)(double* c)
 #define C4(i,j,k,l) (c[(((i)*3+(j))*3+(k))*3+(l)])
 #define C2(i,j)     (c2[(i)*6+(j)])
 /*
- *                  |0 3 5|
- * MI(i,j) maps to  |3 1 4|
- *                  |5 4 2|
+ *                  |0 3 5|    |0 5 4|
+ * MI(i,j) maps to  |3 1 4| or |5 1 3|
+ *                  |5 4 2|    |4 3 2|
  */
 #define MI(i,j)     (mapindex[(i)*3 + (j)])
   double  c2[36] ;
@@ -612,7 +612,7 @@ double* (Elasticity_ConvertStressTensorInto6TermStressVector)(double* c)
 
 
 double* (Elasticity_Convert6TermStressVectorIntoStressTensor)(double* c)
-/** Convert a 6 term column matrix representing a symmetric vector 
+/** Convert a 6x1 column matrix representing the stress components 
  *  using the Mandel's notation into a 2nd-order symmetric stress tensor. 
  *  The Mandel's notation relates the stress tensor to the 6 term vector
  *  of stresses: 

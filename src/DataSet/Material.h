@@ -139,6 +139,12 @@ extern void        (Material_ScanProperties)  (Material_t*,DataFile_t*,Model_Com
         Material_AppendGenericData(MAT,GenericData_Create(__VA_ARGS__))
 
 
+/* We use a C extension provided by GNU C:
+ * A compound statement enclosed in parentheses may appear 
+ * as an expression in GNU C.
+ * (https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html#Statement-Exprs) */
+#define Material_PropertyIndex(PAR,V) \
+        CustomValues_Index(PAR,V,double)
 
 
 
