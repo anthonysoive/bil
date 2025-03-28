@@ -436,6 +436,8 @@ struct ConstantValues_t {
   T InitialVolume_solidtotal;
 };
 
+static MPM_t mpm;
+
 
 
 
@@ -781,8 +783,6 @@ struct Parameters_t {
   double D;
   double Tau;
 };
-
-static MPM_t mpm;
 
 
 
@@ -2288,6 +2288,7 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
 
 
     /* Concentrations */
+    #if 0
     {
       double* c = HardenedCementChemistry_GetAqueousConcentration(hcc) ;
       int nbc = HardenedCementChemistry_NbOfConcentrations ;
@@ -2297,6 +2298,8 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
         val.AqueousConcentration[j] = c[j] ;
       }
     }
+    #endif
+    HardenedCementChemistry_CopyConcentrations(hcc,val.AqueousConcentration) ;
   }
   
   return(&val) ;

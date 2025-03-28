@@ -2288,6 +2288,7 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
 
 
     /* Concentrations */
+    #if 0
     {
       double* c = HardenedCementChemistry_GetAqueousConcentration(hcc) ;
       int nbc = HardenedCementChemistry_NbOfConcentrations ;
@@ -2297,6 +2298,8 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
         val.AqueousConcentration[j] = c[j] ;
       }
     }
+    #endif
+    HardenedCementChemistry_CopyConcentrations(hcc,val.AqueousConcentration) ;
   }
   
   return(&val) ;
