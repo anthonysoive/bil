@@ -41,28 +41,39 @@
  *       DrS(T) = DrS(T0) + Int_T0^T DrCp(T)/T dT
  * 
  * and so
+ *
+ * d/dT(R ln(K)) = -d/dT(DrG/T) = DrH/T^2 = DrH(T0)/T^2 + 1/T^2 Int_T0^T DrCp(T) dT
  * 
  * DrG(T) = DrG(T0) - (T - T0) * DrS(T0) + (Int_T0^T DrCp(T) dT) - T * (Int_T0^T DrCp(T)/T dT)
  * 
  * ie.
  * 
- * ln(K) = ln(K0) - DrH(T0) / R * (1/T - 1/T0) - (1/RT) * (Int_T0^T DrCp(T) dT) + (1/R) * (Int_T0^T DrCp(T)/T dT)
+ * R ln(K) = R ln(K0) - DrH(T0) * (1/T - 1/T0) 
+ *         - (1/T) * (Int_T0^T DrCp(T) dT) + (Int_T0^T DrCp(T)/T dT)
  * 
+ *
+ * 1. The Maier and Kelly [1] expresssion: DrCp(T) = a0 + a1 * T + a2 / T^2
+ * ------------------------------------------------------------------------
+ * [1] Maier, C.G., and Kelly, K.K., 1932, 
+ *     An equation for the representation of high temperature heat content data: 
+ *     Amer. Chem. Soc. Jour., v. 54, pp. 3243-3246.
+ *
+ * R ln(K) = R ln(K0) - DrH(T0) *  (1/T - 1/T0) + a0 * ( T0/T - 1 + ln(T/T0) )
+ *         + 1/2 * a1 * (T - T0)*(1 - T0/T) + 1/2 * a2 * (1/T - 1/T0)^2
  * 
- * Three-term temperature extrapolation
- * ------------------------------------
+ * 2. Three-term temperature extrapolation: DrCP(T) = cst
+ * ------------------------------------------------------
  * This corresponds with a constant heat capacity of reaction DrCp(T) = DrCp. Then
  * 
- * ln(K) = ln(K0) - (DrH(T0)/R) * (1/T - 1/T0) + (DrCp/R) * ( T0/T - 1 + ln(T/T0) )
+ * R ln(K) = R ln(K0) - DrH(T0) * (1/T - 1/T0) + DrCp * ( T0/T - 1 + ln(T/T0) )
  * 
  * 
- * So with the approximation: log(K) = A1 + A2 * T + A3 / T + A4 * log(T) + A5 / (T*T)
+ * So with the approximation: 
+ * log(K) = A1 + A3 / T + A4 * log(T) = log(K0) + A3 * (1/T - 1/T0) + A4 * log(T/T0)
  * 
  * A1 = + (1/(ln(10) * R)) * ( (DrS(T0)) - (DrCp) * ( 1 + ln(T0) )
- * A2 = 0
  * A3 = - (1/(ln(10) * R)) * ( (DrH(T0)) - (DrCp) * T0 )
  * A4 = + (1/(R)) * (DrCp)
- * A5 = 0
  */
 
 
@@ -70,35 +81,31 @@
 #define TemperatureDependenceOfLog10EquilibriumConstant6(T,a,b,c,d,e) \
         ((a) + (b)*((T)) + (c)*(1/(T)) + (d)*log10((T)) + (e)*(1/((T)*(T))))
 
+#define TemperatureDependenceOfLog10EquilibriumConstant7(T0,T,logk0,b,c,d,e) \
+        ((logk0) + (b)*((T) - (T0)) + (c)*(1/(T) - 1/(T0)) + (d)*log10((T)/(T0)) + (e)*(1/((T)*(T)) - 1/((T0)*(T0))))
 
-#define TemperatureDependenceOfLog10EquilibriumConstant6_293(T,a0,b,c,d,e) \
-        ((a0) + (b)*((T) - 293.) + (c)*(1/(T) - 1/293.) + (d)*log10((T)/293.) + (e)*(1/((T)*(T)) - 1/(85849.)))
+#define TemperatureDependenceOfLog10EquilibriumConstant6_293(T,logk0,b,c,d,e) \
+        TemperatureDependenceOfLog10EquilibriumConstant7(293.,T,logk0,b,c,d,e)
+
+
+/* Maier-Kelly's expression (for the record) */
+#define TemperatureDependenceOfLog10EquilibriumConstant_MaierKelly(T0,T,logK0,DrH,a0,a1,a2) \
+        (logK0) + (-(DrH)*(1/(T) - 1/(T0)) + (a0)*((T0)/(T) - 1 + log((T)/(T0)))\
+        + 0.5*(a1)*((T0) - (T))*((T0)/(T) - 1) + 0.5*(a2)*(1/(T) - 1/(T0))*(1/(T) - 1/(T0))\
+        /(log(10.)*PhysicalConstant(PerfectGasConstant)))
         
 
 /* Three-term approximation */
-#define TemperatureDependenceOfLog10EquilibriumConstant4(T,DrH,DrS,DrCp) \
-        TemperatureDependenceOfLog10EquilibriumConstant6(T, \
-        TemperatureDependenceOfLog10EquilibriumConstant_A1(DrH,DrS,DrCp), 0, \
-        TemperatureDependenceOfLog10EquilibriumConstant_A3(DrH,DrS,DrCp), \
-        TemperatureDependenceOfLog10EquilibriumConstant_A4(DrH,DrS,DrCp), 0)
-        
-
-#define TemperatureDependenceOfLog10EquilibriumConstant_A1(DrH,DrS,DrCp) \
-        (( (DrS) - (DrCp) * (1 + log(298.15)))/(log(10.) * PhysicalConstant(PerfectGasConstant)))
-       
-#define TemperatureDependenceOfLog10EquilibriumConstant_A3(DrH,DrS,DrCp) \
-        ((-(DrH) + (DrCp) * (298.15))/(log(10.) * PhysicalConstant(PerfectGasConstant)))
-
-#define TemperatureDependenceOfLog10EquilibriumConstant_A4(DrH,DrS,DrCp) \
-        ((DrCp)/(PhysicalConstant(PerfectGasConstant)))
-        
-        
+#define TemperatureDependenceOfLog10EquilibriumConstant_ThreeTerm(T0,T,logK0,DrH,DrCp) \
+        (logK0) + (-(DrH)*(1/(T) - 1/(T0)) + (DrCp)*((T0)/(T) - 1 + log((T)/(T0)))\
+        /(log(10.)*PhysicalConstant(PerfectGasConstant)))
 
 
-/*
-#define TemperatureDependenceOfLog10EquilibriumConstant_293(T,a0,b,c,d,e) \
-        ((a0) + \
-         TemperatureDependenceOfLog10EquilibriumConstant(T   ,0,b,c,d,e) - \
-         TemperatureDependenceOfLog10EquilibriumConstant(293.,0,b,c,d,e))
-*/
+#define TemperatureDependenceOfLog10EquilibriumConstant5(T0,T,logK0,DrH,DrCp) \
+        TemperatureDependenceOfLog10EquilibriumConstant_ThreeTerm(T0,T,logK0,DrH,DrCp)
+
+
+#define TemperatureDependenceOfLog10EquilibriumConstant4_293(T,logk0,DrH,DrCp) \
+        TemperatureDependenceOfLog10EquilibriumConstant5(293.,T,logK0,DrH,DrCp)
+
 #endif

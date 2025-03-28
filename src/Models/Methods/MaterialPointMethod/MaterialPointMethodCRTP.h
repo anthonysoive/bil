@@ -23,9 +23,9 @@ using MaterialPointMethod_SetTransferMatrix_t = int (Element_t*,double const&,in
 template<template<typename> typename V>
 using MaterialPointMethod_SetFluxes_t = V<double>* (Element_t*,double const&,int const&,int const&,V<double> const&,V<double>*);
 
-using MaterialPointMethod_SetIndexes_t = void (Element_t*,int*);
+using MaterialPointMethod_SetIndexOfPrimaryVariables_t = void (Element_t*,int*);
 
-using MaterialPointMethod_SetIncrements_t = void (Element_t*,double*);
+using MaterialPointMethod_SetIncrementOfPrimaryVariables_t = void (Element_t*,double*);
 
 
 
@@ -124,7 +124,7 @@ struct MaterialPointMethod_t {
    *  Return a pointer to val.
    */
 
-  virtual void SetIndexes(Element_t*,int*){}
+  virtual void SetIndexOfPrimaryVariables(Element_t*,int*){}
   /** On input: (el,ind)
    *  ind = a pointer to an array of ncol integers
    *  ind[k] = index of the k^th unknown in the custom values struct
@@ -134,7 +134,7 @@ struct MaterialPointMethod_t {
    *  ind[k] are updated
    */
 
-  virtual void SetIncrements(Element_t*,double*){}
+  virtual void SetIncrementOfPrimaryVariables(Element_t*,double*){}
   /** On input: (el,dui)
    *  dui = a pointer to an array of ncol doubles
    *  ncol = nb of the tangent matrix columns

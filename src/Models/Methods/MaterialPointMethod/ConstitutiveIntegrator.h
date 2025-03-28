@@ -756,12 +756,12 @@ struct ConstitutiveIntegrator_t {
     return(_mpm->SetFluxes(_el,_t,i,j,grd,v));
   }
 
-  void SetIndexes(int* ind) {
-    _mpm->SetIndexes(_el,ind);
+  void SetIndexOfPrimaryVariables(int* ind) {
+    _mpm->SetIndexOfPrimaryVariables(_el,ind);
   }
 
-  void SetIncrements(double* dui) {
-    _mpm->SetIncrements(_el,dui);
+  void SetIncrementOfPrimaryVariables(double* dui) {
+    _mpm->SetIncrementOfPrimaryVariables(_el,dui);
   }
   #endif
   
@@ -881,8 +881,8 @@ struct ConstitutiveIntegrator_t {
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
-    _mpm->SetIndexes(_el,ind);
-    _mpm->SetIncrements(_el,dui);
+    _mpm->SetIndexOfPrimaryVariables(_el,ind);
+    _mpm->SetIncrementOfPrimaryVariables(_el,dui);
     
     {
       int dec = ncols*ncols ;
@@ -926,7 +926,7 @@ struct ConstitutiveIntegrator_t {
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
-    _mpm->SetIndexes(_el,ind);
+    _mpm->SetIndexOfPrimaryVariables(_el,ind);
     
     {
       int dec = ncols*ncols ;
@@ -969,8 +969,8 @@ struct ConstitutiveIntegrator_t {
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
-    _mpm->SetIndexes(_el,ind);
-    _mpm->SetIncrements(_el,dui);
+    _mpm->SetIndexOfPrimaryVariables(_el,ind);
+    _mpm->SetIncrementOfPrimaryVariables(_el,dui);
     
     {
       int  dec = ncols*ncols ;
@@ -1017,7 +1017,7 @@ struct ConstitutiveIntegrator_t {
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
-    _mpm->SetIndexes(_el,ind);
+    _mpm->SetIndexOfPrimaryVariables(_el,ind);
     
     {
       int  dec = ncols*ncols ;

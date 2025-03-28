@@ -1,6 +1,17 @@
 #ifndef TEMPERATURE_H
 #define TEMPERATURE_H
 
+/* class-like structures "Temperature_t" */
+
+/* vacuous declarations and typedef names */
+struct Temperature_s ; typedef struct Temperature_s Temperature_t ;
+
+
+
+extern Temperature_t* (Temperature_Create)(void) ;
+extern void           (Temperature_Delete)(void*) ;
+
+
 
 #define Temperature_0C                  (273.15)
 #define Temperature_20C                 (293.15)
@@ -16,25 +27,8 @@
         do {Temperature_GetRoomValue(TEMP) = (T) ;} while(0)
 
 
-struct Temperature_t {
+struct Temperature_s {
   double roomvalue ;          /* Room temperature */
-  
-  Temperature_t() {roomvalue = Temperature_DefaultValue;}
-  ~Temperature_t(){};
-};
-
-
-
-inline Temperature_t* (Temperature_Create)(void){
-  Temperature_t* temperature = new Temperature_t();
-  
-  return(temperature) ;
-}
-
-
-
-inline void (Temperature_Delete)(void* self){
-  delete (self);
-}
+} ;
 
 #endif

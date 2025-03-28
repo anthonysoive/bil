@@ -1,7 +1,7 @@
 News in 2.9: Use of the library "autodiff" via option at compiling time. 
 Compliler c++ is forced for all source files (.c and .cpp). 
-Introduction of a constitutive integrator interface for the implementation
-of models.
+Introduction of the interface "MaterialPointMethod.h" for an easiest way
+of implementating models.
 
 News in 2.8: Parallelization via OpemMP and MPI.
 A new algorithm is implemented in the module SNIA which is based on a 

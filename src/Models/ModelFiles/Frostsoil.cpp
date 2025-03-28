@@ -109,8 +109,8 @@ struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_Initialize_t<Values_t>  Initialize;
   MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
   MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
-  MaterialPointMethod_SetIndexes_t SetIndexes;
-  MaterialPointMethod_SetIncrements_t SetIncrements;
+  MaterialPointMethod_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
+  MaterialPointMethod_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
 } ;
 
 
@@ -1180,7 +1180,7 @@ int MPM_t::SetTangentMatrix(Element_t* el,double const& t,double const& dt,int c
   
 
 
-void MPM_t::SetIndexes(Element_t* el,int* ind) {
+void MPM_t::SetIndexOfPrimaryVariables(Element_t* el,int* ind) {
     ind[0] = Values_Index(Strain[0]);
     
     for(int i = 1 ; i < 9 ; i++) {
@@ -1195,7 +1195,7 @@ void MPM_t::SetIndexes(Element_t* el,int* ind) {
 
 
 
-void MPM_t::SetIncrements(Element_t* el,double* dui) {  
+void MPM_t::SetIncrementOfPrimaryVariables(Element_t* el,double* dui) {  
     ObVal_t* obval = Element_GetObjectiveValue(el) ;
         
     for(int i = 0 ; i < 9 ; i++) {

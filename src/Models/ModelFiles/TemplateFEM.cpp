@@ -93,8 +93,8 @@ struct MPM_t: public MaterialPointModel_t<Values_d> {
   MaterialPointModel_Initialize_t<Values_d>  Initialize;
   MaterialPointModel_SetTangentMatrix_t<Values_d> SetTangentMatrix;
   MaterialPointModel_SetTransferMatrix_t<Values_d> SetTransferMatrix;
-  MaterialPointModel_SetIndexes_t SetIndexes;
-  MaterialPointModel_SetIncrements_t SetIncrements;
+  MaterialPointModel_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
+  MaterialPointModel_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
 } ;
 
 
@@ -806,23 +806,23 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
   return(&val) ;
 }
 
-void MPM_t::SetIndexes(Element_t* el,int* ind)
+void MPM_t::SetIndexOfPrimaryVariables(Element_t* el,int* ind)
 /** On ouput:
  *  ind = a pointer to an array of ncol integers
  *  ncol = nb of the tangent matrix columns
  *  
- *  ind[k] = index of the k^th unknown in the custom values struct
+ *  ind[k] = index of the k^th primary unknown in the custom values struct
  */
 {
 }
 
-void MPM_t::SetIncrements(Element_t* el,double* dui)
+void MPM_t::SetIncrementOfPrimaryVariables(Element_t* el,double* dui)
 /** On ouputs:
  *  dui = a pointer to an array of ncol doubles
  *  ncol = nb of the tangent matrix columns
  *  
- *  dui[k] = arbitrary small increment of the k^th unknown used for 
- *           the numerical derivatives (see operator Differentiate)
+ *  dui[k] = arbitrary small increment of the k^th primary unknown used 
+ *           for the numerical derivatives (see operator Differentiate)
  */
 {
 }

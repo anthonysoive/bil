@@ -81,9 +81,9 @@ struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_Initialize_t<Values_t>  Initialize;
   MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
   MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
-  MaterialPointMethod_SetIndexes_t SetIndexes;
+  MaterialPointMethod_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
   #ifndef USE_AUTODIFF
-  void SetIncrements(Element_t* el,double* dui) { 
+  void SetIncrementOfPrimaryVariables(Element_t* el,double* dui) { 
     ObVal_t* obval = Element_GetObjectiveValue(el);
 
     dui[0]  = 1.e-2*ObVal_GetValue(obval + U_LIQ);
@@ -514,7 +514,7 @@ int MPM_t::SetTransferMatrix(Element_t* el,double const& dt,int const& p,Values_
 
 
 
-void MPM_t::SetIndexes(Element_t* el,int* ind) {
+void MPM_t::SetIndexOfPrimaryVariables(Element_t* el,int* ind) {
   ind[0]  = Values_Index(Pressure_liquid); 
 }
 
