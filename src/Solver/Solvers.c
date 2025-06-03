@@ -5,19 +5,12 @@
 #include <math.h>
 #include <stdbool.h>
 #include "Mry.h"
+#include "Options.h"
 #include "Solvers.h"
+#include "Solver.h"
 #include "Message.h"
-#include "BilExtraLibs.h"
+#include "Mesh.h"
 
-
-
-#if defined (PETSCLIB)
-  #include <petsc.h>
-#endif
-
-/*
-  Extern functions
-*/
 
 
 Solvers_t*  (Solvers_Create)(Mesh_t* mesh,Options_t* options,const int n)

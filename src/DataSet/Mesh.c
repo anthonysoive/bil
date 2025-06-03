@@ -7,7 +7,9 @@
 #include "Math_.h"
 #include "Symmetry.h"
 #include "Elements.h"
+#include "Element.h"
 #include "Nodes.h"
+#include "Node.h"
 #include "Geometry.h"
 #include "Message.h"
 #include "DataFile.h"
@@ -23,6 +25,16 @@
 #include "Mesh.h"
 #include "SharedMS.h"
 #include "DistributedMS.h"
+#include "BConds.h"
+#include "Solver.h"
+#include "ObVals.h"
+#include "ObVal.h"
+#include "Matrix.h"
+#include "Residu.h"
+#include "Loads.h"
+#include "Load.h"
+#include "Regions.h"
+#include "IntFcts.h"
 
 
 #if defined(__cplusplus)

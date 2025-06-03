@@ -6,11 +6,12 @@ extern "C" {
 #endif
 
 
-/* Vacuous declarations and typedef names */
-
-/* class-like structure "Modules_t" */
-struct Module_s        ; typedef struct Module_s        Module_t ;
-
+/* Forward declarations */
+struct Module_t; //typedef struct Module_t        Module_t ;
+struct DataSet_t;
+struct OutputFiles_t;
+struct Solutions_t;
+struct Solver_t;
 
 
 /* Declaration of Macros, Methods and Structures */
@@ -21,11 +22,6 @@ extern Module_t*  (Module_Initialize)(Module_t*,const char*) ;
 
 
 #if 0
-#include "Mesh.h"
-#include "Solution.h"
-#include "BConds.h"
-#include "Solver.h"
-
 //extern int    Module_StoreCurrentSolution(Mesh_t*,double,char*) ;
 //extern int    Module_LoadCurrentSolution(Mesh_t*,double*,char*) ;
 //extern void   Module_InitializeCurrentPointers(Mesh_t*,Solution_t*) ;
@@ -47,10 +43,63 @@ extern Module_t*  (Module_Initialize)(Module_t*,const char*) ;
 #define Module_GetComputeProblem(MOD)     ((MOD)->computeproblem)
 #define Module_GetSolveProblem(MOD)       ((MOD)->solveproblem)
 #define Module_GetIncrement(MOD)          ((MOD)->increment)
-#define Module_GetStepForward(MOD)        ((MOD)->stepforward)
+//#define Module_GetStepForward(MOD)        ((MOD)->stepforward)
 #define Module_GetInitializeProblem(MOD)  ((MOD)->initializeproblem)
 #define Module_GetSequentialIndex(MOD)    ((MOD)->sequentialindex)
 #define Module_GetNbOfSequences(MOD)      ((MOD)->nbofsequences)
+
+
+#define Module_SetCodeNameOfModule(MOD,A)\
+        do {\
+          Module_GetCodeNameOfModule(MOD) = A;\
+        } while(0)
+        
+#define Module_SetShortTitle(MOD,A)\
+        do {\
+          Module_GetShortTitle(MOD) = A;\
+        } while(0)
+        
+#define Module_SetNameOfAuthors(MOD,A)\
+        do {\
+          Module_GetNameOfAuthors(MOD) = A;\
+        } while(0)
+        
+#define Module_SetSetModuleProp(MOD,A)\
+        do {\
+          Module_GetSetModuleProp(MOD) = A;\
+        } while(0)
+        
+#define Module_SetComputeProblem(MOD,A)\
+        do {\
+          Module_GetComputeProblem(MOD) = A;\
+        } while(0)
+        
+#define Module_SetSolveProblem(MOD,A)\
+        do {\
+          Module_GetSolveProblem(MOD) = A;\
+        } while(0)
+        
+#define Module_SetIncrement(MOD,A)\
+        do {\
+          Module_GetIncrement(MOD) = A;\
+        } while(0)
+        
+#define Module_SetInitializeProblem(MOD,A)\
+        do {\
+          Module_GetInitializeProblem(MOD) = A;\
+        } while(0)
+        
+#define Module_SetSequentialIndex(MOD,A)\
+        do {\
+          Module_GetSequentialIndex(MOD) = A;\
+        } while(0)
+        
+#define Module_SetNbOfSequences(MOD,A)\
+        do {\
+          Module_GetNbOfSequences(MOD) = A;\
+        } while(0)
+        
+
 
 
 /* Copy operations */
@@ -81,21 +130,12 @@ extern Module_t*  (Module_Initialize)(Module_t*,const char*) ;
         (Module_GetIncrement(MOD)) ? \
         Module_GetIncrement(MOD)(__VA_ARGS__) : -1
 
-#define Module_StepForward(MOD,...) \
-        (Module_GetStepForward(MOD)) ? \
-        Module_GetStepForward(MOD)(__VA_ARGS__) : -1
-
 #define Module_InitializeProblem(MOD,...) \
         (Module_GetInitializeProblem(MOD)) ? \
         Module_GetInitializeProblem(MOD)(__VA_ARGS__) : -1
 
 
 /*  Typedef names of Methods */
-#include "DataSet.h"
-#include "OutputFiles.h"
-#include "Solutions.h"
-#include "Solver.h"
-
 typedef int   Module_SetModuleProp_t(Module_t*) ;
 typedef int   Module_ComputeProblem_t(DataSet_t*) ;
 typedef int   Module_SolveProblem_t(DataSet_t*,Solutions_t*,Solver_t*,OutputFiles_t*) ;
@@ -104,12 +144,12 @@ typedef int   Module_Increment_t(DataSet_t*,Solutions_t*,Solver_t*,OutputFiles_t
 typedef int   Module_InitializeProblem_t(DataSet_t*,Solutions_t*) ;
 
 
-struct Module_s {              /* module */
+struct Module_t {              /* module */
   Module_SetModuleProp_t*      setmoduleprop ;
   Module_ComputeProblem_t*     computeproblem ;
   Module_SolveProblem_t*       solveproblem ;
   Module_Increment_t*          increment ;
-  Module_StepForward_t*        stepforward ;
+  //Module_StepForward_t*        stepforward ;
   Module_InitializeProblem_t*  initializeproblem ;
   int nbofsequences ;
   int sequentialindex ;

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Mry.h"
+#include "Buffer.h"
 #include "Buffers.h"
 
 

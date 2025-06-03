@@ -5,12 +5,13 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Buffers_s     ; typedef struct Buffers_s     Buffers_t ;
+/* Forward declarations */
+struct Buffers_t; //typedef struct Buffers_t     Buffers_t ;
+struct Buffer_t;
 
 
+#include <stdio.h>
 extern Buffers_t*  (Buffers_Create)(size_t) ;
 extern void        (Buffers_Delete)(void*) ;
 
@@ -18,7 +19,6 @@ extern void        (Buffers_Delete)(void*) ;
 #define Buffers_GetNbOfBuffers(BFS)   ((BFS)->nbofbuffers)
 #define Buffers_GetBuffer(BFS)        ((BFS)->buffer)
 
-#include "SharedMS.h"
 
 #define Buffers_MaxNbOfBuffers   SharedMS_MaxNbOfThreads
 
@@ -29,9 +29,8 @@ extern void        (Buffers_Delete)(void*) ;
         NULL)
 
 
-#include "Buffer.h"
 
-struct Buffers_s {
+struct Buffers_t {
   int nbofbuffers ;
   Buffer_t* buffer ;
 } ;
@@ -40,4 +39,7 @@ struct Buffers_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include "SharedMS.h"
 #endif

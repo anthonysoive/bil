@@ -7,8 +7,12 @@
 #include "Mry.h"
 #include "String_.h"
 #include "Fields.h"
+#include "Field.h"
 #include "Functions.h"
+#include "Function.h"
 #include "BCond.h"
+#include "Node.h"
+#include "DataFile.h"
 
 
 

@@ -6,10 +6,9 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure "DataSet_t and attributes */
-struct ShapeFct_s       ; typedef struct ShapeFct_s       ShapeFct_t ;
+/* Forward declarations */
+struct ShapeFct_t; //typedef struct ShapeFct_t       ShapeFct_t ;
 
 
 
@@ -19,7 +18,6 @@ extern void        (ShapeFct_ComputeValuesAtPoint)(int,int,double*,double*,doubl
 
 
 
-#include "Element.h"
 
 #define ShapeFct_MaxNbOfNodes            (Element_MaxNbOfNodes)
 
@@ -34,7 +32,7 @@ extern void        (ShapeFct_ComputeValuesAtPoint)(int,int,double*,double*,doubl
 
 
 
-struct ShapeFct_s {           /* Shape function */
+struct ShapeFct_t {           /* Shape function */
   int dim ;                   /* Sub-dimension (0,1,2,3) */
   int nn ;                    /* Number of nodes */
   double* a ;                 /* Reference coordinates */
@@ -42,9 +40,9 @@ struct ShapeFct_s {           /* Shape function */
   double* dh ;                /* Values of function gradients */
 } ;
 
-
-
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Element.h"
 #endif

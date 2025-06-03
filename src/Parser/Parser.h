@@ -2,16 +2,16 @@
 #define PARSER_H
 
 
-/* vacuous declarations and typedef names */
-struct Parser_s  ; typedef struct Parser_s Parser_t ;
+/* Forward declarations */
+struct Parser_t; //typedef struct Parser_t Parser_t ;
+struct DataSet_t;
+struct Options_t;
 
 
 
 //#include <map>
 //#include <string>
 //#include <vector>
-#include "DataSet.h"
-#include "Options.h"
 
 extern Parser_t*  (Parser_Create)(void) ;
 extern void       (Parser_Delete)(void*) ;
@@ -44,6 +44,7 @@ int  Parser_yyparse(DataSet_t*);
 int  Parser_yylex();
 void Parser_yyflush();
 
+#include <stdio.h>
 // global parser variables that need to be exported
 extern FILE* Parser_yyin;
 extern int   Parser_yylineno;
@@ -55,7 +56,7 @@ extern int   Parser_yyerrorstate;
 
 
 
-struct Parser_s {      /* Parser */
+struct Parser_t {      /* Parser */
   FILE* yyin;
   int   yylineno;
   char* yytext;

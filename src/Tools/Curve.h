@@ -7,10 +7,8 @@ extern "C" {
 
 
 
-/* vacuous declarations and typedef names */
-
-/* class-like structures */
-struct Curve_s        ; typedef struct Curve_s        Curve_t ;
+/* Forward declarations */
+struct Curve_t        ; typedef struct Curve_t        Curve_t ;
 
 
 
@@ -59,7 +57,7 @@ extern double   (Curve_ComputeIntegral)(Curve_t const*,const double&) ;
 
 
 
-struct Curve_s {              /* courbe */
+struct Curve_t {              /* courbe */
   char*  xname ;              /* Name of the x-axis */
   char*  yname ;              /* Name of the y-axis */
   char   echelle ;            /* echelle = n(ormale) ou l(ogarithmique) */

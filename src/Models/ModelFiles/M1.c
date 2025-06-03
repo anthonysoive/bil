@@ -126,8 +126,8 @@ Exemple de donnees :\n\n") ;
 
 int DefineElementProp(Element_t *el,IntFcts_t *intfcts)
 {
-  Element_GetNbOfImplicitTerms(el) = NVI ;
-  Element_GetNbOfExplicitTerms(el) = NVE ;
+  Element_SetNbOfImplicitTerms(el,NVI) ;
+  Element_SetNbOfExplicitTerms(el,NVE) ;
   return(0) ;
 }
 

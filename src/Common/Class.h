@@ -9,15 +9,13 @@
  * A. Schreiner, Object oriented programming with ANSI-C, 2011.
  */
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Class_s     ; typedef struct Class_s     Class_t ;
+/* Forward declarations */
+struct Class_t; //typedef struct Class_t     Class_t ;
+struct 
 
 
 
-/* Class_t
- * -------*/
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -46,7 +44,6 @@ typedef void*    (Class_Dtor_t)  (void*) ;
         Class_GetNew((Class_t*) A)(A,__VA_ARGS__)
         
 
-#include "Utils.h"
 
 /* This is how to initialize any object of type OB_t */
 #define Class_Instance(OB) \
@@ -90,12 +87,14 @@ typedef void*    (Class_Dtor_t)  (void*) ;
 
 
 /* Class */
-struct Class_s {
+struct Class_t {
   size_t size ;
   Class_Ctor_t*    ctor ;
   Class_Dtor_t*    dtor ;
   //Class_Clone_t*   clone ;
   //Class_Differ_t*  differ ;
 } ;
+
+#include "Utils.h"
 
 #endif

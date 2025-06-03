@@ -1,16 +1,13 @@
 #ifndef OBVALS_H
 #define OBVALS_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct ObVals_s       ; typedef struct ObVals_s       ObVals_t ;
-
-
-
-#include "DataFile.h"
-#include "Mesh.h"
-#include "Materials.h"
+/* Forward declarations */
+struct ObVals_t; //typedef struct ObVals_t       ObVals_t ;
+struct DataFile_t;
+struct Mesh_t;
+struct Materials_t;
+struct ObVal_t;
 
 
 extern ObVals_t*  (ObVals_New)(const int) ;
@@ -25,10 +22,7 @@ extern int        (ObVals_FindObValIndex)(ObVals_t*,char*) ;
 
 
 
-#include "ObVal.h"
-
-
-struct ObVals_s {             /* objective variations */
+struct ObVals_t {             /* objective variations */
   unsigned int n_obj ;        /* nb */
   ObVal_t* obj ;              /* objective variation */
 } ;

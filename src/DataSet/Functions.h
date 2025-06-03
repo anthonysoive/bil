@@ -1,14 +1,11 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Functions_s    ; typedef struct Functions_s    Functions_t ;
-
-
-#include "DataFile.h"
-//#include "Materials.h"
+/* Forward declarations */
+struct Functions_t; //typedef struct Functions_t    Functions_t ;
+struct Function_t;
+struct DataFile_t;
 
 
 extern Functions_t* (Functions_New)     (const int) ;
@@ -20,10 +17,9 @@ extern void         (Functions_Delete)  (void*) ;
 #define Functions_GetFunction(FCTS)           ((FCTS)->fn)
 
 
-#include "Function.h"
 
 
-struct Functions_s {          /* time functions */
+struct Functions_t {          /* time functions */
   unsigned int n_fn ;         /* nb of functions */
   Function_t* fn ;            /* function */
 } ;

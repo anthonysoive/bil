@@ -6,8 +6,13 @@
 #include "Math_.h"
 #include "DataFile.h"
 #include "Mesh.h"
+#include "Elements.h"
+#include "Element.h"
+#include "Node.h"
+#include "Material.h"
 #include "Message.h"
 #include "Periodicities.h"
+#include "Periodicity.h"
 #include "Graph.h"
 #include "Mry.h"
 

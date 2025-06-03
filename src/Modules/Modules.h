@@ -9,19 +9,15 @@ extern "C" {
 /* Vacuous declarations and typedef names */
 
 /* class-like structure "Modules_t" */
-struct Modules_s       ; typedef struct Modules_s       Modules_t ;
+struct Modules_t       ; typedef struct Modules_t       Modules_t ;
+struct Module_t;
 
-
-/* Declaration of Macros, Methods and Structures */
-
-#include "Module.h"
 
 extern void       (Modules_Delete)(void*) ;
 extern void       (Modules_Print)(char*) ;
 extern Module_t*  (Modules_FindModule)(Modules_t*,const char*) ;
 
 
-#include "ListOfModules.h"
 
 #define Modules_NbOfModules               (ListOfModules_Nb)
 #define Modules_ListOfNames               ListOfModules_Names
@@ -32,11 +28,25 @@ extern Module_t*  (Modules_FindModule)(Modules_t*,const char*) ;
 #define Modules_GetModule(MODS)         ((MODS)->module)
 
 
-struct Modules_s {              /* modules */
+#define Modules_SetNbOfModules(MODS,A) \
+        do {\
+          Modules_GetNbOfModules(MODS) = A;\
+        } while(0)
+        
+#define Modules_SetModule(MODS,A) \
+        do {\
+          Modules_GetModule(MODS) = A;\
+        } while(0)
+
+
+struct Modules_t {              /* modules */
   unsigned int n_modules ;      /* nb of modules */
   Module_t* module ;            /* module */
 } ;
 
+
+/* For the macros */
+#include "ListOfModules.h"
 
 #ifdef __CPLUSPLUS
 }

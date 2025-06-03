@@ -7,10 +7,12 @@ extern "C" {
 
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structures */
-struct CurvesFile_s       ; typedef struct CurvesFile_s       CurvesFile_t ;
+/* Forward declarations */
+struct CurvesFile_t; //typedef struct CurvesFile_t       CurvesFile_t ;
+struct Curves_t;
+struct TextFile_t;
+
 
 
 extern CurvesFile_t*   (CurvesFile_Create)(void) ;
@@ -21,7 +23,6 @@ extern int             (CurvesFile_WriteCurves)(CurvesFile_t*) ;
 
 
 
-#include "TextFile.h"
 
 #define CurvesFile_MaxLengthOfTextLine      (500)
 #define CurvesFile_MaxNbOfCurves            (20)
@@ -88,10 +89,7 @@ extern int             (CurvesFile_WriteCurves)(CurvesFile_t*) ;
 
 
 
-#include "Buffer.h"
-#include "Curves.h"
-
-struct CurvesFile_s {         /* File of discretized curves */
+struct CurvesFile_t {         /* File of discretized curves */
   const char* cmdline ;       /* Command line used to build the curves */
   const char* pcmdline ;      /* Current position in the command line */
   TextFile_t* textfile ;      /* Text file */
@@ -108,4 +106,6 @@ struct CurvesFile_s {         /* File of discretized curves */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "TextFile.h"
 #endif

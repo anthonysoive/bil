@@ -1,10 +1,10 @@
+#include <signal.h>
+#include <assert.h>
 #include "Message.h"
 #include "Exception.h"
 #include "Session.h"
 #include "GenericData.h"
 #include "Mry.h"
-#include <signal.h>
-#include <assert.h>
 
 
 //static Exception_t* instanceexception = NULL ;
@@ -37,7 +37,7 @@ Exception_t*  (Exception_GetInstance)(void)
   if(!gdat) {
     Exception_t* exc = Exception_Create() ;
     
-    gdat = GenericData_Create(1,exc,Exception_t,"Exception") ;
+    gdat = GenericData_Create(1,exc,"Exception") ;
     
     Session_AddGenericData(gdat) ;
     

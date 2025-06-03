@@ -5,14 +5,13 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure and */
-struct BCond_s        ; typedef struct BCond_s        BCond_t ;
-
-
-#include "DataFile.h"
-#include "Node.h"
+/* Forward declarations */
+struct BCond_t; //typedef struct BCond_t        BCond_t ;
+struct DataFile_t;
+struct Node_t;
+struct Functions_t;
+struct Fields_t;
 
 
 extern BCond_t*  (BCond_New)     (void) ;
@@ -21,13 +20,12 @@ extern void      (BCond_Scan)    (BCond_t*,DataFile_t*) ;
 extern void      (BCond_AssignBoundaryConditionsAtOverlappingNodes)(BCond_t*,Node_t*,int,double);
 
 
-#include "Region.h"
 
 #define BCond_MaxLengthOfKeyWord        (30)
 #define BCond_MaxLengthOfRegionName      Region_MaxLengthOfRegionName
 
 
-#define BCond_GetRegionTag(BC)         ((BC)->RegionTag)
+#define BCond_GetRegionTag(BC)           ((BC)->RegionTag)
 #define BCond_GetRegionName(BC)          ((BC)->RegionName)
 #define BCond_GetNameOfUnknown(BC)       ((BC)->NameOfUnknown)
 #define BCond_GetNameOfEquation(BC)      ((BC)->NameOfEquation)
@@ -41,10 +39,8 @@ extern void      (BCond_AssignBoundaryConditionsAtOverlappingNodes)(BCond_t*,Nod
 
 
 
-#include "Functions.h"
-#include "Fields.h"
 
-struct BCond_s {              /* Boundary condition */
+struct BCond_t {              /* Boundary condition */
   Function_t* Function ;
   Field_t* Field ;
   Functions_t* Functions ;
@@ -66,4 +62,6 @@ struct BCond_s {              /* Boundary condition */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Region.h"
 #endif

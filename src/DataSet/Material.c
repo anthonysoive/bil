@@ -10,6 +10,7 @@
 #include "Curves.h"
 #include "Mry.h"
 #include "String_.h"
+#include "Models.h"
 
 
 /* Extern functions */
@@ -44,7 +45,7 @@ Material_t* (Material_New)(void)
       Material_GetNbOfProperties(mat) = 0 ;
       Material_GetProperty(mat) = pr ;
       
-      Material_AppendData(mat,Material_MaxNbOfProperties,pr,double,"Parameters") ;
+      Material_AppendData(mat,Material_MaxNbOfProperties,pr,"Parameters") ;
     }
 
     /* Curves */

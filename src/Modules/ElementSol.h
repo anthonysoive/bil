@@ -5,11 +5,10 @@
 extern "C" {
 #endif
 
-/* class-like structures "ElementsSol_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct ElementSol_s   ; typedef struct ElementSol_s   ElementSol_t ;
-
+/* Forward declarations */
+struct ElementSol_t; //typedef struct ElementSol_t   ElementSol_t ;
+struct GenericData_t;
 
 
 extern ElementSol_t* (ElementSol_New)(void) ;
@@ -38,6 +37,15 @@ extern void          (ElementSol_Copy)(ElementSol_t*,ElementSol_t*) ;
 
 #define ElementSol_GetNbOfConstantTerms(ES) \
         GenericData_GetNbOfData(ElementSol_GetConstantGenericData(ES))
+        
+#define ElementSol_SetNbOfImplicitTerms(ES,X) \
+        GenericData_SetNbOfData(ElementSol_GetImplicitGenericData(ES),X)
+
+#define ElementSol_SetNbOfExplicitTerms(ES,X) \
+        GenericData_SetNbOfData(ElementSol_GetExplicitGenericData(ES),X)
+
+#define ElementSol_SetNbOfConstantTerms(ES,X) \
+        GenericData_SetNbOfData(ElementSol_GetConstantGenericData(ES),X)
 
 
 
@@ -71,18 +79,6 @@ extern void          (ElementSol_Copy)(ElementSol_t*,ElementSol_t*) ;
 
 
 
-/* Find (im/ex)plicit and constant generic data */
-#define ElementSol_FindImplicitGenericData(ES,...) \
-        GenericData_Find(ElementSol_GetImplicitGenericData(ES),__VA_ARGS__)
-        
-#define ElementSol_FindExplicitGenericData(ES,...) \
-        GenericData_Find(ElementSol_GetExplicitGenericData(ES),__VA_ARGS__)
-        
-#define ElementSol_FindConstantGenericData(ES,...) \
-        GenericData_Find(ElementSol_GetConstantGenericData(ES),__VA_ARGS__)
-
-
-
 /* Find (im/ex)plicit and constant data */
 #define ElementSol_FindImplicitData(ES,...) \
         GenericData_FindData(ElementSol_GetImplicitGenericData(ES),__VA_ARGS__)
@@ -96,7 +92,6 @@ extern void          (ElementSol_Copy)(ElementSol_t*,ElementSol_t*) ;
 
 
 
-#include "GenericData.h"
 
 
 #define ElementSol_DeleteExplicitGenericData(ES) \
@@ -117,7 +112,7 @@ extern void          (ElementSol_Copy)(ElementSol_t*,ElementSol_t*) ;
         } while(0)
 
 
-struct ElementSol_s {              /* Element Solutions */
+struct ElementSol_t {              /* Element Solutions */
   GenericData_t* impgdat ;         /* Implicit generic data */
   GenericData_t* expgdat ;         /* Explicit generic data */
   GenericData_t* cstgdat ;         /* Constant generic data */
@@ -126,6 +121,8 @@ struct ElementSol_s {              /* Element Solutions */
 } ;
 
 
+/* For the macros */
+#include "GenericData.h"
 
 #ifdef __CPLUSPLUS
 }

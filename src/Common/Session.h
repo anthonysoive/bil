@@ -6,23 +6,18 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structures */
-struct Session_s       ; typedef struct Session_s       Session_t ;
+/* Forward declarations */
+struct Session_t; //typedef struct Session_t       Session_t ;
+struct GenericData_t;
 
 
-
-#include "GenericData.h"
-#include "TypeId.h"
 
 extern Session_t*     (Session_GetCurrentInstance)(void) ;
 extern Session_t*     (Session_New)(void) ;
 extern void           (Session_Delete)(void) ;
 extern Session_t*     (Session_Open)(void) ;
 extern Session_t*     (Session_Close)(void) ;
-//extern GenericData_t* (Session_FindGenericData)(Session_t*,TypeId_t*,char const*) ;
-//extern void           (Session_AddGenericData)(Session_t*,TypeId_t*,char const*) ;
 
 
 #define Session_GetIndex(SS)                ((SS)->index)
@@ -43,7 +38,7 @@ extern Session_t*     (Session_Close)(void) ;
 
 /* Find and add generic data in the current instance */
 #define Session_FindGenericData(T,N) \
-        GenericData_Find(Session_GenericData,T,N)
+        GenericData_Find(Session_GenericData,N)
         
         
 #define Session_AddGenericData(GD) \
@@ -59,7 +54,8 @@ extern Session_t*     (Session_Close)(void) ;
 
 
 
-struct Session_s {
+
+struct Session_t {
   int            index ;
   GenericData_t* gdat ;
   Session_t*     prev ;
@@ -69,4 +65,8 @@ struct Session_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include "GenericData.h"
+
 #endif

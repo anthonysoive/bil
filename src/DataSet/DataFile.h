@@ -5,13 +5,12 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct DataFile_s     ; typedef struct DataFile_s     DataFile_t ;
+/* Forward declarations */
+struct DataFile_t; //typedef struct DataFile_t     DataFile_t ;
+struct TextFile_t;
 
 
-#include <stdio.h>
 
 extern DataFile_t*  (DataFile_Create)(char*) ;
 extern void         (DataFile_Delete)(void*) ;
@@ -26,8 +25,6 @@ extern int*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,int) ;
 /*
  *  Function-like macros
  */
-#include "TextFile.h"
-
 #define DataFile_OpenFile(DF,MODE) \
         TextFile_OpenFile(DataFile_GetTextFile(DF),MODE)
 
@@ -60,7 +57,6 @@ extern int*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,int) ;
 
 
 
-#include "String_.h"
 
 /* Tokens in file content */
 #define DataFile_FindToken(DF, ...) \
@@ -149,7 +145,6 @@ extern int*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,int) ;
         
 
 
-#include "DataSet.h"
 
 /* The dataset */
 #define DataFile_GetDataSet(DF) \
@@ -165,7 +160,7 @@ extern int*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,int) ;
         DataSet_GetNbOfSequences(DataFile_GetDataSet(DF))
 
 
-struct DataFile_s {
+struct DataFile_t {
   TextFile_t* textfile ;      /* Text file */
   char* line ;                /* memory space for a line */
   int   initialization ;
@@ -177,4 +172,10 @@ struct DataFile_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+//#include <stdio.h>
+#include "DataSet.h"
+#include "TextFile.h"
+#include "String_.h"
 #endif

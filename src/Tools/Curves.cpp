@@ -11,6 +11,7 @@
 #include "Math_.h"
 #include "CurvesFile.h"
 #include "Curves.h"
+#include "Curve.h"
 
 
 

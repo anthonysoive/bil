@@ -6,17 +6,21 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Material_t; //typedef struct Material_t     Material_t ;
+struct DataFile_t;
+struct Geometry_t;
+struct GenericData_t;
+struct Curves_t;
+struct Curve_t;
+struct Fields_t;
+struct Functions_t;
+struct Models_t;
+struct Model_t;
 
-/* class-like structures */
-struct Material_s     ; typedef struct Material_s     Material_t ;
 
 
-#include <stdlib.h>
 #include "Model.h"
-#include "DataFile.h"
-#include "Geometry.h"
-
 
 extern Material_t* (Material_New)             (void) ;
 extern void        (Material_Delete)          (void*) ;
@@ -113,8 +117,7 @@ extern void        (Material_ScanProperties)  (Material_t*,DataFile_t*,Model_Com
 #define Material_GetSequentialIndexOfUnknown(MAT) \
         Model_GetSequentialIndexOfUnknown(Material_GetModel(MAT))
         
-        
-#include "TypeId.h"
+
 
 /* GenericData */
 #define Material_AppendGenericData(MAT,GD) \
@@ -148,13 +151,8 @@ extern void        (Material_ScanProperties)  (Material_t*,DataFile_t*,Model_Com
 
 
 
-#include "Fields.h"
-#include "Functions.h"
-#include "Curves.h"
-#include "GenericData.h"
-#include "Models.h"
 
-struct Material_s {           /* material */
+struct Material_t {           /* material */
   char*   codenameofmodel ;   /**< Code name of the model */
   char*   method ;            /**< Characterize a method */
   int     n ;                 /**< Nb of properties */
@@ -191,4 +189,15 @@ struct Material_s {           /* material */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+
+#include <stdlib.h>
+#include "Fields.h"
+#include "Functions.h"
+#include "Curves.h"
+#include "Geometry.h"
+#include "Model.h"
+#include "GenericData.h"
+
+
 #endif

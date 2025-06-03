@@ -10,8 +10,8 @@
 /* Choose the finite element method */
 #include "FEM.h"
 
-#define TITLE "Short title of my model"
-#define AUTHORS "Authors"
+#define TITLE "XXX"
+#define AUTHORS "XXX"
 
 #include "PredefinedMethods.h"
 
@@ -48,19 +48,13 @@
 
 
 
-#include "BaseName_.h"
 #include "CustomValues.h"
-#include "MaterialPointModel.h"
-
-
-#define ImplicitValues_t BaseName_(ImplicitValues_t)
-#define ExplicitValues_t BaseName_(ExplicitValues_t)
-#define ConstantValues_t BaseName_(ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
+#include "MaterialPointMethod.h"
+#include "BaseName_.h"
 
 
 
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -82,11 +76,6 @@ using Values_d = Values_t<double> ;
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
 
 
-#define MPM_t      BaseName(_MPM_t)
-
-
-
-
 struct MPM_t: public MaterialPointModel_t<Values_d> {
   MaterialPointModel_SetInputs_t<Values_d> SetInputs;
   MaterialPointModel_Integrate_t<Values_d> Integrate;
@@ -96,12 +85,6 @@ struct MPM_t: public MaterialPointModel_t<Values_d> {
   MaterialPointModel_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
   MaterialPointModel_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
 } ;
-
-
-
-using CI_t = ConstitutiveIntegrator_t<Values_d,MPM_t>;
-
-
 
 
 
@@ -132,6 +115,21 @@ struct ExplicitValues_t {
 struct ConstantValues_t {
   double InitialStress[9];
 };
+
+
+
+/* The parameters below are read in the input data file */
+struct Parameters_t {
+  double Coef1;
+  double Coef2;
+  double Coef3;
+  double InitialStress[9];
+};
+}
+
+using namespace BaseName();
+
+static MPM_t mpm;
 
 
 
@@ -178,17 +176,6 @@ struct ConstantValues_t {
 
 
 
-/* Parameters */
-/* The parameters below are read in the input data file */
-
-#define Parameters_t    BaseName(_Parameters_t)
-
-
-struct Parameters_t {
-  double Coef1;
-  double Coef2;
-  double Coef3;
-};
 
 static Parameters_t  param;
 
@@ -209,15 +196,18 @@ static int  pm(const char* s) ;
 int pm(const char* s)
 {
 #define Parameters_Index(V)  CustomValues_Index(Parameters_t,V,double)
-  if(strcmp(s,"prop1") == 0)        return (0) ;
-  else if(strcmp(s,"prop2") == 0)   return (1) ;
-  else if(strcmp(s,"prop3") == 0)   return (2) ;
-  else if(!strcmp(s,"sig0"))        return (3) ;
-  else if(!strncmp(s,"sig0_",5)) {
-     int i = (strlen(s) > 5) ? s[5] - '1' : 0 ;
-     int j = (strlen(s) > 6) ? s[6] - '1' : 0 ;
-
-     return(3 + 3*i + j) ;
+       if(!strcmp(s,"prop1")) {
+    return (Parameters_Index(Coef1)) ;
+  } else if(!strcmp(s,"prop2")) {
+    return (Parameters_Index(Coef2)) ;
+  } else if(!strcmp(s,"prop3")) {
+    return (Parameters_Index(Coef3)) ;
+  } else if(!strcmp(s,"sig0")) {
+    return (Parameters_Index(InitialStress[0])) ;
+  } else if(!strncmp(s,"sig0_",5)) {
+    int i = (strlen(s) > 5) ? s[5] - '1' : 0 ;
+    int j = (strlen(s) > 6) ? s[6] - '1' : 0 ;
+    return(Parameters_Index(InitialStress[3*i + j])) ;
   } else return(-1) ;
 #undef Parameters_Index
 }
@@ -228,15 +218,15 @@ int pm(const char* s)
 static void   GetProperties(Element_t*) ;
 void GetProperties(Element_t* el)
 {
-#define GetProperty(a)   (Element_GetProperty(el)[pm(a)]) 
-  coef1  = GetProperty("prop1") ;
-  coef2  = GetProperty("prop2") ;
-  coef3  = GetProperty("prop3") ;
-  sig0   = &GetProperty("sig0") ;
+  /* To retrieve the material properties */
+  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  coef1  = param.Coef1 ;
+  coef2  = param.Coef2 ;
+  coef3  = param.Coef3 ;
+  sig0   = param.InitialStress ;
   
   curve1   = Element_FindCurve(el,"y1-axis") ;
   curve2   = Element_FindCurve(el,"y2-axis") ;
-#undef GetProperty
 }
 
 
@@ -289,7 +279,10 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 /** Read the material properties in the stream file ficd 
  *  Return the nb of (scalar) properties of the model */
 {
-  int  NbOfProp = 3 ;
+  int  NbOfProp = ((int) sizeof(Parameters_t)/sizeof(double)) ;
+
+  /* Par defaut tout a 0 */
+  for(int i = 0 ; i < NbOfProp ; i++) Material_GetProperty(mat)[i] = 0. ;
   
   Material_ScanProperties(mat,datafile,pm) ;
   
@@ -338,14 +331,8 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
 {
   IntFct_t* intfct = Element_GetIntFct(el) ;
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
-  int const nvi = CustomValues_NbOfImplicitValues(Values_d);
-  int const nve = CustomValues_NbOfExplicitValues(Values_d);
-  int const nv0 = CustomValues_NbOfConstantValues(Values_d);
-
-  /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = nvi*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = nve*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = nv0*NbOfIntPoints ;
+  
+  mpm.DefineNbOfInternalValues(el,NbOfIntPoints);
   
   /* Skip the rest of code for basic development.
    * For advanced developments find below 
@@ -472,23 +459,9 @@ int ComputeInitialState(Element_t* el,double t)
  *  Return 0 if succeeded and -1 if failed
  */ 
 {
-  double* vi0 = Element_GetImplicitTerm(el) ;
-  double** u  = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  CI_t ci(mpm) ;
+  int i = mpm.ComputeInitialStateByFEM(el,t);
   
-  /* Usually we have to skip if the element is a submanifold, 
-   * e.g. a surface in 3D or a line in 2D */
-  if(Element_IsSubmanifold(el)) return(0) ;
-
-    
-  ci.Set(el,t,0,u,vi0,u,vi0) ;
-
-  /*
-    We load some input data
-  */
-  GetProperties(el) ;
-  
-  return(ci.ComputeInitialStateByFEM());
+  return(i);
 }
 
 
@@ -498,22 +471,9 @@ int  ComputeExplicitTerms(Element_t* el,double t)
  *  whatever they are, nodal values or implicit terms.
  *  Return 0 if succeeded and -1 if failed */
 {
-  double* vi_n = Element_GetPreviousImplicitTerm(el) ;
-  /* If you need the nodal values, use the previous ones */
-  double** u = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  CI_t ci(mpm) ;
+  int i = mpm.ComputeExplicitTermsByFEM(el,t);
   
-  /* If needed ! */
-  if(Element_IsSubmanifold(el)) return(0) ;
-    
-  ci.Set(el,t,0,u,vi_n,u,vi_n) ;
-
-  /*
-    We load some input data
-  */
-  GetProperties(el) ;
-  
-  return(ci.ComputeExplicitTermsByFEM());
+  return(i);
 }
 
 
@@ -521,22 +481,9 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 /** Compute the (current) implicit terms 
  *  Return 0 if succeeded and -1 if failed */
 {
-  double* vi    = Element_GetCurrentImplicitTerm(el) ;
-  double* vi_n  = Element_GetPreviousImplicitTerm(el) ;
-  double** u   = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  double** u_n = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  CI_t ci(mpm) ;
-
-  if(Element_IsSubmanifold(el)) return(0) ;
-    
-  ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
+  int i = mpm.ComputeImplicitTermsByFEM(el,t,dt);
   
-  /*
-    We load some input data
-  */
-  GetProperties(el) ;
-  
-  return(ci.ComputeImplicitTermsByFEM()) ;
+  return(i);
 }
 
 
@@ -544,44 +491,9 @@ int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) 
  *  Return 0 if succeeded and -1 if failed */
 {
-  double*  vi   = Element_GetCurrentImplicitTerm(el) ;
-  double*  vi_n = Element_GetPreviousImplicitTerm(el) ;
-  double** u     = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  double** u_n   = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
-  int ndof = nn*NEQ ;
-  CI_t ci(mpm) ;
-
-  /* Initialization */
-  for(int i = 0 ; i < ndof*ndof ; i++) k[i] = 0. ;
-
-
-  /* We skip if the element is a submanifold */
-  if(Element_IsSubmanifold(el)) return(0) ;
+  int i = mpm.ComputePoromechanicalMatrixByFEM(el,t,dt,k,E_MECH);
   
-  
-  /*
-    We load some input data
-  */
-  GetProperties(el) ;
-  
-
-  ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
-
-
-  /*
-  ** Poromechanical matrix
-  */
-  {
-    double* kp = ci.ComputePoromechanicalMatrixByFEM(E_MECH);
-
-    for(int i = 0 ; i < ndof*ndof ; i++) {
-      k[i] = kp[i] ;
-    }
-  }
-  
-  return(0) ;
+  return(i);
 }
 
 
@@ -589,66 +501,32 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
 /** Compute the residu (r) 
  *  Return 0 if succeeded and -1 if failed */
 {
-#define R(n,i)    (r[(n)*NEQ + (i)])
-  double* vi1   = Element_GetCurrentImplicitTerm(el) ;
-  double* vi1_n = Element_GetPreviousImplicitTerm(el) ;
-  double** u     = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  double** u_n   = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
-  int ndof = nn*NEQ ;
-  CI_t ci(mpm) ;
-  
   /* Initialization */
-  {    
+  {
+    int ndof = Element_GetNbOfDOF(el) ;
+    
     for(int i = 0 ; i < ndof ; i++) r[i] = 0. ;
   }
-
-  if(Element_IsSubmanifold(el)) return(0) ;
-      
-  ci.Set(el,t,dt,u_n,vi1_n,u,vi1) ;
-  
-
-  /* Compute here the residu R(n,i) */
-  
-
   /* 1. Mechanics */
-  if(Element_EquationIsActive(el,E_MECH)) 
   {
     int istress = Values_Index(Stress[0]);
     int ibforce = Values_Index(BodyForce[0]);
-    double* rw = ci.ComputeMechanicalEquilibiumResiduByFEM(istress,ibforce);
-    
-    for(int i = 0 ; i < nn ; i++) {      
-      for(int j = 0 ; j < dim ; j++) R(i,E_MECH + j) -= rw[i*dim + j] ;
-    }
+    mpm.ComputeMechanicalEquilibriumResiduByFEM(el,t,dt,r,E_MECH,istress,ibforce);
   }
-  
-  
-  
   /* 2. Conservation of mass 1 */
-  if(Element_EquationIsActive(el,E_MASS1))
-  {  
+  {
     int imass = Values_Index(Mass1);
     int iflow = Values_Index(MassFlow1[0]);
-    double* ra =  ci.ComputeMassConservationResiduByFEM(imass,iflow);
-    
-    for(int i = 0 ; i < nn ; i++) R(i,E_MASS1) -= ra[i] ;
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_MASS1,imass,iflow);
   }
-  
-  
-  
   /* 3. Conservation of mass 2 */
-  if(Element_EquationIsActive(el,E_SALT))
-  {  
+  {
     int imass = Values_Index(Mass2);
     int iflow = Values_Index(MassFlow2[0]);
-    double* ra =  ci.ComputeMassConservationResiduByFEM(imass,iflow);
-    
-    for(int i = 0 ; i < nn ; i++) R(i,E_MASS2) -= ra[i] ;
+    mpm.ComputeMassConservationResiduByFEM(el,t,dt,r,E_MASS2,imass,iflow);
   }
   
-  return(0) ;
+  return(0);
 #undef R
 }
 

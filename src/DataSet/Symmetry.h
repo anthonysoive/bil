@@ -10,9 +10,6 @@ enum Symmetry_e {             /* symmetry of the problem */
   SPHE = Symmetry_Spherical, 
 } ;
 
-
-/* vacuous declarations and typedef names */
-
 /*     1. Symmetry_t attributes */
 typedef enum Symmetry_e     Symmetry_t ;
 

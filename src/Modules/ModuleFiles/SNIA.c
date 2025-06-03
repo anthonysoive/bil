@@ -4,10 +4,30 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include "Message.h"
 #include "SNIA.h"
 #include "Monolithic.h"
 #include "Context.h"
 #include "CommonModule.h"
+#include "Solutions.h"
+#include "DataSet.h"
+#include "Solvers.h"
+#include "Solver.h"
+#include "Module.h"
+#include "Options.h"
+#include "Mesh.h"
+#include "Nodes.h"
+#include "Loads.h"
+#include "IterProcess.h"
+#include "Matrix.h"
+#include "Residu.h"
+#include "BConds.h"
+#include "IConds.h"
+#include "Dates.h"
+#include "Date.h"
+#include "TimeStep.h"
+#include "OutputFiles.h"
+#include "Points.h"
 
 
 #define AUTHORS  "Dangla"
@@ -33,10 +53,10 @@ int SetModuleProp(Module_t* module)
 {
   Module_CopyShortTitle(module,TITLE) ;
   Module_CopyNameOfAuthors(module,AUTHORS) ;
-  Module_GetComputeProblem(module) = calcul ;
-  Module_GetSolveProblem(module) = Algorithm ;
-  Module_GetIncrement(module) = SNIA_Increment ;
-  Module_GetInitializeProblem(module) = SNIA_Initialize ;
+  Module_SetComputeProblem(module,calcul) ;
+  Module_SetSolveProblem(module,Algorithm) ;
+  Module_SetIncrement(module,SNIA_Increment) ;
+  Module_SetInitializeProblem(module,SNIA_Initialize) ;
   return(0) ;
 }
 
@@ -247,7 +267,7 @@ int   (SNIA_StepForward)(DataSet_t* dataset,Solutions_t* sols,Solver_t* solver,d
       /*
        * 3.1.3b Initialize the repetition index
        */
-      IterProcess_GetRepetitionIndex(iterprocess) = 0 ;
+      IterProcess_SetRepetitionIndex(iterprocess,0) ;
       
       
       /*
@@ -363,7 +383,7 @@ int   (SNIA_Iterate)(DataSet_t* dataset,Solutions_t* sols,Solver_t* solver)
       /*
        * 3.1.5 Loop on iterations
        */
-      IterProcess_GetIterationIndex(iterprocess) = 0 ;
+      IterProcess_SetIterationIndex(iterprocess,0) ;
       
       while(IterProcess_LastIterationIsNotReached(iterprocess)) {
         IterProcess_IncrementIterationIndex(iterprocess) ;

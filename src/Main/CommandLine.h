@@ -1,10 +1,9 @@
 #ifndef COMMANDLINE_H
 #define COMMANDLINE_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct CommandLine_s  ; typedef struct CommandLine_s  CommandLine_t ;
+/* Forward declarations */
+struct CommandLine_t; //typedef struct CommandLine_t  CommandLine_t ;
 
 
 extern CommandLine_t*    (CommandLine_Create)(int,char**) ;
@@ -16,7 +15,7 @@ extern void              (CommandLine_Delete)(void*) ;
 
 
 
-struct CommandLine_s {        /* Command line */
+struct CommandLine_t {        /* Command line */
   int    argc ;               /* Nb of command line arguments */
   char** argv ;               /* Command line arguments */
 } ;

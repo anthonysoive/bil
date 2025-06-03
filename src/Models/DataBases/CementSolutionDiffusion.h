@@ -1,21 +1,19 @@
 #ifndef CEMENTSOLUTIONDIFFUSION_H
 #define CEMENTSOLUTIONDIFFUSION_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct CementSolutionDiffusion_s     ; 
-typedef struct CementSolutionDiffusion_s     CementSolutionDiffusion_t ;
+/* Forward declaration */
+struct CementSolutionDiffusion_t; //typedef struct CementSolutionDiffusion_t     CementSolutionDiffusion_t ;
+struct Temperature_t;
 
 
 
 extern CementSolutionDiffusion_t* (CementSolutionDiffusion_Create)(void) ;
+extern void   (CementSolutionDiffusion_Delete)(void*);
 extern void   (CementSolutionDiffusion_ComputeFluxes)(CementSolutionDiffusion_t*) ;
 
 
 
-#include "Elements.h"
-#include "IntFcts.h"
 
 #define CementSolutionDiffusion_MaxNbOfPotentialVectors \
         (MAX(Element_MaxNbOfNodes,IntFct_MaxNbOfIntPoints))
@@ -63,7 +61,6 @@ extern void   (CementSolutionDiffusion_ComputeFluxes)(CementSolutionDiffusion_t*
 
 
 
-#include "CementSolutionChemistry.h"
 
 
 /* Macros for diffusion coefficients
@@ -106,9 +103,7 @@ extern void   (CementSolutionDiffusion_ComputeFluxes)(CementSolutionDiffusion_t*
        
 
 
-#include "Temperature.h"
-
-struct CementSolutionDiffusion_s {
+struct CementSolutionDiffusion_t {
   Temperature_t* temperature ;
   double* diffusioncoefficient ;
   double* gradient ;
@@ -118,5 +113,11 @@ struct CementSolutionDiffusion_s {
   double* elementflux ;
   double  ioncurrent ;
 } ;
+
+
+#include "CementSolutionChemistry.h"
+#include "Element.h"
+#include "IntFcts.h"
+#include "Temperature.h"
 
 #endif

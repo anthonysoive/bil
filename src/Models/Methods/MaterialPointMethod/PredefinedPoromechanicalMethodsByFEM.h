@@ -2,14 +2,17 @@
 #define PREDEFINEDPOROMECHANICALMETHODSBYFEM_H
 
 #include "PredefinedModelMethods.h"
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
+#include "BaseName.h"
 
 
 #define ImplicitValues_t BaseName(_ImplicitValues_t)
 #define ExplicitValues_t BaseName(_ExplicitValues_t)
 #define ConstantValues_t BaseName(_ConstantValues_t)
+#define Values_t    BaseName(_Values_t)
+#define Values_d    BaseName(_Values_d)
+#define MPM_t      BaseName(_MPM_t)
 
 
 template<typename T>
@@ -22,13 +25,11 @@ template<typename T>
 struct ConstantValues_t;
 
 
-#define Values_t    BaseName(_Values_t)
 
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t> ;
 
 
-#define MPM_t      BaseName(_MPM_t)
 
 struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
@@ -47,7 +48,6 @@ struct MPM_t: public MaterialPointMethod_t<Values_t> {
 
 
 
-#define Values_d    BaseName(_Values_d)
 using Values_d = Values_t<double> ;
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
 

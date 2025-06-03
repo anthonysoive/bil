@@ -38,9 +38,9 @@ int   SuperLUDistMethod_Solve(Solver_t* solver)
     {
       GenericData_t* gw = Solver_GetGenericWorkSpace(solver) ;
       double berr[1] ;
-      dScalePermstruct_t* ScalePermstruct = GenericData_FindData(gw,dScalePermstruct_t,"ScalePermstruct") ;
-      dLUstruct_t* LUstruct = GenericData_FindData(gw,dLUstruct_t,"LUstruct") ;
-      gridinfo_t* grid = GenericData_FindData(gw,gridinfo_t,"grid") ;
+      dScalePermstruct_t* ScalePermstruct = GenericData_FindData(gw,"ScalePermstruct") ;
+      dLUstruct_t* LUstruct = GenericData_FindData(gw,"LUstruct") ;
+      gridinfo_t* grid = GenericData_FindData(gw,"grid") ;
       
   
       /* Set the default input sludist_options: */

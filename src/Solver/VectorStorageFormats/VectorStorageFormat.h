@@ -14,15 +14,13 @@ enum VectorStorageFormat_e {        /* format of the vector to be stored */
 } ;
 
 
-/* class-like structure "VectorStorageFormat_t" and attributes */
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
 typedef enum VectorStorageFormat_e VectorStorageFormat_e ;
-struct VectorStorageFormat_s   ; typedef struct VectorStorageFormat_s  VectorStorageFormat_t ;
 
+struct VectorStorageFormat_t; //typedef struct VectorStorageFormat_t  VectorStorageFormat_t ;
+struct Options_t;
 
-
-#include "Options.h"
 
 extern VectorStorageFormat_t* (VectorStorageFormat_Create)(Options_t*) ;
 extern void                   (VectorStorageFormat_Delete)(void*) ;
@@ -33,7 +31,6 @@ extern void                   (VectorStorageFormat_Delete)(void*) ;
 #define VectorStorageFormat_GetOptions(MSF)           ((MSF)->options)
 
 
-#include "Utils.h"
 
 #define VectorStorageFormat_Is(MSF,KEY) \
         (VectorStorageFormat_GetType(MSF) == Utils_CAT(VectorStorageFormat_,KEY))
@@ -45,7 +42,7 @@ extern void                   (VectorStorageFormat_Delete)(void*) ;
 
 /* complete the structure types by using the typedef */
 
-struct VectorStorageFormat_s {
+struct VectorStorageFormat_t {
   VectorStorageFormat_e type ;
   Options_t* options ;
 } ;
@@ -54,4 +51,6 @@ struct VectorStorageFormat_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Utils.h"
 #endif

@@ -14,9 +14,9 @@ NodeSol_t* (NodeSol_Create)(const int n)
   {
     double* u = (double*) Mry_New(double[n]) ;
   
-    NodeSol_GetNbOfUnknowns(nodesol) = n ;
+    NodeSol_SetNbOfUnknowns(nodesol,n) ;
   
-    NodeSol_GetUnknown(nodesol) = u ;
+    NodeSol_SetUnknown(nodesol,u) ;
   
     //NodeSol_GetPreviousNodeSol(nodesol) = NULL ;
     //NodeSol_GetNextNodeSol(nodesol)     = NULL ;
@@ -36,7 +36,7 @@ void (NodeSol_Delete)(void* self)
     
     if(u) {
       free(u) ;
-      NodeSol_GetUnknown(nodesol) = NULL ;
+      NodeSol_SetUnknown(nodesol,NULL) ;
     }
   }
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "Mry.h"
 #include "Message.h"
+#include "Options.h"
 #include "MatrixStorageFormat.h"
 
 

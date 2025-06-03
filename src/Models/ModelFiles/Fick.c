@@ -310,9 +310,9 @@ int PrintModelChar(Model_t* model,FILE *ficd)
 
 int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
 {
-  Element_GetNbOfImplicitTerms(el) = NVI ;
-  Element_GetNbOfExplicitTerms(el) = (Element_IsSubmanifold(el)) ? 0 : NVE ;
-  Element_GetNbOfConstantTerms(el) = NV0 ;
+  Element_SetNbOfImplicitTerms(el,NVI) ;
+  Element_SetNbOfExplicitTerms(el,(Element_IsSubmanifold(el)) ? 0 : NVE) ;
+  Element_SetNbOfConstantTerms(el,NV0) ;
   return(0) ;
 }
 

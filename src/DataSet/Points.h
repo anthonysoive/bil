@@ -1,14 +1,12 @@
 #ifndef POINTS_H
 #define POINTS_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Points_s       ; typedef struct Points_s       Points_t ;
-
-
-#include "DataFile.h"
-#include "Mesh.h"
+/* Forward declarations */
+struct Points_t; //typedef struct Points_t       Points_t ;
+struct DataFile_t;
+struct Mesh_t;
+struct Point_t;
 
 
 extern Points_t*  (Points_New)     (const int) ;
@@ -21,10 +19,7 @@ extern void       (Points_Delete)  (void*) ;
 #define Points_GetPoint(PTS)         ((PTS)->point)
 
 
-
-#include "Point.h"
-
-struct Points_s {
+struct Points_t {
   int n_points ;              /* nb of points */
   Point_t*  point ;           /* Point */
 } ;

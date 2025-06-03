@@ -2,11 +2,10 @@
 #define LOGACTIVITYOFWATERINBRINE_H
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct LogActivityOfWaterInBrine_s     ; 
-typedef struct LogActivityOfWaterInBrine_s     LogActivityOfWaterInBrine_t ;
+/* Forward declarations */
+struct LogActivityOfWaterInBrine_t; //typedef struct LogActivityOfWaterInBrine_t     LogActivityOfWaterInBrine_t ;
+struct Curves_t;
 
 
 
@@ -42,14 +41,16 @@ extern double (LogActivityOfWaterInBrine)(double,double,const char*) ;
         Temperature_SetRoomTemperature(LogActivityOfWaterInBrine_GetTemperature(LAW),T)
 
 
-#include "Curves.h"
-#include "Temperature.h"
 
-struct LogActivityOfWaterInBrine_s {
+struct LogActivityOfWaterInBrine_t {
   //Temperature_t* temperature ;
   int nbofsalt ;
   Curves_t* curves ;
 } ;
+
+
+#include "Curves.h"
+#include "Temperature.h"
 
 
 #endif

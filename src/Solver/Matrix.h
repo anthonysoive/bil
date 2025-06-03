@@ -1,15 +1,15 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-/* class-like structures "Matrix_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct Matrix_s       ; typedef struct Matrix_s       Matrix_t ;
-
-
-#include "Mesh.h"
-#include "Options.h"
-#include "Element.h"
+/* Forward declarations */
+struct Matrix_t; //typedef struct Matrix_t       Matrix_t ;
+struct Mesh_t;
+struct Options_t;
+struct Element_t;
+struct MatrixStorageFormat_t;
+struct GenericData_t;
+ 
  
 //extern Matrix_t*   (Matrix_Create)                (Mesh_t*,Options_t*) ;
 extern Matrix_t*   (Matrix_Create)                (Mesh_t*,Options_t*,const int) ;
@@ -77,11 +77,6 @@ extern void        (Matrix_SetValuesToZero)       (Matrix_t*) ;
 
 
 
-
-
-#include "MatrixStorageFormat.h"
-#include "GenericData.h"
-
 #define Matrix_GetStorageFormatType(MAT) \
         MatrixStorageFormat_GetType(Matrix_GetMatrixStorageFormat(MAT))
 
@@ -92,10 +87,10 @@ extern void        (Matrix_SetValuesToZero)       (Matrix_t*) ;
 
 #define Matrix_AppendGenericWorkSpace(MAT,GD) \
         Matrix_GetGenericWorkSpace(MAT) = GenericData_Append(Matrix_GetGenericWorkSpace(MAT),GD)
-        
-        
 
-struct Matrix_s {             /* Matrix */
+
+
+struct Matrix_t {             /* Matrix */
   int index ;                 /* Matrix index */
   MatrixStorageFormat_t* fmt ; /* Storage format */
   unsigned int    n ;         /* Nb of rows/columns */

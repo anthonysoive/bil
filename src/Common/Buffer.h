@@ -5,13 +5,11 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Buffer_s     ; typedef struct Buffer_s     Buffer_t ;
+/* Forward declarations */
+struct Buffer_t; //typedef struct Buffer_t     Buffer_t ;
 
-#include <stddef.h>
-
+#include <stdio.h>
 extern Buffer_t*  (Buffer_Create)(size_t) ;
 extern void       (Buffer_Delete)(void*) ;
 extern void*      (Buffer_Allocate)(Buffer_t*,size_t) ;
@@ -27,7 +25,7 @@ extern void       (Buffer_FreeFrom)(Buffer_t*,char*) ;
 #define Buffer_GetAvailableSize(BUF)    ((BUF)->available_sz)
 
 
-struct Buffer_s {           /* Circular buffer */
+struct Buffer_t {           /* Circular buffer */
   void* buffer_begin ;      /* Data buffer */
   void* buffer_end ;        /* End of data buffer */
   void* head ;              /* Pointer to head */

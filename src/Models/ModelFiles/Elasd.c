@@ -242,7 +242,7 @@ void GetProperties(Element_t* el)
   rho_s   = GetProperty("rho_s") ;
   sig0    = &GetProperty("sig0") ;
   
-  damage = (Damage_t*) Element_FindMaterialData(el,Damage_t,"Damage") ;
+  damage = (Damage_t*) Element_FindMaterialData(el,"Damage") ;
   {
     cdamaged = Damage_GetDamagedStiffnessTensor(damage) ;
     cijkl    = Damage_GetTangentStiffnessTensor(damage) ;
@@ -302,7 +302,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     damage = Damage_Create() ;
       
-    Material_AppendData(mat,1,damage,Damage_t,"Damage") ;
+    Material_AppendData(mat,1,damage,"Damage") ;
   }
   
   /* Elastic and plastic properties */
@@ -404,9 +404,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+  Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ;
   return(0) ;
 }
 

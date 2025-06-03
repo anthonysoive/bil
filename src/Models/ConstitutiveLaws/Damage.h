@@ -5,10 +5,11 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Damage_t     ; typedef struct Damage_t     Damage_t ;
+/* Forward declarations */
+struct Damage_t; //typedef struct Damage_t     Damage_t ;
+struct GenericData_t;
+struct Elasticity_t;
 
 
 /* Typedef names of methods */
@@ -18,7 +19,6 @@ typedef void    (Damage_SetParameters_t)(Damage_t*,...) ;
 typedef void    (Damage_SetModelProp_t) (Damage_t*) ;
 
 
-/* 1. Damage_t */
 
 extern Damage_t*      (Damage_Create)(void) ;
 extern void           (Damage_Delete)(void*) ;
@@ -59,7 +59,6 @@ extern void           (Damage_CopyDamagedStiffnessTensor)  (Damage_t*,double*) ;
 #define Damage_MaxNbOfHardeningVariables      (2)
 
 
-#include "DamageModels/ListOfDamageModels.h"
 
 
 #define Damage_NbOfModels               (ListOfDamageModels_Nb)
@@ -68,7 +67,6 @@ extern void           (Damage_CopyDamagedStiffnessTensor)  (Damage_t*,double*) ;
 
 
 
-#include "Arg.h"
 
 #define Damage_SetParameters(D,...) \
         do {\
@@ -79,9 +77,6 @@ extern void           (Damage_CopyDamagedStiffnessTensor)  (Damage_t*,double*) ;
         } while(0)
 
 
-#include "Elasticity.h"
-#include "GenericData.h"
-#include "Math_.h"
 
 
 
@@ -161,4 +156,9 @@ struct Damage_t {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Arg.h"
+#include "DamageModels/ListOfDamageModels.h"
+#include "Elasticity.h"
+#include "Message.h"
 #endif

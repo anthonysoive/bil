@@ -6,22 +6,19 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Mesh_s         ; typedef struct Mesh_s         Mesh_t ;
-
-
-#include "Materials.h"
-#include "Geometry.h"
-#include "BConds.h"
-#include "DataFile.h"
-#include "Solutions.h"
-#include "Solution.h"
-#include "Solver.h"
-#include "Matrix.h"
-#include "Residu.h"
-#include "Loads.h"
+/* Forward declarations */
+struct Mesh_t; //typedef struct Mesh_t         Mesh_t ;
+struct Materials_t;
+struct Geometry_t;
+struct BConds_t;
+struct DataFile_t;
+struct Solver_t;
+struct Matrix_t;
+struct Residu_t;
+struct Loads_t;
+struct Elements_t;
+struct Nodes_t;
 
 
 //extern Mesh_t*  (Mesh_New)(void) ;
@@ -133,10 +130,8 @@ extern void     (Mesh_BroadcastImplicitTerms)(Mesh_t*) ;
 
 
 
-#include "Elements.h"
-#include "Nodes.h"
 
-struct Mesh_s {
+struct Mesh_t {
   DataFile_t* datafile ;
   Geometry_t* geometry ;
   Elements_t* elements ;
@@ -147,4 +142,9 @@ struct Mesh_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+
+#include "Geometry.h"
+#include "Nodes.h"
+#include "Elements.h"
 #endif

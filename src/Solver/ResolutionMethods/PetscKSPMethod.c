@@ -33,7 +33,7 @@ int   PetscKSPMethod_Solve(Solver_t* solver)
   /* Solve the linear system with KSP method */
   {
     GenericData_t* gw = Solver_GetGenericWorkSpace(solver) ;
-    KSP* ksp = GenericData_FindData(gw,KSP,"ksp") ;
+    KSP* ksp = GenericData_FindData(gw,"ksp") ;
     
     MatAssemblyBegin(*A,MAT_FINAL_ASSEMBLY) ;
     MatAssemblyEnd(*A,MAT_FINAL_ASSEMBLY) ;

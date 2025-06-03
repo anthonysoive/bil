@@ -17,9 +17,19 @@ extern "C" {
 
 /* Vacuous declarations and typedef names */
 
-/* class-like structure "Model_t" */
-struct Model_t        ; typedef struct Model_t        Model_t ;
-
+/* Forward declarations */
+struct Model_t; //typedef struct Model_t        Model_t ;
+struct Element_t;
+struct IntFcts_t;
+struct ShapeFcts_t;
+struct Load_t;
+struct Result_t;
+struct Material_t;
+struct DataFile_t;
+struct Geometry_t;
+struct DataFile_t;
+struct ObVal_t;
+struct Views_t;
 
 /*  Typedef names of Methods */
 #include <stdio.h>
@@ -27,42 +37,17 @@ struct Model_t        ; typedef struct Model_t        Model_t ;
 typedef int    (Model_SetModelProperties_t)  (Model_t*) ;
 typedef int    (Model_ComputePropertyIndex_t)(const char*) ;
 typedef int    (Model_PrintModelProperties_t)(Model_t*,FILE*) ;
-
-#include "Element.h"
-
 typedef int    (Model_ComputeInitialState_t) (Element_t*,double) ;
 typedef int    (Model_ComputeExplicitTerms_t)(Element_t*,double) ;
 typedef int    (Model_ComputeImplicitTerms_t)(Element_t*,double,double) ;
 typedef int    (Model_ComputeMatrix_t)       (Element_t*,double,double,double*) ;
 typedef int    (Model_ComputeResidu_t)       (Element_t*,double,double,double*) ;
-
-
-#include "IntFcts.h"
-#include "ShapeFcts.h"
-
 typedef int    (Model_DefineElementProperties_t)(Element_t*,IntFcts_t*,ShapeFcts_t*) ;
-
-#include "Load.h"
-
 typedef int    (Model_ComputeLoads_t)(Element_t*,double,double,Load_t*,double*) ;
-
-#include "Result.h"
-
 typedef int    (Model_ComputeOutputs_t)(Element_t*,double,double*,Result_t*) ;
-
-#include "Material.h"
-#include "DataFile.h"
-
 typedef int    (Model_ReadMaterialProperties_t)(Material_t*,DataFile_t*) ;
-
 typedef void   (Model_ComputeMaterialProperties_t)(Element_t*,double) ;
 
-
-
-
-/* 2. Model_t */
-#include "Geometry.h"
-#include "DataFile.h"
 
 extern Model_t*  (Model_New)       (void) ;
 extern void      (Model_Delete)    (void*) ;
@@ -70,7 +55,6 @@ extern Model_t*  (Model_Initialize)(Model_t*,const char*,Geometry_t*,DataFile_t*
 extern void      (Model_Scan)(Model_t*,DataFile_t*,Geometry_t*) ;
 
 
-#include "Views.h"
 
 #define Model_MaxLengthOfKeyWord        (30)
 #define Model_MaxNbOfEquations          (10)
@@ -152,9 +136,6 @@ extern void      (Model_Scan)(Model_t*,DataFile_t*,Geometry_t*) ;
 
 
 
-#include "ObVal.h"
-
-
 struct Model_t {              /* model */
   Model_SetModelProperties_t*       setmodelprop ;
   Model_ReadMaterialProperties_t*   readmatprop ;
@@ -195,4 +176,8 @@ struct Model_t {              /* model */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* Need for the macros */
+#include "Views.h"
+#include "Geometry.h"
 #endif

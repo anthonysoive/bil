@@ -6,7 +6,7 @@ UNAME = Linux
 # Compilers (C++11 for variadic macros, C++17 for autodiff)
 #----------
 CC     := gcc -x c   -std=c11
-CPP    := gcc -x c++ -std=c++17
+CPP    := gcc -x c++ -std=gnu++17
 # Force c++ compiler
 CC     := ${CPP}
 F77    := gfortran -cpp
@@ -20,7 +20,19 @@ YACC   := bison #-t
 
 # Warning flags
 #--------------
-WFLAGS := -Wall -Wcast-align -Wcast-qual -Wnested-externs -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wshadow -fno-common -Dinline=  -Wvariadic-macros #-W #-Wtraditional #-Wconversion #-Wwrite-strings #-Werror #-fshort-enums
+# Warning flags common to C/C++
+WFLAGSmini := -Wpedantic -Wall -Wextra
+
+WFLAGS := ${WFLAGSmini} -Wformat=2 -Wconversion -Wtrampolines -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wpointer-arith -Wshadow -Wsign-conversion
+
+#WFLAGS := -Wall -Wcast-align -Wcast-qual -Wnested-externs -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wshadow -fno-common -Dinline=  -Wvariadic-macros #-W #-Wtraditional #-Wconversion #-Wwrite-strings #-Werror #-fshort-enums
+
+
+# Warning flags for C
+WCFLAGS := ${WFLAGS} -Wnested-externs -Wmissing-prototypes -Wstrict-prototypes
+
+# Warning flags for C++
+WCXXFLAGS := ${WFLAGS} -Wnon-virtual-dtor -Wzero-as-null-pointer-constant -Woverloaded-virtual -Wfloat-conversion -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference -Wno-unused
 
 
 # Directory flags (-I replaced by -iquote)
@@ -33,16 +45,20 @@ DFLAGS = -iquote${BIL_PATH} -D '__BASEFILE__=${basename ${notdir $@}}'
 #-------------------
 IFLAGS-SRC = -iprefix ${BIL_PATH}/src/ -iwithprefix . -iwithprefix Common -iwithprefix DataSet -iwithprefix Help -iwithprefix Libraries -iwithprefix Macros -iwithprefix Main -iwithprefix Models -iwithprefix Modules -iwithprefix Outputs -iwithprefix Solver -iwithprefix Tools -iwithprefix Parser -iwithprefix Parallelization
 
-IFLAGS-SOLVER = -iprefix ${BIL_PATH}/src/Solver/ -iwithprefix MatrixStorageFormats -iwithprefix ResolutionMethods -iwithprefix VectorStorageFormats
+# Additional flags for solver
+IFLAGS-SOLVER = -iprefix ${BIL_PATH}/src/Solver/ -iwithprefix . -iwithprefix MatrixStorageFormats -iwithprefix ResolutionMethods -iwithprefix VectorStorageFormats
 
 # Additional flags for models
-IFLAGS-MODELS = -iprefix ${BIL_PATH}/src/Models/ -iwithprefix .  -iwithprefix DataBases  -iwithprefix Libraries  -iprefix ${BIL_PATH}/src/Models/Methods/ -iwithprefix .  -iwithprefix ConstitutiveIntegrator -iwithprefix FiniteElementMethod -iwithprefix FiniteVolumeMethod -iprefix ${BIL_PATH}/src/Models/ConstitutiveLaws/ -iwithprefix . -iwithprefix PlasticityModels -iwithprefix DamageModels
+IFLAGS-MODELS = -iprefix ${BIL_PATH}/src/Models/ -iwithprefix .  -iwithprefix DataBases  -iwithprefix Libraries  -iprefix ${BIL_PATH}/src/Models/Methods/ -iwithprefix .  -iwithprefix MaterialPointMethod -iwithprefix FiniteElementMethod -iwithprefix FiniteVolumeMethod -iprefix ${BIL_PATH}/src/Models/ConstitutiveLaws/ -iwithprefix . -iwithprefix PlasticityModels -iwithprefix DamageModels
 
 # Additional flags for modules
 IFLAGS-MODULES =  -iprefix ${BIL_PATH}/src/Modules/ -iwithprefix .
 
+# Additional flags for tools
+IFLAGS-TOOLS = -iprefix ${BIL_PATH}/src/Tools/ -iwithprefix . -iwithprefix Libraries/Expression
 
-IFLAGS = ${IFLAGS-SRC} ${IFLAGS-SOLVER} ${IFLAGS-MODELS} ${IFLAGS-MODULES}
+
+IFLAGS = ${IFLAGS-SRC} ${IFLAGS-SOLVER} ${IFLAGS-MODELS} ${IFLAGS-MODULES} ${IFLAGS-TOOLS}
 
 
 # Option flags
@@ -61,13 +77,25 @@ endif
 
 # C/CPP compiler flags
 #---------------------
-CFLAGS = -pedantic ${DFLAGS} ${WFLAGS} ${IFLAGS} -fPIC ${OFLAGS}
 
-# C compiler flags for models
+# C compiler flags
+CFLAGS = -pedantic ${DFLAGS} ${WCFLAGS} ${IFLAGS} -fPIC ${OFLAGS} -fpermissive
+
+# C++ compiler flags
+# fpermissive is not satisfactory but at the present time it is needed
+# because most of the implementations adopt a C-style which are not 
+# allowed in C++.
+CXXFLAGS = -pedantic ${DFLAGS} ${WCXXFLAGS} ${IFLAGS} -fPIC ${OFLAGS} -fpermissive
+CFLAGS = ${CXXFLAGS}
+
+# C/CPP compiler flags for models
 CFLAGS-MODELS = ${CFLAGS} #${IFLAGS-MODELS}
+CXXFLAGS-MODELS = ${CXXFLAGS} #${IFLAGS-MODELS}
 
-# C compiler flags for modules
+
+# C/CPP compiler flags for modules
 CFLAGS-MODULES = ${CFLAGS} #${IFLAGS-MODULES}
+CXXFLAGS-MODULES = ${CXXFLAGS} #${IFLAGS-MODULES}
 
 
 # Fortran compiler flags
@@ -86,7 +114,8 @@ OPTIM  = -gdwarf-2 -g3     # Debug
 
 # Linker
 #-------
-LINKER = g++
+LINKER = g++ ${CXXFLAGS}
+
 
 
 # Linker flags
@@ -109,6 +138,6 @@ RANLIB = ranlib
 
 
 # To create and install a shared library
-CCSO = gcc -shared
+CCSO = gcc -shared ${CXXFLAGS}
 LDCONFIG  = /sbin/ldconfig 
 

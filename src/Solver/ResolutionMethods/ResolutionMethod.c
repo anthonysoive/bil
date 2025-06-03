@@ -3,6 +3,7 @@
 #include "Mry.h"
 #include "Message.h"
 #include "ResolutionMethod.h"
+#include "Options.h"
 
 
 ResolutionMethod_t* (ResolutionMethod_Create)(Options_t* options)

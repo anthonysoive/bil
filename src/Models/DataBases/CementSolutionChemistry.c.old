@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include "Message.h"
+#include "Exception.h"
+#include "Math_.h"
+#include "Temperature.h"
+#include "Mry.h"
+#include "CementSolutionChemistry.h"
+#include "InternationalSystemOfUnits.h"
+
+
+static double poly4(double,double,double,double,double,double,double) ;
+
+static void   (CementSolutionChemistry_AllocateMemory)             (CementSolutionChemistry_t*) ;
+static void   (CementSolutionChemistry_UpdateChemicalConstants)    (CementSolutionChemistry_t*) ;
+static double (CementSolutionChemistry_ComputeChargeDensity)       (CementSolutionChemistry_t*) ;
+static double (CementSolutionChemistry_ComputeLiquidMassDensity)   (CementSolutionChemistry_t*) ;
+static void   (CementSolutionChemistry_UpdateElementConcentrations)(CementSolutionChemistry_t*) ;
+static void   (CementSolutionChemistry_Initialize)                 (CementSolutionChemistry_t*) ;
+static void   (CementSolutionChemistry_TranslateConcentrationsIntoActivities)(CementSolutionChemistry_t* csc) ;
+
+
+
+static double*   (CementSolutionChemistry_CreateValence)(void) ;
+static void      (CementSolutionChemistry_InitializeValence)(double*) ;
+
+
+static void (CementSolutionChemistry_SupplementSystemWith_SO3_LogA_H2SO4)   (CementSolutionChemistry_t*) ;
+static void (CementSolutionChemistry_SupplementSystemWith_SO3_LogA_SO4)     (CementSolutionChemistry_t*) ;
+static void (CementSolutionChemistry_SupplementSystemWith_Al2O3_LogQ_AH3)   (CementSolutionChemistry_t*) ;
+static void (CementSolutionChemistry_SupplementSystemWith_Al2O3_LogA_AlO4H4)(CementSolutionChemistry_t*) ;
+
+static double* instancevalence = NULL ;
+
+
+
+#define _INLINE_
+  #include "CementSolutionChemistry.in"
+#undef _INLINE_

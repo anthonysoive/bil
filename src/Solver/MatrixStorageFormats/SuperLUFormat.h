@@ -2,32 +2,12 @@
 #define SUPERLUFORMAT_H
 
 
-/* class-like structure "SuperLUFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-//struct SuperLUFormat_s    ; typedef struct SuperLUFormat_s    SuperLUFormat_t ;
+/* Forward declaration */
+//struct SuperLUFormat_t; typedef struct SuperLUFormat_t    SuperLUFormat_t ;
 #define SuperLUFormat_t     SuperMatrix  /* Mimic the SuperMatrix struct defined in SuperLu */
-
-
-
-#include "Mesh.h"
-
-#include "BilExtraLibs.h"
-
-#ifdef SUPERLULIB
-#include "superlu.h"
-#endif
-
-#ifdef SUPERLUMTLIB
-#include "superlu.h"
-#endif
-
-#ifdef SUPERLUDISTLIB
-#include "superlu.h"
-#endif
+struct Mesh_t;
 
   
-
 
 //extern SuperLUFormat_t* (SuperLUFormat_Create)(Mesh_t*) ;
 extern SuperLUFormat_t* (SuperLUFormat_Create)(Mesh_t*,const int) ;
@@ -92,7 +72,8 @@ typedef enum Mtype_e Mtype_t ;
 #endif
 
 
-struct SuperLUFormat_s {
+#if 0
+struct SuperLUFormat_t {
   Stype_t Stype;          /* Storage format (SLU_[NC,NR,SC,SR,NCP,DN]) */
   Dtype_t Dtype;          /* Data type (SLU_[S,D,C,Z])*/
   Mtype_t Mtype;          /* Mathematical property of the matrix (SLU_[GE,..]) */
@@ -100,7 +81,23 @@ struct SuperLUFormat_s {
   int    ncol;            /* number of columns */
   void*  Store;           /* pointer to the actual storage of the matrix */
 } ;
+#endif
 
+
+
+#include "BilExtraLibs.h"
+
+#ifdef SUPERLULIB
+#include "superlu.h"
+#endif
+
+#ifdef SUPERLUMTLIB
+#include "superlu.h"
+#endif
+
+#ifdef SUPERLUDISTLIB
+#include "superlu.h"
+#endif
 
 
 #endif

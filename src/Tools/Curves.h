@@ -7,13 +7,11 @@ extern "C" {
 
 
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Curves_t; //typedef struct Curves_t       Curves_t ;
+struct Curve_t;
 
-/* class-like structures */
-struct Curves_s       ; typedef struct Curves_s       Curves_t ;
 
-
-#include "Curve.h"
 
 extern Curves_t* (Curves_Create)(unsigned int) ;
 extern void      (Curves_Delete)(void*) ;
@@ -85,7 +83,7 @@ extern int       (Curves_CreateInverse)(Curves_t*,Curve_t*,const char) ;
 
 
 
-struct Curves_s {             /* Curves */
+struct Curves_t {             /* Curves */
   unsigned int n_allocatedcurves ;         /* Nb of allocated curves */
   unsigned int n_cb ;         /* nb of curves */
   Curve_t *cb ;               /* curves */

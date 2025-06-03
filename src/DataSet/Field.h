@@ -5,16 +5,15 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Field_s          ; typedef struct Field_s          Field_t ;
-struct FieldAffine_s    ; typedef struct FieldAffine_s    FieldAffine_t ;
-struct FieldGrid_s      ; typedef struct FieldGrid_s      FieldGrid_t ;
-struct FieldConstant_s  ; typedef struct FieldConstant_s  FieldConstant_t ;
+/* Forward declarations */
+struct Field_t          ; //typedef struct Field_t          Field_t ;
+struct FieldAffine_t    ; //typedef struct FieldAffine_t    FieldAffine_t ;
+struct FieldGrid_t      ; //typedef struct FieldGrid_t      FieldGrid_t ;
+struct FieldConstant_t  ; //typedef struct FieldConstant_t  FieldConstant_t ;
 
 
-#include "DataFile.h"
+struct DataFile_t;
 
 extern Field_t*       (Field_New)                  (void) ;
 extern void           (Field_Delete)               (void*) ;
@@ -68,18 +67,18 @@ extern void           (FieldGrid_Delete)(void*) ;
 
 
 
-struct Field_s {              /* champ */
+struct Field_t {              /* champ */
   char*   type ;              /* type de champ */
   void*   store ;             /* pointe sur le format du champ */
 } ;
 
-struct FieldAffine_s {        /* champ affine */
+struct FieldAffine_t {        /* champ affine */
   double v ;                  /* valeur en A */
   double* g ;                 /* gradient en A */
   double* x ;                 /* coordonnees de A */
 } ;
 
-struct FieldGrid_s {          /* champ sur une grille */
+struct FieldGrid_t {          /* champ sur une grille */
   char*  name ;               /* File name which grid is stored in */
   int    n_x ;                /* nb de points sur Ox */
   int    n_y ;                /* nb de points sur Oy */
@@ -90,7 +89,7 @@ struct FieldGrid_s {          /* champ sur une grille */
   double* v ;                 /* valeurs aux points de la grille */
 } ;
 
-struct FieldConstant_s {      /* Constant field */
+struct FieldConstant_t {      /* Constant field */
   double v ;                  /* Value */
   double ranlen ;
 } ;

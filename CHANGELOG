@@ -1,3 +1,6 @@
+News in 2.10: Reorganization of the header files regarding the dependencies that 
+only require to be forward declared and those that need to be #included.
+
 News in 2.9: Use of the library "autodiff" via option at compiling time. 
 Compliler c++ is forced for all source files (.c and .cpp). 
 Introduction of the interface "MaterialPointMethod.h" for an easiest way

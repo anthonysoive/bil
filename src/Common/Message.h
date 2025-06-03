@@ -5,10 +5,9 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Message_s      ; typedef struct Message_s      Message_t ;
+/* Forward declarations */
+struct Message_t; //typedef struct Message_t      Message_t ;
 
 /* Fonctions */
 extern void   (Message_Delete)(void*) ;
@@ -33,8 +32,6 @@ extern int    (Message_SetVerbosity)(const int) ;
 #define Message_GetSavedClock(MSG)            ((MSG)->savedclock)
 
 
-#include <stdlib.h>
-#include <stdio.h>
 
 #define Message_PrintSourceLocation \
         fprintf(stdout,"\nAt %s, line %d",__FILE__,__LINE__)
@@ -54,7 +51,7 @@ extern int    (Message_SetVerbosity)(const int) ;
 #include <time.h>
 #include "GenericObject.h"
 
-struct Message_s {            /* message */
+struct Message_t {            /* message */
   clock_t  launchclock ;      /* Start up processor clock time */
   clock_t  savedclock ;       /* The last saved processor clock time */
   time_t*  launchtime ;       /* Start up time */
@@ -79,6 +76,9 @@ struct Message_s {            /* message */
 
 #ifdef __CPLUSPLUS
 }
-#endif             
+#endif  
+
+#include <stdlib.h>
+#include <stdio.h>           
 
 #endif

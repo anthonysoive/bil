@@ -6,6 +6,7 @@
 #include "String_.h"
 #include "DataFile.h"
 #include "Curves.h"
+#include "Curve.h"
 #include "Function.h"
 
 

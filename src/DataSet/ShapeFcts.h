@@ -6,10 +6,10 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure "DataSet_t and attributes */
-struct ShapeFcts_s      ; typedef struct ShapeFcts_s      ShapeFcts_t ;
+/* Forward declarations */
+struct ShapeFcts_t; //typedef struct ShapeFcts_t      ShapeFcts_t ;
+struct ShapeFct_t;
 
 
 extern ShapeFcts_t*  (ShapeFcts_Create)(void) ;
@@ -24,16 +24,10 @@ extern int           (ShapeFcts_AddShapeFct)(ShapeFcts_t*,int,int) ;
 #define ShapeFcts_GetShapeFct(SFS)         ((SFS)->sh)
 
 
-#include "ShapeFct.h"
-
-struct ShapeFcts_s {          /* Shape functions */
+struct ShapeFcts_t {          /* Shape functions */
   unsigned int n_sh ;         /* Number of shape functions */
   ShapeFct_t*  sh ;           /* Shape function */
 } ;
-
-
-
-
 
 
 #ifdef __CPLUSPLUS

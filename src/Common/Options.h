@@ -5,13 +5,11 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Options_s      ; typedef struct Options_s      Options_t ;
+/* Forward declarations */
+struct Options_t; //typedef struct Options_t      Options_t ;
+struct Context_t;
 
-
-#include "Context.h"
 
 extern Options_t*  (Options_Create)(Context_t*) ;
 extern void        (Options_Delete)(void*) ;
@@ -36,8 +34,6 @@ extern void        (Options_Delete)(void*) ;
         Options_GetPrintedInfos(OPT)
         
 
-#include <string.h>
-#include "String_.h"
         
 #define Options_IsToPrintOutAtEachIteration(OPT) \
         (!strcmp(Options_GetPrintLevel(OPT),"2"))
@@ -91,6 +87,7 @@ extern void        (Options_Delete)(void*) ;
         Options_ResolutionMethodIs(OPT,"petscksp")
     
 
+#include "Context.h"
 #define Options_GetFillFactor(OPT) \
         (((String_Is(((char**) Context_GetSolver(Options_GetContext(OPT)))[2],"-ff")) && atof(((char**) Context_GetSolver(Options_GetContext(OPT)))[3])) ? \
         atof(((char**) Context_GetSolver(Options_GetContext(OPT)))[3]) : Options_DefaultFillFactor(OPT))
@@ -147,7 +144,7 @@ extern void        (Options_Delete)(void*) ;
 
 
 
-struct Options_s {            /* options */
+struct Options_t {            /* options */
   char*   debug ;             /* what to be printed */
   char*   method ;            /* resolution method */
   /* Print level
@@ -170,4 +167,8 @@ struct Options_s {            /* options */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include <string.h>
+#include "String_.h"
 #endif

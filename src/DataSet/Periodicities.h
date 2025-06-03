@@ -5,16 +5,12 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
-
-/* class-like structures */
-struct Periodicities_s       ; typedef struct Periodicities_s      Periodicities_t ;
-
-
-
-#include "DataFile.h"
-#include "Mesh.h"
-#include "Graph.h"
+/* Forward declaration */
+struct Periodicities_t;       //typedef struct Periodicities_t      Periodicities_t ;
+struct DataFile_t;
+struct Mesh_t;
+struct Graph_t;
+struct Periodicity_t;
 
 
 extern Periodicities_t* (Periodicities_Create)(DataFile_t*) ;
@@ -29,11 +25,7 @@ extern void             (Periodicities_UpdateGraph)(Mesh_t*,Graph_t*) ;
 #define Periodicities_GetPeriodicity(PS)       ((PS)->periodicity)
 
 
-
-#include "Periodicity.h"
-
-
-struct Periodicities_s {            /* Periodicities */
+struct Periodicities_t {            /* Periodicities */
   unsigned int   nbperiod ;         /* Nb of periodicities */
   Periodicity_t* periodicity ;      /* Periodicity */
 } ;

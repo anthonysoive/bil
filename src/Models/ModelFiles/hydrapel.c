@@ -373,7 +373,7 @@ void GetProperties(Element_t* el)
   rho_solid= Element_GetPropertyValue(el,"rho_solid") ;
   tortuosity = Element_GetPropertyValue(el,"tortuosity") ;
 
-  plasty  = Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty  = Element_FindMaterialData(el,"Plasticity") ;
   elasty  = Plasticity_GetElasticity(plasty) ;
   
 }
@@ -455,7 +455,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Plasticity_Create() ;
       
-    Material_AppendData(mat,1,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,1,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */
@@ -550,8 +550,8 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
   return(0) ;
 }
 

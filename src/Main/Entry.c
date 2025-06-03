@@ -8,11 +8,13 @@
 #include "Message.h"
 #include "Context.h"
 #include "CommandLine.h"
+#include "TextFile.h"
 #include "Help.h"
 #include "Modules.h"
 #include "OutputFiles.h"
 #include "PosFilesForGMSH.h"
 #include "Models.h"
+#include "Mesh.h"
 #include "Entry.h"
 #include "Exception.h"
 #include "BilVersion.h"
@@ -22,6 +24,8 @@
 #include "TypeId.h"
 #include "SharedMS.h"
 #include "DistributedMS.h"
+#include "Options.h"
+#include "Curve.h"
 
 
 
@@ -299,7 +303,7 @@ void Entry_CLI(Entry_t* entry)
     double temp = atof(((char**) Context_GetMiscellaneous(ctx))[1]) ;
     
     {
-      HardenedCementChemistry_t* hcc = HardenedCementChemistry_Create() ;
+      HardenedCementChemistry_t<double>* hcc = HardenedCementChemistry_Create<double>() ;
     
       HardenedCementChemistry_SetRoomTemperature(hcc,temp) ;
       HardenedCementChemistry_PrintChemicalConstants(hcc) ;
@@ -307,9 +311,9 @@ void Entry_CLI(Entry_t* entry)
     }
     
     {
-      CementSolutionChemistry_t* csc = CementSolutionChemistry_Create() ;
+      CementSolutionChemistry_t<double>* csc = CementSolutionChemistry_Create<double>() ;
       
-      CementSolutionChemistry_GetRoomTemperature(csc) = temp ;
+      CementSolutionChemistry_SetRoomTemperature(csc,temp) ;
       CementSolutionChemistry_PrintChemicalConstants(csc) ;
       CementSolutionChemistry_Delete(csc) ;
     }

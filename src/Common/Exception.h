@@ -5,10 +5,9 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Exception_s     ; typedef struct Exception_s     Exception_t ;
+/* Forward declarations */
+struct Exception_t; //typedef struct Exception_t     Exception_t ;
 
 
 extern Exception_t*    (Exception_GetInstance)(void) ;
@@ -20,9 +19,6 @@ extern void            (Exception_Delete)(void*) ;
 #define Exception_GetDelete(exception)             ((exception)->Delete)
 
 
-#include <signal.h>
-#include <setjmp.h>
-#include "Message.h"
 
 #define Exception_Environment \
         Exception_GetEnvironment(Exception_GetInstance())
@@ -77,8 +73,9 @@ extern void            (Exception_Delete)(void*) ;
 
 
 #include "GenericObject.h"
+#include <setjmp.h>
 
-struct Exception_s {        /* Exception handler */
+struct Exception_t {        /* Exception handler */
   jmp_buf env ;             /* Environment */
   int type ;                /* Signal read by longjmp (1,2,3) and return by setjmp after a long jump */
   GenericObject_Delete_t* Delete ;
@@ -88,4 +85,9 @@ struct Exception_s {        /* Exception handler */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+
+/* For the macros */
+#include <signal.h>
+#include "Message.h"
 #endif

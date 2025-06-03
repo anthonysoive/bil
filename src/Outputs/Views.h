@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Views_s      ; typedef struct Views_s      Views_t ;
+/* Forward declarations */
+struct Views_t; //typedef struct Views_t      Views_t ;
+struct View_t;
 
 
 extern Views_t*   (Views_Create)(int) ;
@@ -22,10 +22,7 @@ extern void       (Views_Delete)(void*) ;
 #define Views_MaxNbOfViews           (100)
 
 
-#include "View.h"
-
-
-struct Views_s {            /* Views */
+struct Views_t {            /* Views */
   unsigned int nbofviews ;  /* nb of views */
   View_t *view ;            /* view */
 } ;

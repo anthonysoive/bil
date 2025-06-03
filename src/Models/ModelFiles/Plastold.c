@@ -266,12 +266,12 @@ void GetProperties(Element_t* el,double t)
   
   {
     int id = SharedMS_CurrentThreadId ;
-    GenericData_t* gdat = Element_FindMaterialGenericData(el,Plasticity_t,"Plasticity") ;
+    GenericData_t* gdat = Element_FindMaterialGenericData(el,"Plasticity") ;
     int n = (gdat) ? GenericData_GetNbOfData(gdat) : 0 ;
     
     if(id < n) {
       plasty = ((Plasticity_t*) GenericData_GetData(gdat)) + id ;
-      //plasty = Element_FindMaterialData(el,Plasticity_t,"Plasticity") + id ;
+      //plasty = Element_FindMaterialData(el,"Plasticity") + id ;
     } else {
       arret("GetProperties") ;
     }
@@ -345,7 +345,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Mry_Create(Plasticity_t,nthreads,Plasticity_Create()) ;
 
-    Material_AppendData(mat,nthreads,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,nthreads,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */
@@ -443,9 +443,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+  Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ;
   return(0) ;
 }
 

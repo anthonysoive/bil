@@ -3,13 +3,9 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-
 #include "Message.h"
-#include "Mesh.h"
-#include "BilVersion.h"
 #include "OutputFile.h"
 #include "TextFile.h"
-#include "Models.h"
 #include "Mry.h"
 
 

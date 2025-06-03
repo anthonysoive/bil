@@ -17,16 +17,13 @@ enum ResolutionMethod_e {     /* Type of resolution method */
   ResolutionMethod_NULL
 } ;
 
-
-/* class-like structures "ResolutionMethod_t" and attributes */
-
-/* vacuous declarations and typedef names */
 typedef enum ResolutionMethod_e  ResolutionMethod_e ;
-struct ResolutionMethod_s   ; typedef struct ResolutionMethod_s  ResolutionMethod_t ;
 
 
+/* Forward declarations */
+struct ResolutionMethod_t; //typedef struct ResolutionMethod_t  ResolutionMethod_t ;
+struct Options_t;
 
-#include "Options.h"
 
 extern ResolutionMethod_t* (ResolutionMethod_Create)(Options_t*) ;
 extern void                (ResolutionMethod_Delete)(void*) ;
@@ -38,7 +35,6 @@ extern void                (ResolutionMethod_Delete)(void*) ;
 #define ResolutionMethod_GetOptions(RM)    ((RM)->options)
 
 
-#include "Utils.h"
 
 #define ResolutionMethod_Is(RM,KEY) \
         (ResolutionMethod_GetType(RM) == Utils_CAT(ResolutionMethod_,KEY))
@@ -50,7 +46,7 @@ extern void                (ResolutionMethod_Delete)(void*) ;
 
 /* complete the structure types by using the typedef */
 
-struct ResolutionMethod_s {
+struct ResolutionMethod_t {
   ResolutionMethod_e type ;
   Options_t* options ;
 } ;
@@ -59,4 +55,6 @@ struct ResolutionMethod_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Utils.h"
 #endif

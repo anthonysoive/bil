@@ -1,14 +1,13 @@
 #ifndef OBVAL_H
 #define OBVAL_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct ObVal_s        ; typedef struct ObVal_s        ObVal_t ;
+/* Forward declarations */
+struct ObVal_t; //typedef struct ObVal_t        ObVal_t ;
+struct DataFile_t;
 
 
 
-#include "DataFile.h"
 
 extern ObVal_t*  (ObVal_New)    (void) ;
 extern void      (ObVal_Delete) (void*) ;
@@ -40,7 +39,6 @@ extern void      (ObVal_Scan)   (ObVal_t*,DataFile_t*) ;
         (ObVal_GetType(OV) = 'a')
 
 
-#include <math.h>
 
 #define ObVal_GetAbsoluteValue(OV,U) \
         (ObVal_GetValue(OV) * ((ObVal_IsAbsoluteValue(OV)) ? 1 : fabs(U)))
@@ -51,11 +49,14 @@ extern void      (ObVal_Scan)   (ObVal_t*,DataFile_t*) ;
 
 
 
-struct ObVal_s {              /* Objective variation */
+struct ObVal_t {              /* Objective variation */
   char    type ;              /* Type = a(bsolute) or r(elative) */
   char*   inc ;               /* Name of the unknown */
   double  val ;               /* Objective variation */
   double  relaxfactor ;       /* Relaxation factor */
 } ;
+
+
+#include <math.h>
 
 #endif

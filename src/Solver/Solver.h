@@ -5,14 +5,17 @@
 extern "C" {
 #endif
 
-/* class-like structures "Solver_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct Solver_s       ; typedef struct Solver_s       Solver_t ;
+/* Forward declarations */
+struct Solver_t; //typedef struct Solver_t       Solver_t ;
+struct Mesh_t;
+struct Options_t;
+struct Solver_t;
+struct Matrix_t;
+struct Residu_t;
+struct GenericData_t;
+struct ResolutionMethod_t;
 
-
-#include "Mesh.h"
-#include "Options.h"
 
 //extern Solver_t*  (Solver_Create)(Mesh_t*,Options_t*,const int) ;
 extern Solver_t*  (Solver_Create)(Mesh_t*,Options_t*,const int,const int) ;
@@ -74,14 +77,8 @@ extern void       (Solver_Print)(Solver_t*,char*) ;
 typedef int  Solver_Solve_t(Solver_t*) ;
 
 
-
-#include "ResolutionMethod.h"
-#include "Matrix.h"
-#include "Residu.h"
-#include "GenericData.h"
-
 /* complete the structure types by using the typedef */
-struct Solver_s {             /* System solver */
+struct Solver_t {             /* System solver */
   Solver_Solve_t* solve ;
   ResolutionMethod_t* mth ;   /* Method */
   unsigned int    n ;         /* Nb of rows/columns */
@@ -96,4 +93,10 @@ struct Solver_s {             /* System solver */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Matrix.h"
+#include "Residu.h"
+#include "GenericData.h"
+#include "ResolutionMethod.h"
+#include "Options.h"
 #endif

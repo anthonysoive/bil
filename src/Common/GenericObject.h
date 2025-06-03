@@ -7,10 +7,9 @@
  * A. Schreiner, Object oriented programming with ANSI-C, 2011.
  */
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-//struct GenericObject_s     ; typedef const struct GenericObject_s     GenericObject_t ;
+/* Forward declarations */
+//struct GenericObject_t; typedef const struct GenericObject_t     GenericObject_t ;
 
 
 
@@ -48,22 +47,18 @@ template <typename T> inline void* GenericObject_New_(const int n)
 
 
 
-#include "Utils.h"
-#include "TypeId.h"
-
-
 #define GenericObject_Type(GO) \
         Utils_CAT(GO,_t)
 
 
 /*
 #define GenericObject_Delete(GO,...) \
-        TypeId_Delete(TypeId_Create(GenericObject_Type(GO)),__VA_ARGS__)
+        TypeId_Delete(TypeId_Create(),__VA_ARGS__)
 */
 
  
  
- 
+#include <stdio.h>
 extern void*            (GenericObject_Ctor)   (const void*, ...) ;
 extern void             (GenericObject_Dtor)   (void*) ;
 extern size_t           (GenericObject_SizeOf) (const void*) ;
@@ -121,7 +116,7 @@ extern const void*      (GenericObject_ClassOf)(const void*) ;
           GenericData_t* gdat = Session_FindGenericData(GenericObject_Type(GO),Utils_STR(GO)) ; \
           if(!gdat) { \
             GenericObject_Type(GO)* obj = Utils_CAT(GO,_Create)(__VA_ARGS__) ; \
-            gdat = GenericData_Create(1,obj,GenericObject_Type(GO),Utils_STR(GO)) ; \
+            gdat = GenericData_Create(1,obj,Utils_STR(GO)) ; \
             Session_AddGenericData(gdat) ; \
             assert(gdat == Session_FindGenericData(GenericObject_Type(GO),Utils_STR(GO))) ; \
           } \
@@ -129,4 +124,6 @@ extern const void*      (GenericObject_ClassOf)(const void*) ;
         }
 
 
+#include "Utils.h"
+#include "GenericData.h"
 #endif

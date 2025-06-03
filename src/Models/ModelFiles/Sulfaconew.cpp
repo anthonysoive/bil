@@ -174,16 +174,12 @@ enum {
 
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
+#include "BaseName.h"
 
 
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -197,8 +193,6 @@ template<typename T>
 struct OtherValues_t;
 
 
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
 
 
 template<typename T>
@@ -207,19 +201,6 @@ using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValu
 using Values_d = Values_t<double> ;
 
 #define Values_Index(V)  CustomValues_Index(Values_t,V)
-
-
-#define MPM_t      BaseName(_MPM_t)
-
-struct MPM_t: public MaterialPointMethod_t<Values_t> {
-  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
-  MaterialPointMethod_Integrate_t<Values_t> Integrate;
-  MaterialPointMethod_Initialize_t<Values_t> Initialize;
-  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointMethod_SetFluxes_t<Values_t> SetFluxes;
-  MaterialPointMethod_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
-  MaterialPointMethod_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
-} ;
 
 
 template<typename T = double>
@@ -291,6 +272,70 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialVolume_solidtotal;
 };
+
+
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
+  MaterialPointMethod_Integrate_t<Values_t> Integrate;
+  MaterialPointMethod_Initialize_t<Values_t> Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetFluxes_t<Values_t> SetFluxes;
+  MaterialPointMethod_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
+  MaterialPointMethod_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
+} ;
+
+
+/* The parameters below are read in the input data file */
+struct Parameters_t {
+  double phi0;
+  double n_ca_ref;
+  double n_si_ref;
+  double n_al_ref;
+  double n_csh2_0;
+  double n_afm_0;
+  double n_aft_0;
+  double n_c3ah6_0;
+  double r_afm;
+  double r_aft;
+  double r_c3ah6;
+  double r_csh2;
+  double K_bulk;
+  double strain0;
+  double strainf;
+  double alphacoef;
+  double betacoef;
+  double Biot;
+  double ar_AFt;
+  double ap_AFt;
+  double dr_AFt;
+  double dp_AFt;
+};
+}
+
+using namespace BaseName();
+
+static double phi0;
+static double n_ca_ref;
+static double n_si_ref;
+static double n_al_ref;
+static double n_csh2_0;
+static double n_afm_0;
+static double n_aft_0;
+static double n_c3ah6_0;
+static double r_afm;
+static double r_aft;
+static double r_c3ah6;
+static double r_csh2;
+static double K_bulk;
+static double strain0;
+static double strainf;
+static double alphacoef;
+static double betacoef;
+static double Biot;
+static double ar_AFt;
+static double ap_AFt;
+static double dr_AFt;
+static double dp_AFt;
 
 static MPM_t mpm;
 
@@ -511,58 +556,6 @@ static double phimin = 0.01 ;
 static double RT ;
 static Curve_t* satcurve ;
 
-static double phi0;
-static double n_ca_ref;
-static double n_si_ref;
-static double n_al_ref;
-static double n_csh2_0;
-static double n_afm_0;
-static double n_aft_0;
-static double n_c3ah6_0;
-static double r_afm;
-static double r_aft;
-static double r_c3ah6;
-static double r_csh2;
-static double K_bulk;
-static double strain0;
-static double strainf;
-static double alphacoef;
-static double betacoef;
-static double Biot;
-static double ar_AFt;
-static double ap_AFt;
-static double dr_AFt;
-static double dp_AFt;
-
-/* The parameters below are read in the input data file */
-
-#define Parameters_t    BaseName(_Parameters_t)
-
-struct Parameters_t {
-  double phi0;
-  double n_ca_ref;
-  double n_si_ref;
-  double n_al_ref;
-  double n_csh2_0;
-  double n_afm_0;
-  double n_aft_0;
-  double n_c3ah6_0;
-  double r_afm;
-  double r_aft;
-  double r_c3ah6;
-  double r_csh2;
-  double K_bulk;
-  double strain0;
-  double strainf;
-  double alphacoef;
-  double betacoef;
-  double Biot;
-  double ar_AFt;
-  double ap_AFt;
-  double dr_AFt;
-  double dp_AFt;
-};
-
 
 #include "PhysicalConstant.h"
 #include "Temperature.h"
@@ -574,7 +567,7 @@ void ComputePhysicoChemicalProperties(void)
 
 
 static CementSolutionDiffusion_t* csd = NULL ;
-static HardenedCementChemistry_t* hcc = NULL ;
+static HardenedCementChemistry_t<double>* hcc = NULL ;
 
 
 int pm(const char* s)
@@ -714,7 +707,7 @@ int SetModelProp(Model_t* model)
 int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 /* Lecture des donnees materiaux dans le fichier ficd */
 {
-  int  NbOfProp = 28 ;
+  int  NbOfProp = ((int) sizeof(Parameters_t)/sizeof(double)) ;
 
   {
     /* Self-initialization */
@@ -757,7 +750,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 
   {
     if(!csd) csd = CementSolutionDiffusion_Create() ;
-    if(!hcc) hcc = HardenedCementChemistry_Create() ;
+    if(!hcc) hcc = HardenedCementChemistry_Create<double>() ;
     
     HardenedCementChemistry_SetRoomTemperature(hcc,TEMPERATURE) ;
     
@@ -774,19 +767,19 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
       if((i = Curves_FindCurveIndex(curves,"X_CSH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfCalciumSiliconRatioInCSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfCalciumSiliconRatioInCSH(hcc,curve) ;
       }
 
       if((i = Curves_FindCurveIndex(curves,"Z_CSH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfWaterSiliconRatioInCSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfWaterSiliconRatioInCSH(hcc,curve) ;
       }
 
       if((i = Curves_FindCurveIndex(curves,"S_SH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfSaturationIndexOfSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfSaturationIndexOfSH(hcc,curve) ;
       }
     }
   }
@@ -1375,10 +1368,10 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
     HardenedCementChemistry_SetInput(hcc,LogC_Na,logc_na) ;
     HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
     HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
-    HardenedCementChemistry_GetElectricPotential(hcc) = psi ;
+    HardenedCementChemistry_SetElectricPotential(hcc,psi) ;
     
-    HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = 1.e-99 ;
-    HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = -99 ;
+    HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,1.e-99) ;
+    HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,-99) ;
   
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O) ;
 
@@ -1721,8 +1714,8 @@ Values_d*  MPM_t::Initialize(Element_t* el,double const& t,Values_d& val)
         HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
         HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
     
-        HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = 1.e-99 ;
-        HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = -99 ;
+        HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,1.e-99) ;
+        HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,-99) ;
   
         HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O) ;
       

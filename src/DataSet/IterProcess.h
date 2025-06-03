@@ -5,16 +5,14 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct IterProcess_s  ; typedef struct IterProcess_s  IterProcess_t ;
+/* Forward declarations */
+struct IterProcess_t; //typedef struct IterProcess_t  IterProcess_t ;
+struct DataFile_t;
+struct ObVals_t;
+struct Nodes_t;
+struct Solver_t;
 
-
-#include "DataFile.h"
-#include "ObVals.h"
-#include "Nodes.h"
-#include "Solver.h"
 
 extern IterProcess_t*  (IterProcess_New)(void) ;
 extern IterProcess_t*  (IterProcess_Create)(DataFile_t*,ObVals_t*) ;
@@ -28,11 +26,57 @@ extern void            (IterProcess_PrintCurrentError)(IterProcess_t*) ;
 #define IterProcess_GetTolerance(IPR)                ((IPR)->tol)
 #define IterProcess_GetRepetitionIndex(IPR)          ((IPR)->irecom)
 #define IterProcess_GetIterationIndex(IPR)           ((IPR)->iter)
-#define IterProcess_GetCurrentError(IPR)             ((IPR)->error)
+#define IterProcess_GetError(IPR)                    ((IPR)->error)
 #define IterProcess_GetObValIndexOfCurrentError(IPR) ((IPR)->obvalindex)
 #define IterProcess_GetNodeIndexOfCurrentError(IPR)  ((IPR)->nodeindex)
 #define IterProcess_GetObVals(IPR)                   ((IPR)->obvals)
 
+
+#define IterProcess_SetNbOfIterations(IPR,A) \
+        do {\
+          IterProcess_GetNbOfIterations(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetNbOfRepetitions(IPR,A) \
+        do {\
+          IterProcess_GetNbOfRepetitions(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetTolerance(IPR,A) \
+        do {\
+          IterProcess_GetTolerance(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetRepetitionIndex(IPR,A) \
+        do {\
+          IterProcess_GetRepetitionIndex(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetIterationIndex(IPR,A) \
+        do {\
+          IterProcess_GetIterationIndex(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetError(IPR,A) \
+        do {\
+          IterProcess_GetError(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetObValIndexOfCurrentError(IPR,A) \
+        do {\
+          IterProcess_GetObValIndexOfCurrentError(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetNodeIndexOfCurrentError(IPR,A) \
+        do {\
+          IterProcess_GetNodeIndexOfCurrentError(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetObVals(IPR,A) \
+        do {\
+          IterProcess_GetObVals(IPR) = A;\
+        } while(0)
+        
 
 
 #define IterProcess_GetObVal(IPR) \
@@ -63,7 +107,7 @@ extern void            (IterProcess_PrintCurrentError)(IterProcess_t*) ;
 
 /* Operations on convergence */
 #define IterProcess_ConvergenceIsAttained(IPR) \
-        (IterProcess_GetCurrentError(IPR) < IterProcess_GetTolerance(IPR))
+        (IterProcess_GetError(IPR) < IterProcess_GetTolerance(IPR))
 
 #define IterProcess_ConvergenceIsNotAttained(IPR) \
         (!IterProcess_ConvergenceIsAttained(IPR))
@@ -74,7 +118,7 @@ extern void            (IterProcess_PrintCurrentError)(IterProcess_t*) ;
         (ObVal_GetNameOfUnknown(IterProcess_GetObVal(IPR) + IterProcess_GetObValIndexOfCurrentError(IPR)))
 
 
-struct IterProcess_s {        /* Iterative process */
+struct IterProcess_t {        /* Iterative process */
   int    niter ;              /* Max nb of iterations */
   int    iter ;               /* Current iteration index */
   int    nrecom ;             /* Max nb of repetitions */
@@ -90,4 +134,7 @@ struct IterProcess_s {        /* Iterative process */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "ObVals.h"
+#include "ObVal.h"
 #endif

@@ -5,13 +5,28 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct DataSet_s      ; typedef struct DataSet_s      DataSet_t ;
+/* Forward declarations */
+struct DataSet_t; //typedef struct DataSet_t      DataSet_t ;
+struct Options_t;
+struct Units_t;
+struct DataFile_t;
+struct Geometry_t;
+struct Mesh_t;
+struct Materials_t;
+struct Dates_t;
+struct Points_t;
+struct IConds_t;
+struct BConds_t;
+struct Loads_t;
+struct Functions_t;
+struct Fields_t;
+struct ObVals_t;
+struct TimeStep_t;
+struct IterProcess_t;
+struct Module_t;
+struct Models_t;
 
-
-#include "Options.h"
 
 extern DataSet_t*  (DataSet_Create)    (char*,Options_t*) ;
 extern void        (DataSet_Delete)    (void*) ;
@@ -19,7 +34,6 @@ extern void        (DataSet_Delete)    (void*) ;
 extern void        (DataSet_PrintData) (DataSet_t*,char*) ;
 
 
-#include "Mry.h"
 
 #define DataSet_New() \
         (DataSet_t*) Mry_New(DataSet_t)
@@ -51,6 +65,7 @@ extern void        (DataSet_PrintData) (DataSet_t*,char*) ;
 
 
 
+
 #define DataSet_GetSequentialIndex(DS) \
         Module_GetSequentialIndex(DataSet_GetModule(DS))
         
@@ -60,32 +75,7 @@ extern void        (DataSet_PrintData) (DataSet_t*,char*) ;
 
 
 
-
-
-
-#include "Units.h"
-#include "DataFile.h"
-#include "Geometry.h"
-#include "Mesh.h"
-#include "Materials.h"
-#include "Dates.h"
-#include "Points.h"
-#include "IConds.h"
-#include "BConds.h"
-#include "Loads.h"
-#include "Functions.h"
-#include "Fields.h"
-#include "ObVals.h"
-#include "TimeStep.h"
-#include "IterProcess.h"
-#include "Modules.h"
-#include "Models.h"
-
-
-
-
-
-struct DataSet_s {               /* set of data for the problem to work out */
+struct DataSet_t {               /* set of data for the problem to work out */
   Units_t*       units ;         /* Units */
   DataFile_t*    datafile ;      /* data file */
   Geometry_t*    geometry ;      /* Geometry */
@@ -113,4 +103,8 @@ struct DataSet_s {               /* set of data for the problem to work out */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include "Mry.h"
+#include "Module.h"
 #endif

@@ -150,9 +150,9 @@ struct MaterialPointMethod_t {
     int const nve = CustomValues_NbOfExplicitValues(V<double>);
     int const nv0 = CustomValues_NbOfConstantValues(V<double>);
           
-    Element_GetNbOfImplicitTerms(el) = N*nvi ;
-    Element_GetNbOfExplicitTerms(el) = N*nve ;
-    Element_GetNbOfConstantTerms(el) = N*nv0 ;
+    Element_SetNbOfImplicitTerms(el,N*nvi) ;
+    Element_SetNbOfExplicitTerms(el,N*nve) ;
+    Element_SetNbOfConstantTerms(el,N*nv0) ;
   }
 
 

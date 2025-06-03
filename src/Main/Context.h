@@ -5,10 +5,11 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Context_s  ; typedef struct Context_s  Context_t ;
+/* Forward declarations */
+struct Context_t; //typedef struct Context_t  Context_t ;
+struct CommandLine_t;
+struct Options_t;
 
 
 
@@ -93,10 +94,8 @@ extern void          (Context_Delete)(void*) ;
         Context_GetNbOfThreads(CTX)
 
 
-#include "CommandLine.h"
-#include "Options.h"
 
-struct Context_s {        /* Context */
+struct Context_t {        /* Context */
   CommandLine_t* commandline ;
   Options_t*     options ;
   void*   help ;

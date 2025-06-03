@@ -5,6 +5,8 @@
 #include <math.h>
 #include "Options.h"
 #include "Mesh.h"
+#include "Element.h"
+#include "Node.h"
 #include "Message.h"
 #include "BilExtraLibs.h"
 #include "Mry.h"

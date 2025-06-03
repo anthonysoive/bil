@@ -5,15 +5,14 @@
 extern "C" {
 #endif
 
-/* class-like structures "Residu_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct Residu_s       ; typedef struct Residu_s       Residu_t ;
+/* Forward declarations */
+struct Residu_t; //typedef struct Residu_t       Residu_t ;
+struct Mesh_t;
+struct Options_t;
+struct Element_t;
+struct VectorStorageFormat_t;
 
-
-#include "Mesh.h"
-#include "Options.h"
-#include "Element.h"
 
 extern Residu_t*   (Residu_Create)(Mesh_t*,Options_t*,const int,const int) ;
 extern void        (Residu_Delete)(void*) ;
@@ -36,8 +35,6 @@ extern void        (Residu_SetValuesToZero)(Residu_t*) ;
 
 #define Residu_GetOptions(RS) \
         VectorStorageFormat_GetOptions(Residu_GetVectorStorageFormat(RS))
-
-#include "Node.h"
         
         
 /* Initialize the residu */
@@ -55,8 +52,6 @@ extern void        (Residu_SetValuesToZero)(Residu_t*) ;
 
 
 
-#include "VectorStorageFormat.h"
-
 #define Residu_GetStorageFormatType(RS) \
         VectorStorageFormat_GetType(Residu_GetVectorStorageFormat(RS))
 
@@ -64,7 +59,9 @@ extern void        (Residu_SetValuesToZero)(Residu_t*) ;
         VectorStorageFormat_Is(Residu_GetVectorStorageFormat(RS),KEY)
 
 
-struct Residu_s {             /* Residu */
+struct VectorStorageFormat_t;
+
+struct Residu_t {             /* Residu */
   unsigned int index ;        /* Residu index */
   VectorStorageFormat_t* vectorstorageformat ; /* Storage format of vectors */
   unsigned int    n ;         /* Length of the rhs */
@@ -74,6 +71,9 @@ struct Residu_s {             /* Residu */
   void*           storageofrhs ;
   void*           storageofsol ;
 } ;
+
+
+#include "VectorStorageFormat.h"
 
 
 #ifdef __CPLUSPLUS

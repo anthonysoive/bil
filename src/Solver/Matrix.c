@@ -5,7 +5,10 @@
 #include <math.h>
 #include "Options.h"
 #include "Mesh.h"
+#include "Element.h"
 #include "Message.h"
+#include "Context.h"
+#include "CommandLine.h"
 #include "BilExtraLibs.h"
 #include "Mry.h"
 #include "Matrix.h"
@@ -96,7 +99,7 @@ Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,const int imatrix)
       {
         int n_col = Matrix_GetNbOfColumns(a) ;
         void* work = Mry_New(int[n_col]) ;
-        GenericData_t* gw = GenericData_Create(n_col,work,int,"rowptr") ;
+        GenericData_t* gw = GenericData_Create(n_col,work,"rowptr") ;
       
         Matrix_AppendGenericWorkSpace(a,gw) ;
       }
@@ -266,7 +269,7 @@ int (Matrix_AssembleElementMatrix)(Matrix_t* a,Element_t* el,double* ke)
     SuperLUFormat_t* aslu   = (SuperLUFormat_t*) Matrix_GetStorage(a) ;
     NCFormat_t*    asluNC = (NCFormat_t*) SuperLUFormat_GetStorage(aslu) ;
     GenericData_t* gw = Matrix_GetGenericWorkSpace(a) ;
-    int*        rowptr = GenericData_FindData(gw,int,"rowptr") ;
+    int*        rowptr = GenericData_FindData(gw,"rowptr") ;
     int         nrow = SuperLUFormat_GetNbOfRows(aslu) ;
     
     len = NCFormat_AssembleElementMatrix(asluNC,ke,col,row,ndof,rowptr,nrow) ;

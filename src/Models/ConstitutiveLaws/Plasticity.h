@@ -5,10 +5,14 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Plasticity_t     ; typedef struct Plasticity_t     Plasticity_t ;
+/* Forward declarations */
+struct Plasticity_t; //typedef struct Plasticity_t     Plasticity_t ;
+struct GenericData_t;
+struct Curves_t;
+struct Elasticity_t;
+struct Buffers_t;
+  
 
 #include "autodiff.h"
 
@@ -29,7 +33,6 @@ typedef void    (Plasticity_SetParameters_t)(Plasticity_t*,...) ;
 typedef void    (Plasticity_SetModelProp_t) (Plasticity_t*) ;
 
 
-/* 1. Plasticity_t */
 
 extern Plasticity_t*  (Plasticity_Create)(void) ;
 extern void           (Plasticity_Delete)(void*) ;
@@ -106,7 +109,6 @@ extern double* (Plasticity_DerivativeOfYieldFunction)(Tfunc,Plasticity_t*,const 
         (1000*sizeof(double))
 
 
-#include "PlasticityModels.h"
 
 #define Plasticity_NbOfModels                PlasticityModels_NbOfModels
 #define Plasticity_ListOfNames               PlasticityModels_ListOfNames
@@ -115,9 +117,6 @@ extern double* (Plasticity_DerivativeOfYieldFunction)(Tfunc,Plasticity_t*,const 
 
 
 
-
-#include "Utils.h"
-#include "Arg.h"
 
 #define Plasticity_SetParameters(PL,...) \
         do {\
@@ -255,10 +254,6 @@ extern double* (Plasticity_DerivativeOfYieldFunction)(Tfunc,Plasticity_t*,const 
 
 
 
-#include "Elasticity.h"
-#include "GenericData.h"
-#include "Curves.h"
-#include "Buffers.h"
 
 
 
@@ -331,4 +326,13 @@ struct Plasticity_t {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "PlasticityModels.h"
+#include "Utils.h"
+#include "Arg.h"
+#include "Elasticity.h"
+#include "GenericData.h"
+#include "Curves.h"
+#include "Buffers.h"
+#include "Buffer.h"
 #endif

@@ -6,11 +6,10 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure "DataSet_t and attributes */
-struct IntFcts_s      ; typedef struct IntFcts_s      IntFcts_t ;
-
+/* Forward declarations */
+struct IntFcts_t; //typedef struct IntFcts_t      IntFcts_t ;
+struct IntFct_t;
 
 /* Declaration of Macros, Methods and Structures */
 
@@ -29,9 +28,7 @@ extern int         (IntFcts_AddIntFct)(IntFcts_t*,int,int,const char*) ;
 #define IntFcts_GetIntFct(IFCTS)         ((IFCTS)->fi)
 
 
-#include "IntFct.h"
-
-struct IntFcts_s {            /* interpolations */
+struct IntFcts_t {            /* interpolations */
   unsigned int n_fi ;         /* nb of interpolation function */
   IntFct_t* fi ;              /* interpolation function */
 } ;

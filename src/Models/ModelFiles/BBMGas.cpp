@@ -43,19 +43,12 @@
 #define U_DIS   U_MECH
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
+#include "BaseName.h"
 
 
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
-
-
-
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t;
 
@@ -69,20 +62,12 @@ template<typename T>
 struct OtherValues_t;
 
 
-
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
-
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
 using Values_d = Values_t<double> ;
 
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
-
-
-#define MPM_t      BaseName(_MPM_t)
-
 
 
 struct MPM_t: public MaterialPointMethod_t<Values_t> {
@@ -150,6 +135,39 @@ struct ExplicitValues_t {
 /* We define some names for constant terms (v0 must be used as pointer below) */
 template<typename T = double>
 struct ConstantValues_t {};
+
+
+/* The parameters below are read in the input data file */
+struct Parameters_t {
+  double Gravity;
+  double MassDensity_solidskeleton;
+  double InitialStress[9];
+  double MassDensity_liquid;
+  double IntrinsicPermeability_liquid;
+  double IntrinsicPermeability_gas;
+  double Viscosity_liquid;
+  double Viscosity_gas;
+  double PoissonRatio;
+  double InitialVoidRatio;
+  double InitialPorosity;
+  double InitialHardeningVariable;
+  double DiffusionCoefficient_watervapor;
+  double DiffusionCoefficient_dissolvedair;
+  double SlopeOfElasticLoadingLine;
+  double SlopeOfVirginConsolidationLine;
+  double SlopeOfCriticalStateLine;
+  double InitialPreconsolidationPressure;
+  double SlopeOfElasticWettingDryingLine;
+  double HenryConstant;
+  double ShearModulus;
+  double SuctionCohesionCoefficient;
+  double ReferenceConsolidationPressure;
+  double MinimumSuction;
+  double MolarMassOfDryGas;
+};
+}
+
+using namespace BaseName();
 
 
 static MPM_t mpm;
@@ -251,38 +269,6 @@ static double  p_atm ;
 static double  p_v0 ;
 static double  RT ;
 
-/* The parameters below are read in the input data file */
-
-#define Parameters_t    BaseName(_Parameters_t)
-
-struct Parameters_t {
-  double Gravity;
-  double MassDensity_solidskeleton;
-  double InitialStress[9];
-  double MassDensity_liquid;
-  double IntrinsicPermeability_liquid;
-  double IntrinsicPermeability_gas;
-  double Viscosity_liquid;
-  double Viscosity_gas;
-  double PoissonRatio;
-  double InitialVoidRatio;
-  double InitialPorosity;
-  double InitialHardeningVariable;
-  double DiffusionCoefficient_watervapor;
-  double DiffusionCoefficient_dissolvedair;
-  double SlopeOfElasticLoadingLine;
-  double SlopeOfVirginConsolidationLine;
-  double SlopeOfCriticalStateLine;
-  double InitialPreconsolidationPressure;
-  double SlopeOfElasticWettingDryingLine;
-  double HenryConstant;
-  double ShearModulus;
-  double SuctionCohesionCoefficient;
-  double ReferenceConsolidationPressure;
-  double MinimumSuction;
-  double MolarMassOfDryGas;
-};
-
 
 #include "PhysicalConstant.h"
 //#include "AtmosphericPressure.h"
@@ -380,7 +366,7 @@ void GetProperties(Element_t* el,double t)
   /* To retrieve the material properties */
   //Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
 
-  plasty  = (Plasticity_t*) Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty  = (Plasticity_t*) Element_FindMaterialData(el,"Plasticity") ;
   elasty  = Plasticity_GetElasticity(plasty) ;
 
   saturationcurve = Element_FindCurve(el,"sl") ;
@@ -445,7 +431,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Plasticity_Create() ;
       
-    Material_AppendData(mat,1,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,1,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */

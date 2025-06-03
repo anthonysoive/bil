@@ -5,16 +5,14 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct TimeStep_s     ; typedef struct TimeStep_s     TimeStep_t ;
+/* Forward declarations */
+struct TimeStep_t; //typedef struct TimeStep_t     TimeStep_t ;
+struct DataFile_t;
+struct ObVals_t;
+struct Nodes_t;
+struct Solution_t;
 
-
-#include "DataFile.h"
-#include "ObVals.h"
-#include "Nodes.h"
-#include "Solution.h"
 
 extern TimeStep_t*  (TimeStep_Create)(DataFile_t*,ObVals_t*) ;
 extern void         (TimeStep_Delete)(void*) ;
@@ -65,7 +63,7 @@ extern double       (TimeStep_ComputeTimeStep)(TimeStep_t*,Solution_t*,double,do
 
 
 
-struct TimeStep_s {           /* Time step management */
+struct TimeStep_t {           /* Time step management */
   double dtini ;              /* Initial time step */
   double dtmax ;              /* Maximum time step */
   double dtmin ;              /* Minimum time step */
@@ -81,4 +79,7 @@ struct TimeStep_s {           /* Time step management */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* Need for the macros */
+#include "ObVals.h"
 #endif

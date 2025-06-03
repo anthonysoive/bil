@@ -6,8 +6,10 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
-struct Graph_s          ; typedef struct Graph_s Graph_t ;
+
+/* Forward declarations */
+struct Graph_t; //typedef struct Graph_t Graph_t ;
+struct AdjacencyList_t;
 
 
 extern Graph_t*  (Graph_Create)(int,int*) ;
@@ -38,10 +40,7 @@ extern void      (Graph_Delete)(void*) ;
         } while(0)
 
 
-
-#include "AdjacencyList.h"
-
-struct Graph_s {              /* Graph */
+struct Graph_t {              /* Graph */
   unsigned int  nvertices ;   /* Nb of vertices */
   unsigned int  nedges ;      /* Nb of edges */
   AdjacencyList_t* adj ;      /* Adjacency list */
@@ -51,4 +50,6 @@ struct Graph_s {              /* Graph */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "AdjacencyList.h"
 #endif

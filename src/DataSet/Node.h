@@ -6,16 +6,14 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Node_t; //typedef struct Node_t         Node_t ;
+struct Buffers_t;
+struct Element_t;
+struct Solutions_t;
 
-/* class-like structure */
-struct Node_s         ; typedef struct Node_s         Node_t ;
-typedef Node_t*   Node_tt ;
 
 
-#include "Utils.h"
-#include "Solutions.h"
-#include "Buffers.h"
 
 
 extern Node_t*  (Node_New)(const int) ;
@@ -41,10 +39,7 @@ extern Node_t*  (Node_OverlappingNodes3)(const Node_t*,int*,Node_t*) ;
 
 
 
-#include "Model.h"
-
 /* Some constants */
-
 #define Node_MaxNbOfEquations \
         Model_MaxNbOfEquations
 
@@ -67,7 +62,6 @@ extern Node_t*  (Node_OverlappingNodes3)(const Node_t*,int*,Node_t*) ;
 #define Node_GetPointerToElement(NOD)     ((NOD)->PointerToElement)
 #define Node_GetBuffers(NOD)              ((NOD)->Buffers)
 #define Node_GetSolutions(NOD)            ((NOD)->Solutions)
-
 
 
 /* Buffer */
@@ -243,13 +237,9 @@ extern Node_t*  (Node_OverlappingNodes3)(const Node_t*,int*,Node_t*) ;
 
 
 
-#include "Element.h"
-//#include "NodeSol.h"
-#include "Buffers.h"
-#include "Solutions.h"
+typedef Element_t*        Element_tt ;
 
-
-struct Node_s {
+struct Node_t {
   Element_tt* PointerToElement ;
   Buffers_t* Buffers ;
   Solutions_t* Solutions ;             /* Pointer to the global solutions */
@@ -270,4 +260,12 @@ struct Node_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "Utils.h"
+#include "Model.h"
+#include "Buffers.h"
+#include "Solutions.h"
+#include "Solution.h"
+#include "NodeSol.h"
+#include "Buffer.h"
 #endif

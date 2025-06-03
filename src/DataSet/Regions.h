@@ -6,13 +6,10 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Regions_t; //typedef struct Regions_t        Regions_t ;
+struct Region_t;
 
-/* class-like structure */
-struct Regions_s        ; typedef struct Regions_s        Regions_t ;
-
-
-#include "Region.h"
 
 extern Regions_t*  (Regions_New)            (void) ;
 extern void        (Regions_Delete)         (void*) ;
@@ -29,7 +26,7 @@ extern Region_t*   (Regions_FindRegion)     (Regions_t*,const char*) ;
 
 
 
-struct Regions_s {
+struct Regions_t {
   Region_t*    Region ;
   unsigned int NbOfRegions ;
 } ;

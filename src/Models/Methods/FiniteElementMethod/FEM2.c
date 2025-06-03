@@ -1,9 +1,3 @@
-#include "FEM2.h"
-#include "FEM.h"
-#include "Message.h"
-#include "Matrix.h"
-#include "Residu.h"
-#include "Session.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -11,6 +5,31 @@
 #include <string.h>
 #include <strings.h>
 #include <assert.h>
+#include "FEM2.h"
+#include "FEM.h"
+#include "Message.h"
+#include "Matrix.h"
+#include "Residu.h"
+#include "Session.h"
+#include "Buffers.h"
+#include "DataSet.h"
+#include "Solvers.h"
+#include "Solver.h"
+#include "Solutions.h"
+#include "Solution.h"
+#include "Model.h"
+#include "GenericData.h"
+#include "Mesh.h"
+#include "Materials.h"
+#include "Material.h"
+#include "Element.h"
+#include "Node.h"
+#include "Functions.h"
+#include "Function.h"
+#include "Module.h"
+#include "Dates.h"
+#include "Date.h"
+#include "TimeStep.h"
 
 
 
@@ -60,7 +79,7 @@ FEM2_t*  (FEM2_GetInstance)(DataSet_t* dataset,Solvers_t* solvers,Solutions_t* s
   if(!gdat) {
     FEM2_t* fem2 = FEM2_Create() ;
     
-    gdat = GenericData_Create(1,fem2,FEM2_t,"FEM2") ;
+    gdat = GenericData_Create(1,fem2,"FEM2") ;
     
     Session_AddGenericData(gdat) ;
     

@@ -1,13 +1,11 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Function_s     ; typedef struct Function_s     Function_t ;
+/* Forward declarations */
+struct Function_t; //typedef struct Function_t     Function_t ;
+struct DataFile_t;
 
-
-#include "DataFile.h"
 
 extern Function_t*  (Function_New)          (const int) ;
 extern void         (Function_Delete)       (void*) ;
@@ -25,7 +23,7 @@ extern double       (Function_ComputeValue) (Function_t*,double) ;
 
 
 
-struct Function_s {           /* fonction du temps */
+struct Function_t {           /* fonction du temps */
   int    n ;                  /* nombre de points */
   double* t ;                 /* temps */
   double* f ;                 /* valeurs f(t) */

@@ -2,16 +2,10 @@
 #define POSFILESFORGMSH_H
 
 
-/* class-like structures "OutputFiles_t" */
-
-/* vacuous declarations and typedef names */
-struct PosFilesForGMSH_s ; typedef struct PosFilesForGMSH_s PosFilesForGMSH_t ;
-
-
-
-/* Declaration of Macros, Methods and Structures */
-
-#include "DataSet.h"
+/* Forward declarations */
+struct PosFilesForGMSH_t; //typedef struct PosFilesForGMSH_t PosFilesForGMSH_t ;
+struct DataSet_t;
+struct OutputFiles_t;
 
 extern PosFilesForGMSH_t*  (PosFilesForGMSH_Create)(DataSet_t*) ;
 extern void                (PosFilesForGMSH_Delete)(void*) ;
@@ -25,11 +19,8 @@ extern void                (PosFilesForGMSH_ASCIIFileFormat)(PosFilesForGMSH_t*)
 #define PosFilesForGMSH_GetBilVersion(PFG)             ((PFG)->version)
 
 
-
-#include "OutputFiles.h"
-
 /* complete the structure types by using the typedef */
-struct PosFilesForGMSH_s {
+struct PosFilesForGMSH_t {
   double version ;
   DataSet_t* dataset ;
   OutputFiles_t* outputfiles ;  /* The output files */

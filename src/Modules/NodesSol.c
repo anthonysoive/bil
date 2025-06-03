@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include "Mry.h"
+#include "Mesh.h"
 #include "NodesSol.h"
+#include "NodeSol.h"
 #include "Message.h"
+#include "Nodes.h"
+#include "Node.h"
 
 
 
@@ -19,9 +23,9 @@ NodesSol_t* (NodesSol_Create)(Mesh_t* mesh)
       Nodes_t* nodes = Mesh_GetNodes(mesh) ;
       NodeSol_t* nodesol = (NodeSol_t*) Mry_New(NodeSol_t[NbOfNodes]) ;
     
-      NodesSol_GetNodeSol(nodessol) = nodesol ;
-      NodesSol_GetNbOfNodes(nodessol) = NbOfNodes ;
-      NodesSol_GetNodes(nodessol) = nodes ;
+      NodesSol_SetNodeSol(nodessol,nodesol) ;
+      NodesSol_SetNbOfNodes(nodessol,NbOfNodes) ;
+      NodesSol_SetNodes(nodessol,nodes) ;
       
       
       {
@@ -65,8 +69,8 @@ void (NodesSol_Copy)(NodesSol_t* nodessol_dest,NodesSol_t* nodessol_src)
   Nodes_t* nodes = NodesSol_GetNodes(nodessol_src) ;
   unsigned int nno = NodesSol_GetNbOfNodes(nodessol_src) ;
   
-  NodesSol_GetNodes(nodessol_dest) = nodes ;
-  NodesSol_GetNbOfNodes(nodessol_dest) = nno ;
+  NodesSol_SetNodes(nodessol_dest,nodes) ;
+  NodesSol_SetNbOfNodes(nodessol_dest,nno) ;
   
   /* Nodal values */
     {

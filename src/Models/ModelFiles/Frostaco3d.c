@@ -290,7 +290,7 @@ void GetProperties(Element_t* el)
   poisson = GetProperty("Poisson") ;
   biot    = GetProperty("Biot") ;
   
-  elasty  = Element_FindMaterialData(el,Elasticity_t,"Elasticity") ;
+  elasty  = Element_FindMaterialData(el,"Elasticity") ;
   cijkl   = Elasticity_GetStiffnessTensor(elasty) ;
 #undef GetProperty
 }
@@ -517,12 +517,12 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     elasty = Elasticity_Create() ;
       
-    Material_AppendData(mat,1,elasty,Elasticity_t,"Elasticity") ;
+    Material_AppendData(mat,1,elasty,"Elasticity") ;
   }
   
   /* The 4th rank elastic tensor */
   {
-    elasty = Material_FindData(mat,Elasticity_t,"Elasticity") ;
+    elasty = Material_FindData(mat,"Elasticity") ;
 
     /* isotropic Hooke's law */
     { 
@@ -609,9 +609,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+  Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ;
 
 
   /* Continuity of unknowns across zero-thickness element */

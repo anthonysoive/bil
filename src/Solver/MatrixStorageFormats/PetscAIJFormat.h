@@ -2,13 +2,9 @@
 #define PETSCAIJFORMAT_H
 
 
-/* class-like structure "PetscAIJFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-struct PetscAIJFormat_s ; typedef struct PetscAIJFormat_s PetscAIJFormat_t ;
-
-
-#include "Mesh.h"
+/* Forward declarations */
+struct PetscAIJFormat_t; //typedef struct PetscAIJFormat_t PetscAIJFormat_t ;
+struct Mesh_t;
 
 
 extern PetscAIJFormat_t* (PetscAIJFormat_Create)(Mesh_t*,const int) ;
@@ -31,7 +27,7 @@ extern void              (PetscAIJFormat_PrintMatrix)(PetscAIJFormat_t*,const ch
 
 /* complete the structure types by using the typedef */
 #if 1
-struct PetscAIJFormat_s {
+struct PetscAIJFormat_t {
   int    nnz ;          /* nb of non zero values */
   double* nzval ;       /* Non zero values */
   int* idxrow ;         /* Indices of the rows */

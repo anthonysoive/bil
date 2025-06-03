@@ -6,10 +6,9 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structures */
-struct TextFile_s       ; typedef struct TextFile_s       TextFile_t ;
+/* Forward declarations */
+struct TextFile_t; //typedef struct TextFile_t       TextFile_t ;
 
 
 #include <stdio.h>
@@ -46,7 +45,6 @@ extern char*           (TextFile_StoreFileContent)(TextFile_t*) ;
         (!TextFile_Exists(TF))
 
 
-#include "String_.h"
 
 #define TextFile_Scan(TF, ...) \
         String_Scan(TextFile_GetCurrentPositionInFileContent(TF),__VA_ARGS__)
@@ -99,7 +97,7 @@ extern char*           (TextFile_StoreFileContent)(TextFile_t*) ;
 
 //#include "Buffer.h"
 
-struct TextFile_s {           /* File */
+struct TextFile_t {           /* File */
   char*     filename ;        /* Name of the file */
   char*     filecontent ;
   FILE*     stream ;          /* Current file stream if any */
@@ -118,4 +116,6 @@ struct TextFile_s {           /* File */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "String_.h"
 #endif

@@ -8,6 +8,10 @@
 #include "TimeStep.h"
 #include "DataFile.h"
 #include "ObVals.h"
+#include "ObVal.h"
+#include "Nodes.h"
+#include "Node.h"
+#include "Solution.h"
 
 
 static TimeStep_t*  TimeStep_New(void) ;

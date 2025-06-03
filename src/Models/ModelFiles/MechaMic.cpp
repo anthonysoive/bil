@@ -31,16 +31,12 @@
 
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
-
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
+#include "BaseName.h"
 
 
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -54,8 +50,6 @@ template<typename T>
 struct OtherValues_t;
 
 
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
 
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
@@ -66,19 +60,12 @@ using Values_d = Values_t<double> ;
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
 
 
-#define MPM_t      BaseName(_MPM_t)
-
-
-
-
 struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
   MaterialPointMethod_Integrate_t<Values_t> Integrate;
   MaterialPointMethod_Initialize_t<Values_t>  Initialize;
   MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
 } ;
-
-
 
 
 /* We define some names for implicit terms */
@@ -111,6 +98,9 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialStress[9];
 };
+}
+
+using namespace BaseName();
 
 
 static MPM_t mpm;
@@ -303,14 +293,14 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
       
       /* Store options in mat */
       {
-        GenericData_t* gdat = GenericData_Create(1,options,Options_t,"Options") ;
+        GenericData_t* gdat = GenericData_Create(1,options,"Options") ;
       
         Material_AppendGenericData(mat,gdat) ;
       }
       
       /* Store dataset in mat */
       {
-        GenericData_t* gdat = GenericData_Create(1,dataset,DataSet_t,"DataSet") ;
+        GenericData_t* gdat = GenericData_Create(1,dataset,"DataSet") ;
       
         Material_AppendGenericData(mat,gdat) ;
       }
@@ -318,7 +308,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
       
       /* Store solvers in mat */
       {
-        GenericData_t* gdat = GenericData_Create(1,solvers,Solvers_t,"Solvers") ;
+        GenericData_t* gdat = GenericData_Create(1,solvers,"Solvers") ;
       
         Material_AppendGenericData(mat,gdat) ;
       }
@@ -367,20 +357,20 @@ int PrintModelProp(Model_t* model,FILE *ficd)
 
 /* The current and the previous solutions */
 #define Element_GetCurrentLocalSolutions(EL) \
-        ((Solutions_t*) Element_FindCurrentImplicitData(EL,Solutions_t,"Solutions"))
+        ((Solutions_t*) Element_FindCurrentImplicitData(EL,"Solutions"))
 
 #define Element_GetPreviousLocalSolutions(EL) \
-        ((Solutions_t*) Element_FindPreviousImplicitData(EL,Solutions_t,"Solutions"))
+        ((Solutions_t*) Element_FindPreviousImplicitData(EL,"Solutions"))
 
 
 /* The dataset */
 #define Element_GetDataSet(EL) \
-        ((DataSet_t*) Element_FindMaterialData(EL,DataSet_t,"DataSet"))
+        ((DataSet_t*) Element_FindMaterialData(EL,"DataSet"))
 
 
 /* The solvers */
 #define Element_GetSolvers(EL) \
-        ((Solvers_t*) Element_FindMaterialData(EL,Solvers_t,"Solvers"))
+        ((Solvers_t*) Element_FindMaterialData(EL,"Solvers"))
 
 
 
@@ -437,30 +427,9 @@ int  ComputeLoads(Element_t* el,double t,double dt,Load_t* cg,double* r)
 
 int ComputeInitialState(Element_t* el,double t)
 {
-  #if 0
-  double* vim0  = Element_GetImplicitTerm(el) ;
-  double** u   = Element_ComputePointerToNodalUnknowns(el) ;
-  
-  /* We skip if the element is a submanifold */
-  if(Element_IsSubmanifold(el)) return(0) ;
-
-  /*
-    Input data
-  */
-  GetProperties(el,t) ;
-      
-  ci.Set(el,t,0,u,vim0,u,vim0) ;
-  
-  {
-    int i = ci.ComputeInitialStateByFEM();
-    
-    return(i);
-  }
-  #else
   int i = mpm.ComputeInitialStateByFEM(el,t);
   
   return(i);
-  #endif
 }
 
 
@@ -474,32 +443,9 @@ int  ComputeExplicitTerms(Element_t* el,double t)
 
 int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 {
-  #if 0
-  double* vim0   = Element_GetCurrentImplicitTerm(el) ;
-  double* vim_n  = Element_GetPreviousImplicitTerm(el) ;
-  double** u   = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  double** u_n = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  
-  /* We skip if the element is a submanifold */
-  if(Element_IsSubmanifold(el)) return(0) ;
-
-  /*
-    Input data
-  */
-  GetProperties(el,t) ;
-    
-  ci.Set(el,t,dt,u_n,vim_n,u,vim0) ;
-  
-  {
-    int i = ci.ComputeImplicitTermsByFEM();
-    
-    return(i);
-  }
-  #else
   int i = mpm.ComputeImplicitTermsByFEM(el,t,dt);
   
   return(i);
-  #endif
 }
 
 
@@ -507,49 +453,9 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) */
 {
-  #if 0
-  #define K(i,j)    (k[(i)*ndof + (j)])
-  double*  vi   = Element_GetCurrentImplicitTerm(el) ;
-  double*  vi_n = Element_GetPreviousImplicitTerm(el) ;
-  double** u     = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  double** u_n   = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
-  int dim = Element_GetDimensionOfSpace(el) ;
-  int ndof = nn*NEQ ;
-
-
-  /* Initialization */
-  {
-    for(int i = 0 ; i < ndof*ndof ; i++) k[i] = 0 ;
-  }
-
-
-  /* We skip if the element is a submanifold */
-  if(Element_IsSubmanifold(el)) return(0) ;
-  
-  
-  /*
-    Input data
-  */
-  GetProperties(el,t) ;
-      
-  ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
-
-  {
-    double* kp = ci.ComputeTangentStiffnessMatrixByFEM() ;
-
-    for(int i = 0 ; i < ndof*ndof ; i++) {
-      k[i] = kp[i] ;
-    }
-  }
-  
-  return(0) ;
-  #undef K
-  #else
   int i = mpm.ComputeTangentStifnessMatrixByFEM(el,t,dt,k);
   
   return(i);
-  #endif
 }
 
 
@@ -558,40 +464,6 @@ int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 int  ComputeResidu(Element_t* el,double t,double dt,double* r)
 /** Comput the residu (r) */
 {
-  #if 0
-  #define R(n,i)    (r[(n)*NEQ+(i)])
-  double*  vi   = Element_GetCurrentImplicitTerm(el) ;
-  double*  vi_n = Element_GetPreviousImplicitTerm(el) ;
-  double** u     = Element_ComputePointerToCurrentNodalUnknowns(el) ;
-  double** u_n   = Element_ComputePointerToPreviousNodalUnknowns(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
-  int dim = Geometry_GetDimension(Element_GetGeometry(el)) ;
-  int ndof = nn*NEQ ;
-
-  /* Initialization */
-  for(int i = 0 ; i < ndof ; i++) r[i] = 0 ;
-
-  if(Element_IsSubmanifold(el)) return(0) ;
-
-  GetProperties(el,t) ;
-      
-  ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
-
-  {
-    int istress = Values_Index(Stress[0]);
-    int ibforce = Values_Index(BodyForce[0]);
-    double* rw = ci.ComputeMechanicalEquilibiumResiduByFEM(istress,ibforce);
-    
-    for(int i = 0 ; i < nn ; i++) {
-      int j ;
-      
-      for(j = 0 ; j < dim ; j++) R(i,E_MECH + j) -= rw[i*dim + j] ;
-    }
-  }
-  #undef R
-  
-  return(0) ;
-  #else
   /* Initialization */
   {
     int ndof = Element_GetNbOfDOF(el) ;
@@ -606,7 +478,6 @@ int  ComputeResidu(Element_t* el,double t,double dt,double* r)
   }
 
   return(0);
-  #endif
 }
 
 
@@ -800,14 +671,14 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
 {
   /* Strains */
   double* eps   =  val.Strain ;
-  double* eps_n =  val_n.Strain ;
+  double const* eps_n =  val_n.Strain ;
     
 
 
   /* Backup stresses, plastic strains */
   {
     double* sig   = val.Stress ;
-    double* sig_n = val_n.Stress ;
+    double const* sig_n = val_n.Stress ;
     
     
     {

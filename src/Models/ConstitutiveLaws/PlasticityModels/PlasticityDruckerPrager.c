@@ -5,6 +5,8 @@
 #include <stdarg.h>
 
 #include "Message.h"
+#include "Curves.h"
+#include "Curve.h"
 #include "Math_.h"
 #include "Plasticity.h"
 #include "autodiff.h"

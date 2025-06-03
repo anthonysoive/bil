@@ -7,12 +7,11 @@ extern "C" {
 
 /* class-like structures "ElementsSol_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct ElementsSol_s  ; typedef struct ElementsSol_s  ElementsSol_t ;
+/* Forward declarations */
+struct ElementsSol_t; //typedef struct ElementsSol_t  ElementsSol_t ;
+struct ElementSol_t;
+struct Mesh_t;
 
-
-
-#include "Mesh.h"
 
 extern ElementsSol_t*   (ElementsSol_Create)(Mesh_t*) ;
 extern void             (ElementsSol_Delete)(void*) ;
@@ -27,6 +26,16 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 //#define ElementsSol_GetNbOfConstantTerms(ESS)    ((ESS)->NbOfConstTerms)
 #define ElementsSol_GetNbOfElements(ESS)         ((ESS)->NbOfElements)
 #define ElementsSol_GetElementSol(ESS)           ((ESS)->elementsol)
+
+#define ElementsSol_SetNbOfElements(ESS,A) \
+        do {\
+          ElementsSol_GetNbOfElements(ESS) = A;\
+        } while(0)
+        
+#define ElementsSol_SetElementSol(ESS,A) \
+        do {\
+          ElementsSol_GetElementSol(ESS) = A;\
+        } while(0)
 
 
 
@@ -112,10 +121,9 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 
 
 
-#include "ElementSol.h"
 
 
-struct ElementsSol_s {
+struct ElementsSol_t {
   unsigned int NbOfElements ;
   //unsigned int NbOfImpltTerms ;         /* nb of implicit terms */
   //unsigned int NbOfExpltTerms ;         /* nb of explicit terms */
@@ -124,6 +132,9 @@ struct ElementsSol_s {
 } ;
 
 
+/* For the macros */
+#include "ElementSol.h"
+#include "GenericData.h"
 
 #ifdef __CPLUSPLUS
 }

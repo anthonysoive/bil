@@ -7,10 +7,17 @@
 #include "Mry.h"
 #include "Solver.h"
 #include "Message.h"
+#include "CommandLine.h"
+#include "Context.h"
 #include "BilExtraLibs.h"
 #include "ResolutionMethod.h"
 #include "CroutMethod.h"
 #include "DistributedMS.h"
+#include "Mesh.h"
+#include "Options.h"
+#include "Residu.h"
+#include "Matrix.h"
+#include "GenericData.h"
 
 #ifdef SUPERLULIB
   #include "SuperLUMethod.h"
@@ -94,10 +101,10 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         void* R      = Mry_New(double[n]) ;
         void* C      = Mry_New(double[n]) ;
         void* err    = Mry_New(double[2]) ;
-        GenericData_t* getree = GenericData_Create(n,etree,int,"etree") ;
-        GenericData_t* gR     = GenericData_Create(n,R,double,"R") ;
-        GenericData_t* gC     = GenericData_Create(n,C,double,"C") ;
-        GenericData_t* gerr   = GenericData_Create(2,err,double,"err") ;
+        GenericData_t* getree = GenericData_Create(n,etree,"etree") ;
+        GenericData_t* gR     = GenericData_Create(n,R,"R") ;
+        GenericData_t* gC     = GenericData_Create(n,C,"C") ;
+        GenericData_t* gerr   = GenericData_Create(2,err,"err") ;
         /* The FILL factor: FILL = 30 set by sp_ienv of superlu. */
         /* If lwork = 0 allocate space internally by system malloc */
         double fill = Options_GetFillFactor(options) ;
@@ -112,7 +119,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       
         if(lwork) {
           void* work = Mry_New(double[lwork]) ;
-          GenericData_t* gwork = GenericData_Create(lwork,work,double,"work") ;
+          GenericData_t* gwork = GenericData_Create(lwork,work,"work") ;
         
           Solver_AppendGenericWorkSpace(solver,gwork) ;
         }
@@ -132,12 +139,12 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         void* R      = Mry_New(double[n]) ;
         void* C      = Mry_New(double[n]) ;
         void* err    = Mry_New(double[2]) ;
-        GenericData_t* getree = GenericData_Create(n,etree,int,"etree") ;
-        GenericData_t* gcolcnt_h = GenericData_Create(n,colcnt_h,int,"colcnt_h") ;
-        GenericData_t* gpart_super_h = GenericData_Create(n,part_super_h,int,"part_super_h") ;
-        GenericData_t* gR     = GenericData_Create(n,R,double,"R") ;
-        GenericData_t* gC     = GenericData_Create(n,C,double,"C") ;
-        GenericData_t* gerr   = GenericData_Create(2,err,double,"err") ;
+        GenericData_t* getree = GenericData_Create(n,etree,"etree") ;
+        GenericData_t* gcolcnt_h = GenericData_Create(n,colcnt_h,"colcnt_h") ;
+        GenericData_t* gpart_super_h = GenericData_Create(n,part_super_h,"part_super_h") ;
+        GenericData_t* gR     = GenericData_Create(n,R,"R") ;
+        GenericData_t* gC     = GenericData_Create(n,C,"C") ;
+        GenericData_t* gerr   = GenericData_Create(2,err,"err") ;
         Matrix_t* matrix = Solver_GetMatrix(solver) ;
         int nnz = Matrix_GetNbOfNonZeroValues(matrix) ;
         /* The FILL factor of superlumt from the command line*/
@@ -162,7 +169,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       
         if(lwork) {
           void* work = Mry_New(double[lwork]) ;
-          GenericData_t* gwork = GenericData_Create(lwork,work,double,"work") ;
+          GenericData_t* gwork = GenericData_Create(lwork,work,"work") ;
         
           Solver_AppendGenericWorkSpace(solver,gwork) ;
         }
@@ -178,9 +185,9 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         dScalePermstruct_t* scalepermstruct = Mry_New(dScalePermstruct_t) ;
         dLUstruct_t* lustruct = Mry_New(dLUstruct_t) ;
         gridinfo_t* grid = Mry_New(gridinfo_t) ;
-        GenericData_t* gscalepermstruct = GenericData_Create(1,scalepermstruct,dScalePermstruct_t,"ScalePermstruct") ;
-        GenericData_t* glustruct = GenericData_Create(1,lustruct,dLUstruct_t,"LUstruct") ;
-        GenericData_t* ggrid = GenericData_Create(1,grid,gridinfo_t,"grid") ;
+        GenericData_t* gscalepermstruct = GenericData_Create(1,scalepermstruct,"ScalePermstruct") ;
+        GenericData_t* glustruct = GenericData_Create(1,lustruct,"LUstruct") ;
+        GenericData_t* ggrid = GenericData_Create(1,grid,"grid") ;
 
         Solver_AppendGenericWorkSpace(solver,gscalepermstruct) ;
         Solver_AppendGenericWorkSpace(solver,glustruct) ;
@@ -246,7 +253,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         int n_col = Solver_GetNbOfColumns(solver) ;
         int lwork = 4 * n_col ;
         void* work = Mry_New(double[lwork]) ;
-        GenericData_t* gwork = GenericData_Create(lwork,work,double,"work") ;
+        GenericData_t* gwork = GenericData_Create(lwork,work,"work") ;
       
         Solver_AppendGenericWorkSpace(solver,gwork) ;
       }
@@ -270,7 +277,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       /*  Create the solver KSP */
       {
         KSP* ksp = (KSP*) Mry_New(KSP) ;
-        GenericData_t* gksp = GenericData_Create(1,ksp,KSP,"ksp") ;
+        GenericData_t* gksp = GenericData_Create(1,ksp,"ksp") ;
         
         KSPCreate(PETSC_COMM_WORLD,ksp) ;
         
@@ -300,9 +307,9 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       #if 1
       {
         GenericData_t* gw = Solver_GetGenericWorkSpace(solver) ;
-        KSP* ksp = GenericData_FindData(gw,KSP,"ksp") ;
+        KSP* ksp = GenericData_FindData(gw,"ksp") ;
         PC*  pc = (PC*) Mry_New(PC) ;
-        GenericData_t* gpc = GenericData_Create(1,pc,PC,"pc") ;
+        GenericData_t* gpc = GenericData_Create(1,pc,"pc") ;
 
         /* Set the method from the command line "-pc_type <method>"
          * wher "method" is on eof the following options:

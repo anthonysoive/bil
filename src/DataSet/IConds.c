@@ -3,9 +3,17 @@
 #include <string.h>
 #include <ctype.h>
 #include "Message.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "Element.h"
 #include "DataFile.h"
+#include "Fields.h"
+#include "Field.h"
+#include "Functions.h"
+#include "Function.h"
 #include "Mry.h"
 #include "IConds.h"
+#include "ICond.h"
 
 
 static IConds_t* IConds_New(const int) ;

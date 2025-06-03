@@ -11,9 +11,11 @@
 #include "Math_.h"
 #include "Buffer.h"
 #include "Curves.h"
+#include "Curve.h"
 #include "String_.h"
 #include "CurvesFile.h"
 #include "InternationalSystemOfUnits.h"
+#include "Expression.h"
 
 
 /* Shorthands of some units */
@@ -929,7 +931,8 @@ double (Evaluate)(double x,va_list args)
   }
   
   {
-    double val = Math_EvaluateExpression(line) ;
+    double val = 0;//Math_EvaluateExpression(line) ;
+    Message_RuntimeError("Evaluate: not available") ;
     
     return(val) ;
   }
@@ -1018,7 +1021,8 @@ double (Expressions)(double x,va_list args)
   }
   
   {
-    double val = Math_EvaluateExpressions(ylabel,line) ;
+    //double val = Math_EvaluateExpressions(ylabel,line) ;
+    double val = Expression_Evaluate(ylabel,line) ;
     
     return(val) ;
   }

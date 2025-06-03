@@ -27,7 +27,7 @@ Module_t* (Module_New)(void)
     {
       char* code = (char*) Mry_New(char[Module_MaxLengthOfKeyWord]) ;
       
-      Module_GetCodeNameOfModule(module) = code ;
+      Module_SetCodeNameOfModule(module,code) ;
     }
     
     
@@ -35,7 +35,7 @@ Module_t* (Module_New)(void)
     {
       char* title = (char*) Mry_New(char[Module_MaxLengthOfShortTitle]) ;
       
-      Module_GetShortTitle(module) = title ;
+      Module_SetShortTitle(module,title) ;
     
       Module_CopyShortTitle(module,"\0") ;
     }
@@ -45,15 +45,15 @@ Module_t* (Module_New)(void)
     {
       char* names = (char*) Mry_New(char[Module_MaxLengthOfAuthorNames]) ;
       
-      Module_GetNameOfAuthors(module) = names ;
+      Module_SetNameOfAuthors(module,names) ;
       
       Module_CopyNameOfAuthors(module,"\0") ;
     }
     
     /* Initialize the nb of sequences and the sequential index */
     {
-      Module_GetNbOfSequences(module) = 1 ;
-      Module_GetSequentialIndex(module) = 0 ;
+      Module_SetNbOfSequences(module,1) ;
+      Module_SetSequentialIndex(module,0) ;
     }
   }
   
@@ -84,7 +84,7 @@ Module_t* (Module_Initialize)(Module_t* module,const char* codename)
     
   if(i < NbOfModules) {
     Module_CopyCodeNameOfModule(module,modulenames[i]) ;
-    Module_GetSetModuleProp(module) = xModule_SetModuleProp[i] ;
+    Module_SetSetModuleProp(module,xModule_SetModuleProp[i]) ;
     Module_SetModuleProp(module) ; /* Call to SetModuleProp */
     
     return(module) ;
@@ -110,7 +110,7 @@ void* (Module_Initialize)(void* self)
     {
       char* code = (char*) Mry_New(char[Module_MaxLengthOfKeyWord]) ;
       
-      Module_GetCodeNameOfModule(module_i) = code ;
+      Module_SetCodeNameOfModule(module_i,code) ;
     }
     
     
@@ -118,7 +118,7 @@ void* (Module_Initialize)(void* self)
     {
       char* title = (char*) Mry_New(char[Module_MaxLengthOfShortTitle]) ;
       
-      Module_GetShortTitle(module_i) = title ;
+      Module_SetShortTitle(module_i,title) ;
     
       Module_CopyShortTitle(module_i,"\0") ;
     }
@@ -128,7 +128,7 @@ void* (Module_Initialize)(void* self)
     {
       char* names = (char*) Mry_New(char[Module_MaxLengthOfAuthorNames]) ;
       
-      Module_GetNameOfAuthors(module_i) = names ;
+      Module_SetNameOfAuthors(module_i,names) ;
       
       Module_CopyNameOfAuthors(module_i,"\0") ;
     }

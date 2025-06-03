@@ -49,6 +49,10 @@
 #include "HardenedCementChemistry.h"
 #include "CementSolutionDiffusion.h"
 
+#ifdef HAVE_AUTODIFF
+#define USE_AUTODIFF
+#endif
+
 #define TITLE   "Mother model of durability of CBM (2024)"
 #define AUTHORS "Dangla and many others"
 
@@ -295,16 +299,12 @@ enum {
 
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
+#include "BaseName.h"
 
 
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -318,9 +318,6 @@ template<typename T>
 struct OtherValues_t;
 
 
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
-
 
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
@@ -329,18 +326,6 @@ using Values_d = Values_t<double> ;
 
 #define Values_Index(V)  CustomValues_Index(Values_t,V)
 
-
-#define MPM_t      BaseName(_MPM_t)
-
-struct MPM_t: public MaterialPointMethod_t<Values_t> {
-  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
-  MaterialPointMethod_Integrate_t<Values_t> Integrate;
-  MaterialPointMethod_Initialize_t<Values_t> Initialize;
-  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
-  MaterialPointMethod_SetFluxes_t<Values_t> SetFluxes;
-  MaterialPointMethod_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
-  MaterialPointMethod_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
-} ;
 
 
 template<typename T = double>
@@ -435,6 +420,77 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialVolume_solidtotal;
 };
+
+
+struct MPM_t: public MaterialPointMethod_t<Values_t> {
+  MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
+  template<typename T>
+  MaterialPointMethod_Integrate_t<Values_t,T> Integrate;
+
+  Values_t<double>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<double>& val) {return(Integrate<double>(el,t,dt,val_n,val));}
+  #ifdef USE_AUTODIFF
+  Values_t<real>* Integrate(Element_t* el,double const& t,double const& dt,Values_t<double> const& val_n,Values_t<real>& val) {return(Integrate<real>(el,t,dt,val_n,val));}
+  #endif
+  MaterialPointMethod_Initialize_t<Values_t> Initialize;
+  MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
+  MaterialPointMethod_SetFluxes_t<Values_t> SetFluxes;
+  MaterialPointMethod_SetIndexOfPrimaryVariables_t SetIndexOfPrimaryVariables;
+  MaterialPointMethod_SetIncrementOfPrimaryVariables_t SetIncrementOfPrimaryVariables;
+} ;
+
+#if 0
+template Values_t<double>* MPM_t::Integrate<double>(Element_t*,const double&,const double&,Values_d const&,Values_t<double>&);
+
+#ifdef USE_AUTODIFF
+template Values_t<real>* MPM_t::Integrate<real>(Element_t*,double const&,double const&,Values_t<double> const&,Values_t<real>&);
+#endif
+#endif
+
+
+/* The parameters below are read in the input data file */
+struct Parameters_t {
+  double phi0;
+  double phi_min;
+  double kl_int;
+  double kg_int;
+  double frac;
+  double phi_r;
+  double a_2;
+  double c_2 ;
+  double rate_calcite;
+  double n_ch0;
+  double n_csh0;
+  double c_na0;
+  double c_k0;
+  double rate_friedelsalt;
+  double p_c3;
+  double R_CH;
+  double D;
+  double Tau;
+};
+}
+
+using namespace BaseName();
+
+ 
+static double phi0;
+static double phi_min;
+static double kl_int;
+static double kg_int;
+static double frac;
+static double phi_r;
+static double a_2;
+static double c_2 ;
+static double rate_calcite;
+static double n_ch0;
+static double n_csh0;
+static double c_na0;
+static double c_k0;
+static double rate_friedelsalt;
+static double p_c3;
+static double R_CH;
+static double D;
+static double Tau;
 
 static MPM_t mpm;
 
@@ -617,7 +673,7 @@ static MPM_t mpm;
   /* Initial solid content of Cc */
   #define InitialCCSolidContent(logs_ch,s_ch,s_cc)   (0)
   /* Current solid content */
-  #define CCSolidContent_kin(n,s,dt)        MAX((n + dt*rate_cc*(s - 1)),0.)
+  #define CCSolidContent_kin(n,s,dt)        MAX((n + dt*rate_calcite*(s - 1)),0.)
   #define CCSolidContent(logs_ch,n_chn,n_ccn,s_ch,s_cc,dt) \
           CCSolidContent_kin(n_ccn,s_cc,dt)
 #endif
@@ -713,21 +769,29 @@ static MPM_t mpm;
 static int     pm(const char* s) ;
 static void    GetProperties(Element_t*,double) ;
 
-static double  dn1_caoh2sdt(double const,double const) ;
+template<typename T>
+static T  dn1_caoh2sdt(T const,T const) ;
 //static double  CHSolidContent_kin1(double const,double const,double const) ;
 
 static void    ComputePhysicoChemicalProperties(double) ;
 
 static int     concentrations_oh_na_k(double,double,double,double,double,double) ;
 
-static double  PermeabilityCoefficient_KozenyCarman(Element_t const*,double const) ;
-static double  PermeabilityCoefficient_VermaPruess(Element_t const*,double const) ;
-static double  TortuosityToLiquid_OhJang(double const,double const) ;
-static double  TortuosityToLiquid_BazantNajjar(double const,double const) ;
-static double  TortuosityToLiquid_Xie(double const,double const) ;
-static double  TortuosityToGas(double const,double const) ;
+template<typename T>
+static T  PermeabilityCoefficient_KozenyCarman(Element_t const*,T const) ;
+template<typename T>
+static T  PermeabilityCoefficient_VermaPruess(Element_t const*,T const) ;
+template<typename T>
+static T  TortuosityToLiquid_OhJang(T const,T const) ;
+template<typename T>
+static T  TortuosityToLiquid_BazantNajjar(T const,T const) ;
+template<typename T>
+static T  TortuosityToLiquid_Xie(T const,T const) ;
+template<typename T>
+static T  TortuosityToGas(T const,T const) ;
 
-static double  saturationdegree(double const,double const,Curve_t const*) ;
+template<typename T>
+static T  saturationdegree(T const,T const,Curve_t const*) ;
 
 
 /* Internal parameters */
@@ -757,32 +821,24 @@ static double K_w ;
 static double rho_l0 ;
 
 static CementSolutionDiffusion_t* csd = NULL ;
-static HardenedCementChemistry_t* hcc = NULL ;
+static HardenedCementChemistry_t<double>* hcc = NULL ;
+#ifdef USE_AUTODIFF
+static HardenedCementChemistry_t<real>* hcc_r = NULL ;
+#endif
 
-/* The parameters below are read in the input data file */
+template<typename T>
+HardenedCementChemistry_t<T>* hcc_func(void) {
+  if constexpr(std::is_same_v<T,double>) {
+    return(hcc);
+    #ifdef USE_AUTODIFF
+  } else if constexpr(std::is_same_v<T,real>) {
+    return(hcc_r);
+    #endif
+  }
+  
+  return(NULL);
+}
 
-#define Parameters_t    BaseName(_Parameters_t)
-
-struct Parameters_t {
-  double phi0;
-  double phi_min;
-  double kl_int;
-  double kg_int;
-  double frac;
-  double phi_r;
-  double a_2;
-  double c_2 ;
-  double rate_calcite;
-  double n_ch0;
-  double n_csh0;
-  double c_na0;
-  double c_k0;
-  double rate_friedelsalt;
-  double p_c3;
-  double R_CH;
-  double D;
-  double Tau;
-};
 
 
 
@@ -874,7 +930,26 @@ int pm(const char* s)
 void GetProperties(Element_t* el,double t)
 {
   /* To retrieve the material properties */
-  //Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
+
+  phi0     = param.phi0 ;
+  phi_min  = param.phi_min ;
+  kl_int   = param.kl_int ;
+  kg_int   = param.kg_int ;
+  frac     = param.frac;
+  phi_r    = param.phi_r;
+  a_2      = param.a_2 ;
+  c_2      = param.c_2 ;
+  rate_calcite  = param.rate_calcite ;
+  n_ch0    = param.n_ch0 ;
+  n_csh0   = param.n_csh0 ;
+  c_na0    = param.c_na0;
+  c_k0     = param.c_k0;
+  rate_friedelsalt  = param.rate_friedelsalt ;
+  p_c3     = param.p_c3 ;
+  R_CH     = param.R_CH;
+  D        = param.D;
+  Tau      = param.Tau;
 
   saturationcurve         = Element_FindCurve(el,"s_l") ;
   relativepermliqcurve    = Element_FindCurve(el,"kl_r") ;
@@ -1070,9 +1145,13 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 
   {
     if(!csd) csd = CementSolutionDiffusion_Create() ;
-    if(!hcc) hcc = HardenedCementChemistry_Create() ;
-    
+    if(!hcc) hcc = HardenedCementChemistry_Create<double>() ;
     HardenedCementChemistry_SetRoomTemperature(hcc,TEMPERATURE) ;
+    
+    #ifdef USE_AUTODIFF
+    if(!hcc_r) hcc_r = HardenedCementChemistry_Create<real>() ;
+    HardenedCementChemistry_SetRoomTemperature(hcc_r,TEMPERATURE) ;
+    #endif
     
     CementSolutionDiffusion_SetRoomTemperature(csd,TEMPERATURE) ;
   }
@@ -1103,19 +1182,28 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
       if((i = Curves_FindCurveIndex(curves,"X_CSH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfCalciumSiliconRatioInCSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfCalciumSiliconRatioInCSH(hcc,curve) ;
+        #ifdef USE_AUTODIFF
+        HardenedCementChemistry_SetCurveOfCalciumSiliconRatioInCSH(hcc_r,curve) ;
+        #endif
       }
 
       if((i = Curves_FindCurveIndex(curves,"Z_CSH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfWaterSiliconRatioInCSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfWaterSiliconRatioInCSH(hcc,curve) ;
+        #ifdef USE_AUTODIFF
+        HardenedCementChemistry_SetCurveOfWaterSiliconRatioInCSH(hcc_r,curve) ;
+        #endif
       }
 
       if((i = Curves_FindCurveIndex(curves,"S_SH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfSaturationIndexOfSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfSaturationIndexOfSH(hcc,curve) ;
+        #ifdef USE_AUTODIFF
+        HardenedCementChemistry_SetCurveOfSaturationIndexOfSH(hcc_r,curve) ;
+        #endif
       }
   }
   
@@ -1968,106 +2056,94 @@ Values_d* MPM_t::SetInputs(Element_t* el,const double& t,const int& n,double con
 
 
 
-
-Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values_d const& val_n,Values_d& val)
+template <typename T>
+Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values_d const& val_n,Values_t<T>& val)
 /** Compute the secondary variables from the primary ones. */
 {
-  /* Parameters */
-  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
-  double phi0     = param.phi0 ;
-  double n_ch0    = param.n_ch0 ;
-  double n_csh0   = param.n_csh0 ;
-  double kl_int   = param.kl_int ;
-  double kg_int   = param.kg_int ;
-  double phi_min  = param.phi_min ;
-  double rate_cc  = param.rate_calcite ;
-  double rate_friedelsalt  = param.rate_friedelsalt ;
-  double p_c3     = param.p_c3 ;
-  double a_2      = param.a_2 ;
-  double c_2      = param.c_2 ;
-  
   #ifdef E_CARBON
-  double logc_co2   = val.U_carbon ;
+  T logc_co2   = val.U_carbon ;
   #else
-  double logc_co2   = -99 ;
+  T logc_co2   = -99 ;
   #endif
-  double u_calcium  = val.U_calcium ;
+  T u_calcium  = val.U_calcium ;
   #ifdef E_SILICON
-  double u_silicon  = val.U_silicon ;
+  T u_silicon  = val.U_silicon ;
   #else
-  double u_silicon  = 1 ;
+  T u_silicon  = 1 ;
   #endif
-  double p_l        = val.U_mass ;
+  T p_l        = val.U_mass ;
   #ifdef E_AIR
-  double p_g        = val.U_air ;
+  T p_g        = val.U_air ;
   #else
-  double p_g        = p_g0 ;
+  T p_g        = p_g0 ;
   #endif
   #ifdef E_CHLORINE
-  double logc_cl    = val.U_chlorine ;
+  T logc_cl    = val.U_chlorine ;
   #else
-  double logc_cl    = -99 ;
+  T logc_cl    = -99 ;
   #endif
-  double c_cl       = pow(10,logc_cl) ;
+  T c_cl       = pow(10,logc_cl) ;
   
   
   /* Liquid components */
-  double c_co2      = pow(10,logc_co2) ;
-  double logc_co2aq = log(k_h) + logc_co2 ;
-  //double c_co2aq    = k_h*c_co2 ;
+  T c_co2      = pow(10,logc_co2) ;
+  T logc_co2aq = log(k_h) + logc_co2 ;
+  //T c_co2aq    = k_h*c_co2 ;
+  
+  HardenedCementChemistry_t<T>* hcc1 = hcc_func<T>();
 
 
   /* Solve cement chemistry */
   {
-    double logc_na  = val.U_sodium ;
-    double logc_k   = val.U_potassium ;
-    //double logc_co2aq = log10(c_co2aq) ;
+    T logc_na  = val.U_sodium ;
+    T logc_k   = val.U_potassium ;
+    //T logc_co2aq = log10(c_co2aq) ;
     #ifdef E_ENEUTRAL
-    double logc_oh  = val.U_eneutral ;
+    T logc_oh  = val.U_eneutral ;
     #else
     double logc_oh  = log10(val_n.Concentration_oh) ;
     #endif
     //double logc_oh  = log10(c_oh) ;
-    double psi      = val.U_charge ;
+    T psi      = val.U_charge ;
 
     #if defined (U_ZN_Ca_S)
     {
-      double si_ch_cc = Log10SaturationIndexOfCcH(u_calcium) ;
+      T si_ch_cc = Log10SaturationIndexOfCcH(u_calcium) ;
           
-      HardenedCementChemistry_SetInput(hcc,SI_CH_CC,si_ch_cc) ;
+      HardenedCementChemistry_SetInput(hcc1,SI_CH_CC,si_ch_cc) ;
     }
     #elif defined (U_LogS_CH)
     {
-      double si_ch = Log10SaturationIndexOfCH(u_calcium) ;
+      T si_ch = Log10SaturationIndexOfCH(u_calcium) ;
           
-      HardenedCementChemistry_SetInput(hcc,SI_CH,si_ch) ;
+      HardenedCementChemistry_SetInput(hcc1,SI_CH,si_ch) ;
     }
     #endif
         
     {
-      double si_csh = Log10SaturationIndexOfCSH(u_silicon) ;
+      T si_csh = Log10SaturationIndexOfCSH(u_silicon) ;
           
-      HardenedCementChemistry_SetInput(hcc,SI_CSH,si_csh) ;
+      HardenedCementChemistry_SetInput(hcc1,SI_CSH,si_csh) ;
     }
   
-    HardenedCementChemistry_SetInput(hcc,LogC_CO2,logc_co2aq) ;
-    HardenedCementChemistry_SetInput(hcc,LogC_Na,logc_na) ;
-    HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
-    HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
-    HardenedCementChemistry_GetElectricPotential(hcc) = psi ;
-    HardenedCementChemistry_SetInput(hcc,LogC_Cl,logc_cl) ;
+    HardenedCementChemistry_SetInput(hcc1,LogC_CO2,logc_co2aq) ;
+    HardenedCementChemistry_SetInput(hcc1,LogC_Na,logc_na) ;
+    HardenedCementChemistry_SetInput(hcc1,LogC_K,logc_k) ;
+    HardenedCementChemistry_SetInput(hcc1,LogC_OH,logc_oh) ;
+    HardenedCementChemistry_SetElectricPotential(hcc1,psi) ;
+    HardenedCementChemistry_SetInput(hcc1,LogC_Cl,logc_cl) ;
     
     #ifdef E_CHLORINE
-    HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_CO2_Cl_H2O) ;
+    HardenedCementChemistry_ComputeSystem(hcc1,CaO_SiO2_Na2O_K2O_CO2_Cl_H2O) ;
     #else
-    HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = c_cl ;
-    HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = logc_cl ;
-    HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_CO2_H2O) ;
+    HardenedCementChemistry_SetAqueousConcentrationOf(hcc1,Cl,c_cl) ;
+    HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc1,Cl,logc_cl) ;
+    HardenedCementChemistry_ComputeSystem(hcc1,CaO_SiO2_Na2O_K2O_CO2_H2O) ;
     #endif
 
     #ifndef E_ENEUTRAL
     {
-      int k = HardenedCementChemistry_SolveElectroneutrality(hcc) ;
+      int k = HardenedCementChemistry_SolveElectroneutrality(hcc1) ;
       
       if(k < 0) return(NULL) ;
     }
@@ -2078,20 +2154,20 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
   
   /* Backup */
   
-  double c_q_l  = HardenedCementChemistry_GetLiquidChargeDensity(hcc) ;
+  T c_q_l  = HardenedCementChemistry_GetLiquidChargeDensity(hcc1) ;
   
-  double rho_l  = HardenedCementChemistry_GetLiquidMassDensity(hcc) ;
+  T rho_l  = HardenedCementChemistry_GetLiquidMassDensity(hcc1) ;
   
-  double c_c_l  = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc,C) ;
-  double c_ca_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc,Ca) ;
-  double c_na_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc,Na) ;
-  double c_k_l  = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc,K) ;
-  double c_si_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc,Si) ;
-  double c_cl_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc,Cl) ;
+  T c_c_l  = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc1,C) ;
+  T c_ca_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc1,Ca) ;
+  T c_na_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc1,Na) ;
+  T c_k_l  = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc1,K) ;
+  T c_si_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc1,Si) ;
+  T c_cl_l = HardenedCementChemistry_GetElementAqueousConcentrationOf(hcc1,Cl) ;
   
-  double s_ch   = HardenedCementChemistry_GetSaturationIndexOf(hcc,CH) ;
-  double s_cc   = HardenedCementChemistry_GetSaturationIndexOf(hcc,CC) ;
-  double s_friedelsalt = HardenedCementChemistry_GetSaturationIndexOf(hcc,FriedelSalt) ;
+  T s_ch   = HardenedCementChemistry_GetSaturationIndexOf(hcc1,CH) ;
+  T s_cc   = HardenedCementChemistry_GetSaturationIndexOf(hcc1,CC) ;
+  T s_friedelsalt = HardenedCementChemistry_GetSaturationIndexOf(hcc1,FriedelSalt) ;
        
     
   /* Solid contents */
@@ -2099,90 +2175,90 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
   double n_chn      = val_n.Mole_solidportlandite ;
   double n_ccn      = val_n.Mole_solidcalcite ;
   double n_friedelsaltn = val_n.Mole_solidfriedelsalt ;
-  double n_ch       = CHSolidContent(u_calcium,n_chn,n_ccn,s_ch,s_cc,dt) ;
-  double n_cc       = CCSolidContent(u_calcium,n_chn,n_ccn,s_ch,s_cc,dt) ;
-  double n_csh      = CSHSolidContent(u_silicon) ;
-  double n_friedelsalt = FriedelSaltContent(n_friedelsaltn,s_friedelsalt,dt) ;
-  double n_c3a      = - n_friedelsalt ;
+  T n_ch       = CHSolidContent(u_calcium,n_chn,n_ccn,s_ch,s_cc,dt) ;
+  T n_cc       = CCSolidContent(u_calcium,n_chn,n_ccn,s_ch,s_cc,dt) ;
+  T n_csh      = CSHSolidContent(u_silicon) ;
+  T n_friedelsalt = FriedelSaltContent(n_friedelsaltn,s_friedelsalt,dt) ;
+  T n_c3a      = - n_friedelsalt ;
   
   /* ... as elements: C, Ca, Si, Cl */
-  double x_csh      = HardenedCementChemistry_GetCalciumSiliconRatioInCSH(hcc) ;
-  double n_si_s     = n_csh ;
-  double n_ca_s     = n_ch + n_cc + x_csh * n_csh + 4 * n_friedelsalt + 3 * n_c3a ;
-  double n_c_s      = n_cc ;
-  double n_cl_ads   = n_csh * AdsorbedChloridePerUnitMoleOfCSH(c_cl,x_csh) ;
-  double n_cl_s     = n_cl_ads + 2 * n_friedelsalt ;
+  T x_csh      = HardenedCementChemistry_GetCalciumSiliconRatioInCSH(hcc1) ;
+  T n_si_s     = n_csh ;
+  T n_ca_s     = n_ch + n_cc + x_csh * n_csh + 4 * n_friedelsalt + 3 * n_c3a ;
+  T n_c_s      = n_cc ;
+  T n_cl_ads   = n_csh * AdsorbedChloridePerUnitMoleOfCSH(c_cl,x_csh) ;
+  T n_cl_s     = n_cl_ads + 2 * n_friedelsalt ;
   
   /* ... as mass */
-  double z_csh      = HardenedCementChemistry_GetWaterSiliconRatioInCSH(hcc) ;
-  double m_csh      = MolarMassOfCSH(x_csh,z_csh) * n_csh ;
-  double m_ch       = M_CaOH2 * n_ch ;
-  double m_cc       = M_CaCO3 * n_cc ;
-  double m_c3a      = M_C3A * n_c3a ;
-  double m_friedelsalt = M_FriedelSalt * n_friedelsalt ;
-  double m_cl_ads   = (M_Cl - M_OH) * n_cl_ads ;
-  double m_s        = m_ch + m_cc + m_csh + m_cl_ads + m_friedelsalt + m_c3a ;
+  T z_csh      = HardenedCementChemistry_GetWaterSiliconRatioInCSH(hcc1) ;
+  T m_csh      = MolarMassOfCSH(x_csh,z_csh) * n_csh ;
+  T m_ch       = M_CaOH2 * n_ch ;
+  T m_cc       = M_CaCO3 * n_cc ;
+  T m_c3a      = M_C3A * n_c3a ;
+  T m_friedelsalt = M_FriedelSalt * n_friedelsalt ;
+  T m_cl_ads   = (M_Cl - M_OH) * n_cl_ads ;
+  T m_s        = m_ch + m_cc + m_csh + m_cl_ads + m_friedelsalt + m_c3a ;
   
   /* ... as volume */
-  double v_csh      = MolarVolumeOfCSH(x_csh) ;
-  double v_s        = V_CH * n_ch + V_CC * n_cc + v_csh * n_csh ;
+  T v_csh      = MolarVolumeOfCSH(x_csh) ;
+  T v_s        = V_CH * n_ch + V_CC * n_cc + v_csh * n_csh ;
   
   
   /* Porosity */
   double v_s0     = val_n.InitialVolume_solidtotal ;
-  double phi_th   = phi0 + v_s0 - v_s ;
-  double phi      = MAX(phi_th,phi_min) ;
+  T phi_th   = phi0 + v_s0 - v_s ;
+  T phi      = MAX(phi_th,phi_min) ;
   
   
   /* Pressures */
-  double p_c      = p_g - p_l ;
-  double p_v      = VaporPressure(p_l) ;
-  double p_co2    = c_co2 * RT ;
-  double p_air    = p_g - p_v - p_co2 ;
+  T p_c      = p_g - p_l ;
+  T p_v      = VaporPressure(p_l) ;
+  T p_co2    = c_co2 * RT ;
+  T p_air    = p_g - p_v - p_co2 ;
   
   
   /* Saturation */
-  double s_l      = SaturationDegree(p_c) ;
-  double s_g      = 1 - s_l ;
+  T s_l      = SaturationDegree(p_c) ;
+  T s_g      = 1 - s_l ;
   
   
   /* Liquid contents */
-  double phi_l  = phi * s_l ;
+  T phi_l  = phi * s_l ;
   /* ... as elements: C, Ca, Si */
-  double n_c_l  = phi_l * c_c_l ;
-  double n_ca_l = phi_l * c_ca_l ;
-  double n_na_l = phi_l * c_na_l ;
-  double n_k_l  = phi_l * c_k_l ;
-  double n_si_l = phi_l * c_si_l ;
-  double n_cl_l = phi_l * c_cl_l ;
+  T n_c_l  = phi_l * c_c_l ;
+  T n_ca_l = phi_l * c_ca_l ;
+  T n_na_l = phi_l * c_na_l ;
+  T n_k_l  = phi_l * c_k_l ;
+  T n_si_l = phi_l * c_si_l ;
+  T n_cl_l = phi_l * c_cl_l ;
   /* ... as charge */
-  //double n_q_l  = phi_l * c_q_l ;
+  //T n_q_l  = phi_l * c_q_l ;
   /* ... as mass */
-  double m_l    = phi_l * rho_l ;
+  T m_l    = phi_l * rho_l ;
        
        
   /* Gas contents */
-  double phi_g  = phi * s_g ;
+  T phi_g  = phi * s_g ;
   /* ... as elements */
-  double n_c_g  = phi_g * c_co2 ;
+  T n_c_g  = phi_g * c_co2 ;
   /* ... as densities */
-  double rho_co2_g   = M_CO2 * c_co2 ;
-  double rho_h2o_g   = MassDensityOfWaterVapor(p_v) ;
-  double rho_air_g   = MassDensityOfDryAir(p_air) ;
-  double rho_noair_g = rho_h2o_g + rho_co2_g ;
-  double rho_g       = rho_air_g + rho_noair_g ;
+  T rho_co2_g   = M_CO2 * c_co2 ;
+  T rho_h2o_g   = MassDensityOfWaterVapor(p_v) ;
+  T rho_air_g   = MassDensityOfDryAir(p_air) ;
+  T rho_noair_g = rho_h2o_g + rho_co2_g ;
+  T rho_g       = rho_air_g + rho_noair_g ;
   /* ... as masses */
-  double m_air_g   = phi_g * rho_air_g ;
-  double m_noair_g = phi_g * rho_noair_g ;
-  //double m_g       = phi_g * rho_g ;
+  T m_air_g   = phi_g * rho_air_g ;
+  T m_noair_g = phi_g * rho_noair_g ;
+  //T m_g       = phi_g * rho_g ;
   
   
       
   if(c_co2 < 0) {
-    double c_naoh   = HardenedCementChemistry_GetAqueousConcentrationOf(hcc,NaOH) ;
-    double c_nahco3 = HardenedCementChemistry_GetAqueousConcentrationOf(hcc,NaHCO3) ;
-    double c_naco3  = HardenedCementChemistry_GetAqueousConcentrationOf(hcc,NaCO3) ;
-    double c_cl     = HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) ;
+    double c_naoh   = HardenedCementChemistry_GetAqueousConcentrationOf(hcc1,NaOH) ;
+    double c_nahco3 = HardenedCementChemistry_GetAqueousConcentrationOf(hcc1,NaHCO3) ;
+    double c_naco3  = HardenedCementChemistry_GetAqueousConcentrationOf(hcc1,NaCO3) ;
+    double c_cl     = HardenedCementChemistry_GetAqueousConcentrationOf(hcc1,Cl) ;
     printf("\n") ;
     printf("c_co2    = %e\n",c_co2) ;
     //printf("c_oh     = %e\n",pow(10,logc_oh)) ;
@@ -2242,10 +2318,10 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
   val.Mole_charge   = c_q_l ;
   
   /* Hydroxide ion concentration */
-  val.Concentration_oh  = HardenedCementChemistry_GetAqueousConcentrationOf(hcc,OH) ;
+  val.Concentration_oh  = HardenedCementChemistry_GetAqueousConcentrationOf(hcc1,OH) ;
 
   /* Chemical potentials */
-  HardenedCementChemistry_CopyChemicalPotential(hcc,val.ChemicalPotential) ;
+  HardenedCementChemistry_CopyChemicalPotential(hcc1,val.ChemicalPotential) ;
   
   /*
     Transfer coefficients
@@ -2254,9 +2330,9 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
     /* Advective transport in liquid and gas phases */
     {
       /* Permeabilities */
-      double coeff_permeability = PermeabilityCoefficient(el,phi) ;
-      double k_l  = (kl_int/mu_l)*RelativePermeabilityToLiquid(s_l)*coeff_permeability ;
-      double k_g  = (kg_int/mu_g)*RelativePermeabilityToGas(s_l)*coeff_permeability ;
+      T coeff_permeability = PermeabilityCoefficient(el,phi) ;
+      T k_l  = (kl_int/mu_l)*RelativePermeabilityToLiquid(s_l)*coeff_permeability ;
+      T k_g  = (kg_int/mu_g)*RelativePermeabilityToGas(s_l)*coeff_permeability ;
     
       val.Permeability_liquid = rho_l * k_l ;
       val.Permeability_gas = rho_g * k_g ;
@@ -2276,9 +2352,9 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
     /* Diffusive transport in liquid and gas phases */
     {
       /* tortuosity liquid */
-      double tauliq =  TortuosityToLiquid(phi,s_l) ;
+      T tauliq =  TortuosityToLiquid(phi,s_l) ;
       /* tortuosity gas */
-      double taugas  = TortuosityToGas(phi,s_l) ;
+      T taugas  = TortuosityToGas(phi,s_l) ;
       
       val.DiffusionCoefficient_carbondioxide = phi_g * taugas * d_co2 ;
       val.DiffusionCoefficient_watervapor    = phi_g * taugas * d_vap ;
@@ -2288,22 +2364,19 @@ Values_d* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values
 
 
     /* Concentrations */
-    #if 0
-    {
-      double* c = HardenedCementChemistry_GetAqueousConcentration(hcc) ;
-      int nbc = HardenedCementChemistry_NbOfConcentrations ;
-      int j ;
-    
-      for(j = 0 ; j < nbc ; j++) {
-        val.AqueousConcentration[j] = c[j] ;
-      }
-    }
-    #endif
-    HardenedCementChemistry_CopyConcentrations(hcc,val.AqueousConcentration) ;
+    HardenedCementChemistry_CopyConcentrations(hcc1,val.AqueousConcentration) ;
   }
   
   return(&val) ;
 }
+
+#if 0
+template Values_t<double>* MPM_t::Integrate<double>(Element_t*,const double&,const double&,Values_d const&,Values_t<double>&);
+
+#ifdef USE_AUTODIFF
+template Values_t<real>* MPM_t::Integrate<real>(Element_t*,double const&,double const&,Values_t<double> const&,Values_t<real>&);
+#endif
+#endif
 
 
 
@@ -2449,15 +2522,8 @@ Values_d*  MPM_t::SetFluxes(Element_t* el,double const& t,int const& i,int const
 
 Values_d*  MPM_t::Initialize(Element_t* el,double const& t,Values_d& val)
 {
-  /* Parameters */
-  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
-  double n_ch0    = param.n_ch0 ;
-  double n_csh0   = param.n_csh0 ;
-  double c_na0    = param.c_na0 ;
-  double c_k0     = param.c_k0 ;
   double c_na_tot = c_na0 ;
   double c_k_tot  = c_k0 ;
-
   double c_na       = pow(10,val.U_sodium) ;
   double c_k        = pow(10,val.U_potassium) ;
   #ifdef E_CARBON
@@ -2526,14 +2592,14 @@ Values_d*  MPM_t::Initialize(Element_t* el,double const& t,Values_d& val)
     HardenedCementChemistry_SetInput(hcc,LogC_Na,logc_na) ;
     HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
     HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
-    HardenedCementChemistry_GetElectricPotential(hcc) = psi ;
+    HardenedCementChemistry_SetElectricPotential(hcc,psi) ;
     HardenedCementChemistry_SetInput(hcc,LogC_Cl,logc_cl) ;
   
     #ifdef E_CHLORINE
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_CO2_Cl_H2O) ;
     #else
-    HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = c_cl ;
-    HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = logc_cl ;
+    HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,c_cl) ;
+    HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,logc_cl) ;
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_CO2_H2O) ;
     #endif
 
@@ -2651,8 +2717,8 @@ int concentrations_oh_na_k(double c_co2,double u_calcium,double u_silicon,double
 #ifdef E_CHLORINE
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_CO2_Cl_H2O) ;
 #else
-    HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = c_cl ;
-    HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = logc_cl ;
+    HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,c_cl) ;
+    HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,logc_cl) ;
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_CO2_H2O) ;
 #endif
 
@@ -2711,17 +2777,14 @@ int concentrations_oh_na_k(double c_co2,double u_calcium,double u_silicon,double
   return(0) ;
 }
 
-
-double PermeabilityCoefficient_KozenyCarman(Element_t const* el,double const phi)
+template<typename T>
+double PermeabilityCoefficient_KozenyCarman(Element_t const* el,T const phi)
 /* Kozeny-Carman model */
 {
-  /* To retrieve the material properties */
-  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
-  double phi0     = param.phi0 ;
-  double coeff_permeability ;
+  T coeff_permeability ;
   
   {
-    double kozeny_carman  = (phi > 0) ? pow(phi/phi0,3.)*pow(((1 - phi0)/(1 - phi)),2.) : 0 ;
+    T kozeny_carman  = (phi > 0) ? pow(phi/phi0,3.)*pow(((1 - phi0)/(1 - phi)),2.) : 0 ;
 
     coeff_permeability = kozeny_carman ;
   }
@@ -2730,8 +2793,8 @@ double PermeabilityCoefficient_KozenyCarman(Element_t const* el,double const phi
 }
 
 
-
-double PermeabilityCoefficient_VermaPruess(Element_t const* el,double const phi)
+template<typename T>
+T PermeabilityCoefficient_VermaPruess(Element_t const* el,T const phi)
 /* Ref:
  * A. Verma and K. Pruess,
  * Thermohydrological Conditions and Silica Redistribution Near High-Level
@@ -2741,18 +2804,13 @@ double PermeabilityCoefficient_VermaPruess(Element_t const* el,double const phi)
  * phi_r = fraction of initial porosity (phi/phi0) at which permeability is 0 
  */
 {
-  /* To retrieve the material properties */
-  Parameters_t& param = ((Parameters_t*) Element_GetProperty(el))[0] ;
-  double phi0     = param.phi0 ;
-  double frac     = param.frac ;
-  double phi_r    = param.phi_r ;
-  double coeff_permeability ;
+  T coeff_permeability ;
   
   {
-    double phi_c = phi0 * phi_r ;
-    double w = 1 + (phi_r/frac)/(1 - phi_r) ;
-    double t = (phi - phi_c)/(phi0 - phi_c) ;
-    double verma_pruess = (t > 0) ? t*t*(1 - frac + (frac/(w*w)))/(1 - frac + frac*(pow(t/(t + w - 1),2.))) : 0 ;
+    T phi_c = phi0 * phi_r ;
+    T w = 1 + (phi_r/frac)/(1 - phi_r) ;
+    T t = (phi - phi_c)/(phi0 - phi_c) ;
+    T verma_pruess = (t > 0) ? t*t*(1 - frac + (frac/(w*w)))/(1 - frac + frac*(pow(t/(t + w - 1),2.))) : 0 ;
 
     coeff_permeability = verma_pruess ;
   }
@@ -2762,8 +2820,8 @@ double PermeabilityCoefficient_VermaPruess(Element_t const* el,double const phi)
 
 
 
-
-double TortuosityToLiquid_OhJang(double const phi,double const s_l)
+template<typename T>
+T TortuosityToLiquid_OhJang(T const phi,T const s_l)
 /* Ref:
  * Byung Hwan Oh, Seung Yup Jang, 
  * Prediction of diffusivity of concrete based on simple analytic equations, 
@@ -2790,63 +2848,63 @@ double TortuosityToLiquid_OhJang(double const phi,double const s_l)
  * tau_agg = 0.27 (Concrete) ; 0.63 (Mortar)
  */
 {
-  double phi_cap = (phi > 0) ? 0.5 * phi : 0  ;
-  double phi_c = 0.18 ;          /* Critical porosity */
-  double n     = 2.7 ;           /* n  = 2.7   (OPC) ; 4.5  (OPC + 10% Silica fume) */
-  double ds    = 2.e-4 ;         /* ds = 2.e-4 (OPC) ; 5e-5 (OPC + 10% Silica fume) */
-  double dsn   = pow(ds,1/n) ;
-  double m_phi = 0.5 * ((phi_cap - phi_c) + dsn * (1 - phi_c - phi_cap)) / (1 - phi_c) ;
-  double tau_paste = pow(m_phi + sqrt(m_phi*m_phi + dsn * phi_c/(1 - phi_c)),n) ;
-  double tau_agg = 0.27 ;
-  double tausat =  tau_paste * tau_agg ;
+  T phi_cap = (phi > 0) ? 0.5 * phi : 0  ;
+  T phi_c = 0.18 ;          /* Critical porosity */
+  T n     = 2.7 ;           /* n  = 2.7   (OPC) ; 4.5  (OPC + 10% Silica fume) */
+  T ds    = 2.e-4 ;         /* ds = 2.e-4 (OPC) ; 5e-5 (OPC + 10% Silica fume) */
+  T dsn   = pow(ds,1/n) ;
+  T m_phi = 0.5 * ((phi_cap - phi_c) + dsn * (1 - phi_c - phi_cap)) / (1 - phi_c) ;
+  T tau_paste = pow(m_phi + sqrt(m_phi*m_phi + dsn * phi_c/(1 - phi_c)),n) ;
+  T tau_agg = 0.27 ;
+  T tausat =  tau_paste * tau_agg ;
   
-  double tau =  tausat * pow(s_l,4.5) ;
+  T tau =  tausat * pow(s_l,4.5) ;
     
   return(tau) ;
 }
 
 
 
-
-double TortuosityToLiquid_BazantNajjar(double const phi,double const s_l)
+template<typename T>
+T TortuosityToLiquid_BazantNajjar(T const phi,T const s_l)
 /* Ref:
  * Z. P. BAZANT, L.J. NAJJAR,
  * Nonlinear water diffusion in nonsaturated concrete,
  * Materiaux et constructions, 5(25), 1972.
  */
 {
-  double iff = 0.00029 * exp(9.95 * phi) ;
-  double tausat = (iff < 1) ? iff : 1 ;
-  double tau    = tausat / (1 + 625*pow((1 - s_l),4)) ;
+  T iff = 0.00029 * exp(9.95 * phi) ;
+  T tausat = (iff < 1) ? iff : 1 ;
+  T tau    = tausat / (1 + 625*pow((1 - s_l),4)) ;
     
   return(tau) ;
 }
 
 
-
-double TortuosityToLiquid_Xie(double const phi,double const s_l)
+template<typename T>
+T TortuosityToLiquid_Xie(T const phi,T const s_l)
 {
-  double vca = 0.392 ;
-  double vfa = 0.284 ;
-  double vpa = 0.324  ;
-  double fac = (1.-2.1*vca)/(1.-0.65*vfa)*vpa ;
-  double hydrationdegree = 0.95 ;
-  double wcratio = 0.5 ;
-  double phiused = phi/vpa - 0.19*hydrationdegree/(wcratio + 0.32);
-  double fporo = (phiused > 0.18) ? 0.001+0.07*phiused*phiused+1.8*(phiused-0.18)*(phiused-0.18) : 0.001+0.07*phiused*phiused ;
-  double coefsa = pow(s_l,6.) ; 
-  double iff = fac * fporo * coefsa ;
+  T vca = 0.392 ;
+  T vfa = 0.284 ;
+  T vpa = 0.324  ;
+  T fac = (1.-2.1*vca)/(1.-0.65*vfa)*vpa ;
+  T hydrationdegree = 0.95 ;
+  T wcratio = 0.5 ;
+  T phiused = phi/vpa - 0.19*hydrationdegree/(wcratio + 0.32);
+  T fporo = (phiused > 0.18) ? 0.001+0.07*phiused*phiused+1.8*(phiused-0.18)*(phiused-0.18) : 0.001+0.07*phiused*phiused ;
+  T coefsa = pow(s_l,6.) ; 
+  T iff = fac * fporo * coefsa ;
       
   return(iff) ;
 }
 
 
-
-double TortuosityToGas(double const phi,double const s_l)
+template<typename T>
+T TortuosityToGas(T const phi,T const s_l)
 {
-  double s_g    = 1 - s_l ;
-  double tausat = (phi > 0) ? pow(phi,1.74) : 0 ;
-  double tau    = (s_g > 0) ? tausat * pow(s_g,3.20) : 0 ;
+  T s_g    = 1 - s_l ;
+  T tausat = (phi > 0) ? pow(phi,1.74) : 0 ;
+  T tau    = (s_g > 0) ? tausat * pow(s_g,3.20) : 0 ;
 
   return(tau) ;
 }
@@ -2866,33 +2924,33 @@ double CHSolidContent_kin1(double const n_chn,double const s_ch,double const dt)
 #endif
 
 
-
-double dn1_caoh2sdt(double const av0,double const c)
+template<typename T>
+T dn1_caoh2sdt(T const av0,T const c)
 {
-  double av = ((av0 > 0) ? ((av0 < 1) ? av0 : 1) : 0) ; /* av = 1 - n_ch/n_ch0 */
-  double rp = (av < 1) ? pow(1 - av,1./3) : 0 ; /* rp = Rp/R0 */
-  double rc = pow(1 - av + V_CC/V_CH*av,1./3) ; /* rc = Rc/R0 */
-  double width = rc - rp ;
-  double dn1dt = (rc > 0.) ? rp*rp/(1 + c*width*rp/rc) : 0 ;
+  T av = ((av0 > 0) ? ((av0 < 1) ? av0 : 1) : 0) ; /* av = 1 - n_ch/n_ch0 */
+  T rp = (av < 1) ? pow(1 - av,1./3) : 0 ; /* rp = Rp/R0 */
+  T rc = pow(1 - av + V_CC/V_CH*av,1./3) ; /* rc = Rc/R0 */
+  T width = rc - rp ;
+  T dn1dt = (rc > 0.) ? rp*rp/(1 + c*width*rp/rc) : 0 ;
   
   return(dn1dt) ;
 }
 
 
-
-double saturationdegree(double const pc,double const pc3,Curve_t const* curve)
+template<typename T>
+T saturationdegree(T const pc,T const pc3,Curve_t const* curve)
 /* Saturation degree: regularization around 1 */
 {
-  double* x = Curve_GetXRange(curve) ;
-  double* y = Curve_GetYValue(curve) ;
-  double pc1 = x[0] ;
-  double sl ;
+  T* x = Curve_GetXRange(curve) ;
+  T* y = Curve_GetYValue(curve) ;
+  T pc1 = x[0] ;
+  T sl ;
   
   if(pc >= pc3 || pc1 >= pc3) {
     sl = Curve_ComputeValue(curve,pc) ;
   } else {
-    double sl1 = y[0] ;
-    double sl3 = Curve_ComputeValue(curve,pc3) ;
+    T sl1 = y[0] ;
+    T sl3 = Curve_ComputeValue(curve,pc3) ;
     
     sl  = sl1 - (sl1 - sl3) * exp(-(pc - pc3)/(pc1 - pc3)) ;
   }

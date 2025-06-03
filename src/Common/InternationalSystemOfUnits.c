@@ -63,7 +63,7 @@ InternationalSystemOfUnits_t*  (InternationalSystemOfUnits_GetInstance)(void)
   if(!gdat) {
     InternationalSystemOfUnits_t* isu = InternationalSystemOfUnits_Create() ;
     
-    gdat = GenericData_Create(1,isu,InternationalSystemOfUnits_t,"InternationalSystemOfUnits") ;
+    gdat = GenericData_Create(1,isu,"InternationalSystemOfUnits") ;
     
     Session_AddGenericData(gdat) ;
     

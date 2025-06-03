@@ -1,10 +1,14 @@
 #ifndef LOAD_H
 #define LOAD_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure and attributes */
-struct Load_s         ; typedef struct Load_s         Load_t ;
+/* Forward declarations */
+struct Load_t; //typedef struct Load_t         Load_t ;
+struct DataFile_t;
+struct Function_t;
+struct Functions_t;
+struct Fields_t;
+struct Field_t;
 
 
 
@@ -16,7 +20,6 @@ extern void    (Load_Scan)   (Load_t*,DataFile_t*) ;
 
 
 
-#include "Region.h"
 
 #define Load_MaxLengthOfRegionName      Region_MaxLengthOfRegionName
 #define Load_MaxLengthOfKeyWord               (30)
@@ -37,11 +40,7 @@ extern void    (Load_Scan)   (Load_t*,DataFile_t*) ;
 #define Load_TypeIs(LOAD,TYPE)           (!strcmp(Load_GetType(LOAD),TYPE))
 
 
-#include "Functions.h"
-#include "Fields.h"
-
-
-struct Load_s {
+struct Load_t {
   Function_t*  Function ;
   Field_t*     Field ;
   Functions_t* Functions ;
@@ -58,4 +57,5 @@ struct Load_s {
 /* Old notations which I try to eliminate little by little */
 #define char_t    Load_t
 
+#include "Region.h"
 #endif

@@ -6,19 +6,23 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Element_s ;
-typedef struct Element_s  Element_t ;
-typedef Element_t*        Element_tt ;
+/* Forward declarations */
+struct Element_t; //typedef struct Element_t  Element_t ;
+struct Mesh_t;
+struct Node_t;
+struct ShapeFcts_t;
+struct IntFcts_t;
+struct IntFct_t;
+struct Buffers_t;
+struct Material_t;
+struct ShapeFct_t;
+struct IntFct_t;
+struct Buffers_t;
+struct Solutions_t;
+struct Region_t;
 
 
-#include "Mesh.h"
-#include "Node.h"
-#include "ShapeFcts.h"
-#include "IntFcts.h"
-#include "Buffers.h"
 
 extern Element_t*  (Element_New)(void) ;
 extern void        (Element_CreateMore)(Element_t*,Buffers_t*,ShapeFcts_t*,IntFcts_t*) ;
@@ -72,7 +76,6 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
          Element_ComputePointerToCurrentNodalUnknowns
 
 
-
 /* Some constants */
 #define Element_MaxNbOfNodes  (8)
 
@@ -111,7 +114,6 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
         Buffers_GetBufferOfCurrentThread(Element_GetBuffers(ELT))
 
 
-
 /* Nb of (im/ex)plicit and constant terms */
 #define Element_GetNbOfImplicitTerms(ELT) \
         ElementSol_GetNbOfImplicitTerms(Element_GetElementSol(ELT))
@@ -121,7 +123,15 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
 
 #define Element_GetNbOfConstantTerms(ELT) \
         ElementSol_GetNbOfConstantTerms(Element_GetElementSol(ELT))
+        
+#define Element_SetNbOfImplicitTerms(ELT,X) \
+        ElementSol_SetNbOfImplicitTerms(Element_GetElementSol(ELT),X)
 
+#define Element_SetNbOfExplicitTerms(ELT,X) \
+        ElementSol_SetNbOfExplicitTerms(Element_GetElementSol(ELT),X)
+
+#define Element_SetNbOfConstantTerms(ELT,X) \
+        ElementSol_SetNbOfConstantTerms(Element_GetElementSol(ELT),X)
 
 
 /* Access to solution */
@@ -202,7 +212,6 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
         ElementSol_FindConstantData(Element_GetElementSol(ELT),__VA_ARGS__)
 
 
-
 /* Access to nodes and node coordinates */
 #define Element_GetNode(ELT,i) \
         (Element_GetPointerToNode(ELT)[i])
@@ -235,11 +244,9 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
         ((u)[n][Element_GetNodalUnknownPosition(ELT,n,i)])
 
 
-
 /* Objective values */
 #define Element_GetObjectiveValue(ELT) \
         Model_GetObjectiveValue(Element_GetModel(ELT))
-
 
 
 /* Geometrical characteristics */
@@ -279,11 +286,11 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
 #define Element_FindCurve(ELT,S) \
         Material_FindCurve(Element_GetMaterial(ELT),S)
         
-#define Element_FindMaterialData(ELT,T,N) \
-        Material_FindData(Element_GetMaterial(ELT),T,N)
+#define Element_FindMaterialData(ELT,...) \
+        Material_FindData(Element_GetMaterial(ELT),__VA_ARGS__)
         
-#define Element_FindMaterialGenericData(ELT,T,N) \
-        Material_FindGenericData(Element_GetMaterial(ELT),T,N)
+#define Element_FindMaterialGenericData(ELT,...) \
+        Material_FindGenericData(Element_GetMaterial(ELT),__VA_ARGS__)
 
 #define Element_ComputeMaterialProperties(ELT,...) \
         Model_GetComputeMaterialProperties(Element_GetModel(ELT))(ELT,__VA_ARGS__)
@@ -337,7 +344,6 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
         (Element_GetDimension(ELT) < Element_GetDimensionOfSpace(ELT))
 
 
-
 /* Operations on buffer */
 #define Element_AllocateInBuffer(ELT,sz) \
         Buffer_Allocate(Element_GetBuffer(ELT),(sz))
@@ -366,8 +372,6 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
 
 
 /* Method */
-#include "String_.h"
-
 #define Element_MethodIs(ELT,MTH) \
         String_Is(Material_GetMethod(Element_GetMaterial(ELT)),MTH)
 
@@ -431,14 +435,10 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
 
 
 
-#include "IntFct.h"
-
 /* Loop on integration points */
 #define Element_LoopOnIntegrationPoints(ELT,p) \
         for(p = 0 ; p < IntFct_GetNbOfPoints(Element_GetIntFct(ELT)) ; p++)
         
-
-#include "DistributedMS.h"
 
 /* Supporting processor */
 #define Element_RankOfSupportingProcessor(ELT) \
@@ -459,16 +459,11 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
         } while(0)
         
 
-#include "ShapeFct.h"
-#include "Material.h"
-#include "Buffers.h"
-//#include "ElementSol.h"
-#include "Solutions.h"
-#include "Region.h"
 
+typedef Node_t*   Node_tt ;
 
 /* Minmize the size of the struct by re-organizing the order of its members*/
-struct Element_s {
+struct Element_t {
   Node_tt* PointerToNode ;
   Material_t* Material ;
   ShapeFct_t* ShapeFct ;      /* Shape function */
@@ -500,4 +495,20 @@ struct Element_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+
+#include "IntFct.h"
+#include "Buffers.h"
+#include "Region.h"
+#include "DistributedMS.h"
+#include "String_.h"
+#include "DataFile.h"
+#include "Buffer.h"
+#include "Material.h"
+#include "Geometry.h"
+#include "Model.h"
+#include "ElementSol.h"
+#include "Solutions.h"
+#include "Solution.h"
+#include "Node.h"
 #endif

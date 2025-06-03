@@ -2,16 +2,11 @@
 #define COORDINATEFORMAT_H
 
 
+/* Forward declarations */
+struct CoordinateFormat_t; //typedef struct CoordinateFormat_t      CoordinateFormat_t ;
+struct Mesh_t;
+struct Options_t;
 
-/* class-like structure "CoordinateFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-struct CoordinateFormat_s      ; typedef struct CoordinateFormat_s      CoordinateFormat_t ;
-
-
-
-#include "Mesh.h"
-#include "Options.h"
 
 extern CoordinateFormat_t* (CoordinateFormat_Create)(Mesh_t*,Options_t*,const int) ;
 extern void                (CoordinateFormat_Delete)(void*) ;
@@ -45,7 +40,7 @@ extern void                (CoordinateFormat_PrintMatrix)(CoordinateFormat_t*,co
 
 /* Coordinate format:
  * a_ij = val[k] ; j = colind[k] ; i = rowind[k]   for  k = 0,..,nnz-1 */
-struct CoordinateFormat_s {
+struct CoordinateFormat_t {
   int     nnz ;       /* Nb of non zero values */
   int     lvalue ;    /* Lentgth of array value */
   int     lindex ;    /* Length of array index */

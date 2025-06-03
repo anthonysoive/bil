@@ -5,10 +5,9 @@
 extern "C" {
 #endif
 
-/* class-like structures "NodesSol_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct NodeSol_s      ; typedef struct NodeSol_s      NodeSol_t ;
+/* Forward declarations */
+struct NodeSol_t; //typedef struct NodeSol_t      NodeSol_t ;
 
 
 
@@ -23,9 +22,19 @@ extern void       (NodeSol_Copy)(NodeSol_t*,NodeSol_t*) ;
 //#define NodeSol_GetNextNodeSol(NS)        ((NS)->next)
 
 
+#define NodeSol_SetNbOfUnknowns(NS,A) \
+        do {\
+          NodeSol_GetNbOfUnknowns(NS) = A;\
+        } while(0)
+        
+#define NodeSol_SetUnknown(NS,A) \
+        do {\
+          NodeSol_GetUnknown(NS) = A;\
+        } while(0)
 
 
-struct NodeSol_s {            /* Nodal Solutions */
+
+struct NodeSol_t {            /* Nodal Solutions */
   unsigned int nu ;     /* Nb of unknowns */
   double* u ;                 /* Nodal Unknowns */
   //NodeSol_t* prev ;           /* Previous Nodal Solutions */

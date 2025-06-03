@@ -4,6 +4,7 @@
 #include "Message.h"
 #include "Mry.h"
 #include "Curves.h"
+#include "Curve.h"
 #include "BilPath.h"
 #include "Temperature.h"
 #include "Utils.h"

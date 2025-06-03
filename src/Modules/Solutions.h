@@ -5,18 +5,12 @@
 extern "C" {
 #endif
 
-/* class-like structures "Solution_t" and attributes */
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Solutions_t; //typedef struct Solutions_t     Solutions_t ;
+struct Mesh_t;
+struct Solution_t;
 
-/* class-like structure "Solutions_t" */
-struct Solutions_s     ; typedef struct Solutions_s     Solutions_t ;
-
-
-
-/* Declaration of Macros, Methods and Structures */
-
-#include "Mesh.h"
  
 extern Solutions_t*   (Solutions_Create)(Mesh_t*,const int) ;
 extern void           (Solutions_Delete)(void*) ;
@@ -91,9 +85,8 @@ extern void           (Solutions_InitializeMeshPointers)(Solutions_t*,Mesh_t*) ;
 
 
 
-#include "Solution.h"
 
-struct Solutions_s {              /* Solutions */
+struct Solutions_t {              /* Solutions */
   unsigned int n_sol ;            /* Nb of solutions */
   char mergeindex ;
   Solution_t* head ;              /* Solution head */
@@ -102,7 +95,7 @@ struct Solutions_s {              /* Solutions */
  
  
  
-
+#include "Solution.h"
 
 
 #ifdef __CPLUSPLUS

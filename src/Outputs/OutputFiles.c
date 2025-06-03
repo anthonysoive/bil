@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "OutputFiles.h"
+#include "OutputFile.h"
 #include "Message.h"
 #include "Mesh.h"
 #include "BilVersion.h"
@@ -13,6 +14,13 @@
 #include "String_.h"
 #include "Mry.h"
 #include "DistributedMS.h"
+#include "Results.h"
+#include "Element.h"
+#include "Materials.h"
+#include "Models.h"
+#include "Result.h"
+#include "Points.h"
+#include "Point.h"
 
 
 //char   OutputFile_TypeOfCurrentFile ;

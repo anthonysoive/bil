@@ -5,6 +5,7 @@
 #include "Message.h"
 #include "Math_.h"
 #include "ShapeFcts.h"
+#include "ShapeFct.h"
 
 
 

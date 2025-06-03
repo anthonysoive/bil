@@ -2,6 +2,11 @@
 #include "Solution.h"
 #include "Message.h"
 #include "Mry.h"
+#include "Mesh.h"
+#include "ElementsSol.h"
+#include "ElementSol.h"
+#include "Nodes.h"
+#include "Node.h"
 
 
 
@@ -15,11 +20,11 @@ Solution_t*   (Solution_Create)(Mesh_t* mesh)
   Solution_t* sol = (Solution_t*) Mry_New(Solution_t) ;
   
   {
-    Solution_GetNodesSol(sol)    = NodesSol_Create(mesh) ;
-    Solution_GetElementsSol(sol) = ElementsSol_Create(mesh) ;
+    Solution_SetNodesSol(sol,NodesSol_Create(mesh)) ;
+    Solution_SetElementsSol(sol,ElementsSol_Create(mesh)) ;
   }
   
-  Solution_GetNbOfSequences(sol) = Mesh_GetNbOfMatrices(mesh) ;
+  Solution_SetNbOfSequences(sol,Mesh_GetNbOfMatrices(mesh)) ;
   
   /* Allocation of space for the times and the time steps */
   {
@@ -27,8 +32,8 @@ Solution_t*   (Solution_Create)(Mesh_t* mesh)
     double* t = (double*) Mry_New(double[2*n]) ;
     double* dt = t + n ;
 
-    Solution_GetSequentialTime(sol)      = t ;
-    Solution_GetSequentialTimeStep(sol)  = dt ;
+    Solution_SetSequentialTime(sol,t) ;
+    Solution_SetSequentialTimeStep(sol,dt) ;
   }
   
   /* Allocation of space for the step indexes */
@@ -36,12 +41,12 @@ Solution_t*   (Solution_Create)(Mesh_t* mesh)
     int n = Solution_GetNbOfSequences(sol) ;
     int* index = (int*) Mry_New(int[n]) ;
     
-    Solution_GetSequentialStepIndex(sol) = index ;
+    Solution_SetSequentialStepIndex(sol,index) ;
   }
   
   {
-    Solution_GetPreviousSolution(sol) = NULL ;
-    Solution_GetNextSolution(sol)     = NULL ;
+    Solution_SetPreviousSolution(sol,NULL) ;
+    Solution_SetNextSolution(sol,NULL) ;
   }
   
   return(sol) ;
@@ -60,7 +65,7 @@ void   (Solution_Delete)(void* self)
     if(nodessol) {
       NodesSol_Delete(nodessol) ;
       free(nodessol) ;
-      Solution_GetNodesSol(sol) = NULL ;
+      Solution_SetNodesSol(sol,NULL) ;
     }
   }
   
@@ -70,7 +75,7 @@ void   (Solution_Delete)(void* self)
     if(elementssol) {
       ElementsSol_Delete(elementssol) ;
       free(elementssol) ;
-      Solution_GetElementsSol(sol) = NULL ;
+      Solution_SetElementsSol(sol,NULL) ;
     }
   }
 
@@ -79,7 +84,7 @@ void   (Solution_Delete)(void* self)
     
     if(t) {
       free(t) ;
-      Solution_GetSequentialTime(sol) = NULL ;
+      Solution_SetSequentialTime(sol,NULL) ;
     }
   }
   
@@ -88,7 +93,7 @@ void   (Solution_Delete)(void* self)
     
     if(index) {
       free(index) ;
-      Solution_GetSequentialStepIndex(sol) = NULL ;
+      Solution_SetSequentialStepIndex(sol,NULL) ;
     }
   }
 }

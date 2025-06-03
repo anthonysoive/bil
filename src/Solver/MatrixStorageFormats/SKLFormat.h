@@ -2,10 +2,8 @@
 #define SKLFORMAT_H
 
 
-/* class-like structure "SKLFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-struct SKLFormat_s   ; typedef struct SKLFormat_s   SKLFormat_t ;
+/* Forward declarations */
+struct SKLFormat_t; //typedef struct SKLFormat_t   SKLFormat_t ;
 
 
 
@@ -22,7 +20,7 @@ struct SKLFormat_s   ; typedef struct SKLFormat_s   SKLFormat_t ;
 /* complete the structure types by using the typedef */
 
 /* Skyline format */
-struct SKLFormat_s {          /* Skyline storage format */
+struct SKLFormat_t {          /* Skyline storage format */
   unsigned int    nnz ;       /* Nb of non zero values */
   double* nzval ;             /* Non zero values */
   double* l ;                 /* Strictly lower triangular matrix values */

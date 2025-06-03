@@ -438,7 +438,7 @@ void GetProperties(Element_t* el)
   p_r0_Sf = GetProperty("p_r0_Sf") ; // p_r^0 paramater in S_f
   sig0 = GetProperty("sig0") ;
 
-  plasty = Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty = Element_FindMaterialData(el,"Plasticity") ;
   {
     Elasticity_t* elasty = Plasticity_GetElasticity(plasty) ;
     cijkl   = Elasticity_GetStiffnessTensor(elasty) ;
@@ -504,7 +504,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Plasticity_Create() ;
 
-    Material_AppendData(mat,1,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,1,plasty,"Plasticity") ;
   }
 
   /* Elastic and plastic properties */
@@ -660,9 +660,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
     int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1; //ADDED in frostaco and CO2coal there is  +1
 
     /** Define the length of tables */
-    Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-    Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-    Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ; //ADDED
+    Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+    Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+    Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ; //ADDED
   }
 
   return(0) ;
@@ -1354,7 +1354,7 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     Input data
   */
   GetProperties(el) ;
-  plasty = Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty = Element_FindMaterialData(el,"Plasticity") ;
   Elasticity_t* elasty = Plasticity_GetElasticity(plasty) ;
   double modulus = Elasticity_GetYoungModulus(elasty) ;
   double poisson = Elasticity_GetPoissonRatio(elasty) ;
@@ -1895,7 +1895,7 @@ void  ComputeSecondaryVariables(Element_t* el,double t,double dt,double* x)
   double young = GetProperty("young") * ModulusFromHydration(alpha) ;
   double poisson = PoissonFromHydration(alpha) ;
 
-  plasty = Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty = Element_FindMaterialData(el,"Plasticity") ;
   
   #if 0
   {

@@ -2,6 +2,7 @@
 #include "Message.h"
 #include "Mry.h"
 #include "Results.h"
+#include "Result.h"
 
 
 

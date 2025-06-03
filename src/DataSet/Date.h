@@ -1,10 +1,9 @@
 #ifndef DATE_H
 #define DATE_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Date_s        ; typedef struct Date_s        Date_t ;
+/* Forward declarations */
+struct Date_t; //typedef struct Date_t        Date_t ;
 
 
 
@@ -19,7 +18,7 @@ extern void     (Date_Delete) (void*) ;
 
 
 
-struct Date_s {
+struct Date_t {
   double time ;
 } ;
 

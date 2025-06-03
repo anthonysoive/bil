@@ -5,6 +5,7 @@
 #include "Message.h"
 #include "Math_.h"
 #include "IntFcts.h"
+#include "IntFct.h"
 
 
 

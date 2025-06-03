@@ -8,6 +8,9 @@
 #include "DataFile.h"
 #include "DataSet.h"
 #include "ObVals.h"
+#include "ObVal.h"
+#include "Nodes.h"
+#include "Node.h"
 #include "Solver.h"
 #include "Exception.h"
 #include "String_.h"
@@ -22,20 +25,20 @@ IterProcess_t*  (IterProcess_New)(void)
   
   /* Iterations */
   {
-    IterProcess_GetNbOfIterations(iterprocess) = 5 ;
-    IterProcess_GetIterationIndex(iterprocess) = 0 ;
+    IterProcess_SetNbOfIterations(iterprocess,5) ;
+    IterProcess_SetIterationIndex(iterprocess,0) ;
   }
     
   /* Tolerance */
   {
-    IterProcess_GetTolerance(iterprocess) = 1.e-4 ;
-    IterProcess_GetCurrentError(iterprocess) = 0 ;
+    IterProcess_SetTolerance(iterprocess,1.e-4) ;
+    IterProcess_SetError(iterprocess,0) ;
   }
     
   /* Repetition */
   {
-    IterProcess_GetNbOfRepetitions(iterprocess) = 0 ;
-    IterProcess_GetRepetitionIndex(iterprocess) = 0 ;
+    IterProcess_SetNbOfRepetitions(iterprocess,0) ;
+    IterProcess_SetRepetitionIndex(iterprocess,0) ;
   }
 
   return(iterprocess) ;
@@ -61,7 +64,7 @@ IterProcess_t*  (IterProcess_Create)(DataFile_t* datafile,ObVals_t* obvals)
 
 
   /* Objective variations */
-  IterProcess_GetObVals(iterprocess) = obvals ;
+  IterProcess_SetObVals(iterprocess,obvals) ;
 
 
 
@@ -76,7 +79,7 @@ IterProcess_t*  (IterProcess_Create)(DataFile_t* datafile,ObVals_t* obvals)
     int n = String_FindAndScanExp(c,"Iter",","," = %d",&i) ;
     
     if(n) {
-      IterProcess_GetNbOfIterations(iterprocess) = i ;
+      IterProcess_SetNbOfIterations(iterprocess,i) ;
     } else {
       arret("IterProcess_Create: no Iterations") ;
     }
@@ -88,7 +91,7 @@ IterProcess_t*  (IterProcess_Create)(DataFile_t* datafile,ObVals_t* obvals)
     int n = String_FindAndScanExp(c,"Tol",","," = %lf",&tol) ;
     
     if(n) {
-      IterProcess_GetTolerance(iterprocess) = tol ;
+      IterProcess_SetTolerance(iterprocess,tol) ;
     } else {
       arret("IterProcess_Create: no Tolerance") ;
     }
@@ -100,7 +103,7 @@ IterProcess_t*  (IterProcess_Create)(DataFile_t* datafile,ObVals_t* obvals)
     int n = String_FindAndScanExp(c,"Rep,Rec",","," = %d",&i) ;
     
     if(n) {
-      IterProcess_GetNbOfRepetitions(iterprocess) = i ;
+      IterProcess_SetNbOfRepetitions(iterprocess,i) ;
     }
   }
 
@@ -171,9 +174,9 @@ int (IterProcess_SetCurrentError)(IterProcess_t* iterprocess,Nodes_t* nodes,Solv
     }
   }
           
-  IterProcess_GetCurrentError(iterprocess) = err ;
-  IterProcess_GetObValIndexOfCurrentError(iterprocess) = obvalindex ;
-  IterProcess_GetNodeIndexOfCurrentError(iterprocess) = nodeindex ;
+  IterProcess_SetError(iterprocess,err) ;
+  IterProcess_SetObValIndexOfCurrentError(iterprocess,obvalindex) ;
+  IterProcess_SetNodeIndexOfCurrentError(iterprocess,nodeindex) ;
   
   return(0) ;
 }
@@ -183,7 +186,7 @@ int (IterProcess_SetCurrentError)(IterProcess_t* iterprocess,Nodes_t* nodes,Solv
 void (IterProcess_PrintCurrentError)(IterProcess_t* iterprocess)
 {
   char*  name = IterProcess_GetNameOfTheCurrentError(iterprocess) ;
-  double err  = IterProcess_GetCurrentError(iterprocess) ;
+  double err  = IterProcess_GetError(iterprocess) ;
   int    iter = IterProcess_GetIterationIndex(iterprocess) ;
   int    inode = IterProcess_GetNodeIndexOfCurrentError(iterprocess) ;
 

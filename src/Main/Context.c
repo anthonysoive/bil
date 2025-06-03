@@ -5,6 +5,8 @@
 #include "Message.h"
 #include "String_.h"
 #include "Context.h"
+#include "CommandLine.h"
+#include "Options.h"
 #include "Mry.h"
 
 

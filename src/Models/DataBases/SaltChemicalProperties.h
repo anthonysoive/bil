@@ -1,11 +1,9 @@
 #ifndef SALTCHEMICALPROPERTIES_H
 #define SALTCHEMICALPROPERTIES_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct SaltChemicalProperties_s     ; 
-typedef struct SaltChemicalProperties_s     SaltChemicalProperties_t ;
+/* Forward declarations */
+struct SaltChemicalProperties_t; //typedef struct SaltChemicalProperties_t     SaltChemicalProperties_t ;
 
 
 extern SaltChemicalProperties_t* SaltChemicalProperties(char*,double) ;
@@ -23,7 +21,7 @@ extern SaltChemicalProperties_t* SaltChemicalProperties(char*,double) ;
 #define SaltChemicalProperties_GetPartialMolarVolumeOfAnion(scp)    ((scp)->v_anion)
 
 
-struct SaltChemicalProperties_s {
+struct SaltChemicalProperties_t {
   double z_cation ;
   double z_anion ;
   double nu_cation ;

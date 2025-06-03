@@ -6,10 +6,9 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure "DataSet_t and attributes */
-struct IntFct_s       ; typedef struct IntFct_s       IntFct_t ;
+/* Forward declarations */
+struct IntFct_t; //typedef struct IntFct_t       IntFct_t ;
 
 
 extern IntFct_t*  (IntFct_Create)(int,int,const char*) ;
@@ -23,7 +22,6 @@ extern double     (IntFct_InterpolateAtPoint)(IntFct_t*,double*,int,int) ;
 
 #define IntFct_MaxNbOfIntPoints            (20)
 
-#include "ShapeFct.h"
 
 #define IntFct_MaxNbOfFunctions            (ShapeFct_MaxNbOfNodes)
 
@@ -67,7 +65,7 @@ extern double     (IntFct_InterpolateAtPoint)(IntFct_t*,double*,int,int) ;
 //typedef double* IntFct_ComputeValuesAtPoint_t(IntFct_t*,double*) ;
 
 
-struct IntFct_s {             /* Interpolation function */
+struct IntFct_t {             /* Interpolation function */
   char*   type ;              /* Type of the function */
   int nn ;                    /* Number of functions/nodes */
   int np ;                    /* Number of integration points */
@@ -89,4 +87,6 @@ struct IntFct_s {             /* Interpolation function */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include "ShapeFct.h"
 #endif

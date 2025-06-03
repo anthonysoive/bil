@@ -1,7 +1,7 @@
 #ifndef PREDEFINEDPLASTICITYMODELMETHODS_H
 #define PREDEFINEDPLASTICITYMODELMETHODS_H
 
-#include "autodiff"
+#include "autodiff.h"
 
 template<typename T>
 T* (YieldFunction)(Plasticity_t*,const T*,const T*);

@@ -2,13 +2,15 @@
 #define NODES_H
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Nodes_s        ; typedef struct Nodes_s        Nodes_t ;
+/* Forward declarations */
+struct Nodes_t; //typedef struct Nodes_t        Nodes_t ;
+struct DataFile_t;
+struct Node_t;
+struct ObVals_t;
+struct Element_t;
+struct Buffers_t;
 
-
-#include "DataFile.h"
 
 extern Nodes_t*  (Nodes_New)                         (const int,const int,const int) ;
 extern void      (Nodes_Delete)                      (void*) ;
@@ -53,13 +55,9 @@ extern void      (Nodes_InitializeMatrixRowColumnIndexes)(Nodes_t*) ;
 
 
 
-#include "Node.h"
-#include "ObVals.h"
-#include "Element.h"
-#include "Buffers.h"
+typedef Element_t*  Element_tt ;
 
-
-struct Nodes_s {
+struct Nodes_t {
   Node_t* Node ;
   Element_tt* PointerToElement ;
   ObVals_t* ObjectiveValues ;
@@ -71,5 +69,9 @@ struct Nodes_s {
   unsigned int  NbOfConnectivities ;
   unsigned int  NbOfDOF ;
 } ;
+
+
+#include "Node.h"
+#include "Element.h"
 
 #endif

@@ -28,17 +28,12 @@
 
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
-
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
+#include "BaseName.h"
 
 
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -52,10 +47,6 @@ template<typename T>
 struct OtherValues_t;
 
 
-
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
-
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
@@ -65,10 +56,6 @@ using Values_d = Values_t<double> ;
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
 
 
-#define MPM_t      BaseName(_MPM_t)
-
-
-
 
 struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_SetInputs_t<Values_t> SetInputs;
@@ -76,8 +63,6 @@ struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_Initialize_t<Values_t>  Initialize;
   MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
 } ;
-
-
 
 
 /* We define some names for implicit terms */
@@ -112,6 +97,9 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialStress[9];
 };
+}
+
+using namespace BaseName();
 
 
 static MPM_t mpm;
@@ -309,12 +297,12 @@ void GetProperties(Element_t* el,double t)
   
   {
     int id = SharedMS_CurrentThreadId ;
-    GenericData_t* gdat = Element_FindMaterialGenericData(el,Plasticity_t,"Plasticity") ;
+    GenericData_t* gdat = Element_FindMaterialGenericData(el,"Plasticity") ;
     int n = (gdat) ? GenericData_GetNbOfData(gdat) : 0 ;
     
     if(id < n) {
       plasty = ((Plasticity_t*) GenericData_GetData(gdat)) + id ;
-      //plasty = Element_FindMaterialData(el,Plasticity_t,"Plasticity") + id ;
+      //plasty = Element_FindMaterialData(el,"Plasticity") + id ;
     } else {
       arret("GetProperties") ;
     }
@@ -386,7 +374,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Mry_Create(Plasticity_t,nthreads,Plasticity_Create()) ;
 
-    Material_AppendData(mat,nthreads,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,nthreads,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */

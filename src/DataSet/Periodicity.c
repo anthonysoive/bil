@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "Mry.h"
+#include "String_.h"
 #include "Message.h"
+#include "DataFile.h"
 #include "Periodicity.h"
 
 

@@ -6,7 +6,7 @@
 
 #if 0
 To test the macros below, copy and execute the line:
-"gcc -x c -iprefix ../ -iwithprefix . -iwithprefix DataSet -iwithprefix Outputs -iwithprefix Solver -iwithprefix Tools -iwithprefix Models -iwithprefix Modules -iwithprefix Help -iwithprefix Common -iwithprefix Main -iwithprefix Macros -E testMacros.e"
+"gcc -x c++ -std=c++17 -iprefix ../../ -iwithprefix . -iprefix ../ -iwithprefix . -iwithprefix DataSet -iwithprefix Outputs -iwithprefix Solver -iwithprefix Tools -iwithprefix Models -iwithprefix Modules -iwithprefix Help -iwithprefix Common -iwithprefix Main -iwithprefix Macros -E testMacros.e"
 #endif
 
 
@@ -76,6 +76,18 @@ Test Algos:
 "Algos_MAP(T,F) " = Algos_MAP(T,F)
 #undef T
 #undef F
+
+
+#define T         A_t ,b_t ,C_t , d_t, u E , sh f,G,h,I,j
+#define F(a)        a*
+"T              " = T
+"F(a)             = a*"
+"Tuple_SEQ(Algos_MAP(Tuple_TUPLE(T),F)) " = Tuple_SEQ(Algos_MAP(Tuple_TUPLE(T),F))
+#undef T
+#undef F
+
+#endif
+#if 0
 
 
 

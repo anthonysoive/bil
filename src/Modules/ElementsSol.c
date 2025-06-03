@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "ElementsSol.h"
+#include "ElementSol.h"
+#include "Mesh.h"
 #include "Message.h"
-#include "GenericData.h"
 #include "Mry.h"
 
 
@@ -16,8 +17,8 @@ ElementsSol_t*   (ElementsSol_Create)(Mesh_t* mesh)
     int NbOfElements = Mesh_GetNbOfElements(mesh) ;
     ElementSol_t* elementsol = (ElementSol_t*) Mry_New(ElementSol_t[NbOfElements]) ;
 
-    ElementsSol_GetElementSol(elementssol)   = elementsol ;
-    ElementsSol_GetNbOfElements(elementssol) = NbOfElements ;
+    ElementsSol_SetElementSol(elementssol,elementsol) ;
+    ElementsSol_SetNbOfElements(elementssol,NbOfElements) ;
     
     
     /* Initialization */
@@ -56,7 +57,7 @@ void (ElementsSol_Delete)(void* self)
       }
     
       free(elementsol) ;
-      ElementsSol_GetElementSol(elementssol) = NULL ;
+      ElementsSol_SetElementSol(elementssol,NULL) ;
     }
   }
 }
@@ -132,7 +133,7 @@ void (ElementsSol_Copy)(ElementsSol_t* elementssol_dest,ElementsSol_t* elementss
   ElementSol_t* elementsol_s = ElementsSol_GetElementSol(elementssol_src) ;
   ElementSol_t* elementsol_d = ElementsSol_GetElementSol(elementssol_dest) ;
   
-  ElementsSol_GetNbOfElements(elementssol_dest) = nelts ;
+  ElementsSol_SetNbOfElements(elementssol_dest,nelts) ;
   
     /* Implicit terms */
     {
@@ -203,7 +204,7 @@ void (ElementsSol_Copy)(ElementsSol_t* elementssol_dest,ElementsSol_t* elementss
   ElementSol_t* elementsol_s = ElementsSol_GetElementSol(elementssol_src) ;
   ElementSol_t* elementsol_d = ElementsSol_GetElementSol(elementssol_dest) ;
   
-  ElementsSol_GetNbOfElements(elementssol_dest) = nelts ;
+  ElementsSol_SetNbOfElements(elementssol_dest,nelts) ;
 
   for(unsigned int ie = 0 ; ie < nelts ; ie++) {
     ElementSol_t* elementsoli_s = elementsol_s + ie ;

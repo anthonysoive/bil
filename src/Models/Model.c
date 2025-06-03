@@ -8,7 +8,7 @@
 #include "Message.h"
 #include "Geometry.h"
 #include "DataFile.h"
-#include "ObVals.h"
+#include "ObVal.h"
 #include "Views.h"
 #include "Mry.h"
 

@@ -1,10 +1,9 @@
 #ifndef DISTRIBUTEDMS_H
 #define DISTRIBUTEDMS_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-//struct DistributedMS_s     ; typedef struct DistributedMS_s     DistributedMS_t ;
+/* Forward declarations */
+//struct DistributedMS_t     ; typedef struct DistributedMS_t     DistributedMS_t ;
 
 
 //extern int DistributedMS_CurrentThreadId(void) ;
@@ -32,7 +31,6 @@
 #endif
 
 
-#include "Utils.h"
 
 
 /* Test the DistributedMS API */
@@ -93,10 +91,12 @@
 
 
 #if 0
-struct DistributedMS_s {
+struct DistributedMS_t {
   int rank ;
   int size ;
 } ;
 #endif
+
+#include "Utils.h"
 
 #endif

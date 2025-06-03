@@ -7,9 +7,14 @@
 #include "Message.h"
 #include "DataFile.h"
 #include "Materials.h"
+#include "Material.h"
 #include "Models.h"
+#include "Model.h"
 #include "Curves.h"
 #include "Mry.h"
+#include "Geometry.h"
+#include "Fields.h"
+#include "Functions.h"
 
 
 /* Extern functions */

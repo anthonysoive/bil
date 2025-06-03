@@ -58,7 +58,7 @@ struct MaterialPointMethod_t {
    *  Return a pointer to val
    */
 
-  virtual V<double>* Integrate(Element_t*,double const&,double const&,V<double> const&,V<double>&) = 0;//{return(NULL);}
+  virtual V<double>* Integrate(Element_t*,double const&,double const&,V<double> const&,V<double>&){return(NULL);}
   /** On input: (el,t,dt,p,val_n,val)
    *  On output:
    *  val is updated from the integration of the constitutive law from t-dt to t.
@@ -142,9 +142,9 @@ struct MaterialPointMethod_t {
     int const nve = CustomValues_NbOfExplicitValues(V<double>);
     int const nv0 = CustomValues_NbOfConstantValues(V<double>);
           
-    Element_GetNbOfImplicitTerms(el) = N*nvi ;
-    Element_GetNbOfExplicitTerms(el) = N*nve ;
-    Element_GetNbOfConstantTerms(el) = N*nv0 ;
+    Element_SetNbOfImplicitTerms(el,N*nvi) ;
+    Element_SetNbOfExplicitTerms(el,N*nve) ;
+    Element_SetNbOfConstantTerms(el,N*nv0) ;
   }
 
 
@@ -161,7 +161,6 @@ struct MaterialPointMethod_t {
 
 
   V<double>* OutputValues(Element_t* el,double const t,int const i) {
-    V<double> val;
     double* vi = Element_GetImplicitTerm(el) ;
     double** u = Element_ComputePointerToNodalUnknowns(el) ;
     ConstitutiveIntegrator_t<D> ci(this);

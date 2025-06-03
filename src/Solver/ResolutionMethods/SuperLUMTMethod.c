@@ -83,14 +83,14 @@ int   SuperLUMTMethod_Solve(Solver_t* solver)
     
       {
         GenericData_t* gw = Solver_GetGenericWorkSpace(solver) ;
-        double* ferr  = GenericData_FindData(gw,double,"err") ;
+        double* ferr  = GenericData_FindData(gw,"err") ;
         double* berr  = ferr + 1 ;
-        int*    etree = GenericData_FindData(gw,int,"etree") ;
-        int*    colcnt_h = GenericData_FindData(gw,int,"colcnt_h") ;
-        int*    part_super_h = GenericData_FindData(gw,int,"part_super_h") ;
-        double* R     = GenericData_FindData(gw,double,"R") ;
-        double* C     = GenericData_FindData(gw,double,"C") ;
-        GenericData_t* gwork  = GenericData_Find(gw,double,"work") ;
+        int*    etree = GenericData_FindData(gw,"etree") ;
+        int*    colcnt_h = GenericData_FindData(gw,"colcnt_h") ;
+        int*    part_super_h = GenericData_FindData(gw,"part_super_h") ;
+        double* R     = GenericData_FindData(gw,"R") ;
+        double* C     = GenericData_FindData(gw,"C") ;
+        GenericData_t* gwork  = GenericData_Find(gw,"work") ;
         void* work   = (gwork) ? GenericData_GetData(gwork) : NULL ;
         size_t lwork = (gwork) ? GenericData_GetSize(gwork)*GenericData_GetNbOfData(gwork) : 0 ;
       

@@ -3,13 +3,8 @@
 
 
 
-/* class-like structure "CRSFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-struct CRSFormat_s      ; typedef struct CRSFormat_s      CRSFormat_t ;
-
-#include "Mesh.h"
-
+/* Forward declarations */
+struct CRSFormat_t; //typedef struct CRSFormat_t      CRSFormat_t ;
 
 
 /** The getters */
@@ -24,7 +19,7 @@ struct CRSFormat_s      ; typedef struct CRSFormat_s      CRSFormat_t ;
 
 /* Compressed row storage format
  * If a_ij = nzval[k] then colind[k] = j and rowptr[i] <= k < rowptr[i + 1] */
-struct CRSFormat_s {
+struct CRSFormat_t {
   unsigned int    nnz ;       /* nb of non zero values */
   double* nzval ;             /* Non zero values */
   unsigned int* colind ;      /* Column indices of the non zeros */

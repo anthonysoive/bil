@@ -56,17 +56,12 @@
 
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
-
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
+#include "BaseName.h"
 
 
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -82,8 +77,6 @@ struct OtherValues_t;
 
 
 
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
 
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
@@ -93,7 +86,6 @@ using Values_d = Values_t<double> ;
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
 
 
-#define MPM_t      BaseName(_MPM_t)
 
 
 
@@ -170,6 +162,31 @@ struct ExplicitValues_t {
 /* We define some names for constant terms (v0 must be used as pointer below) */
 template<typename T = double>
 struct ConstantValues_t {};
+
+
+/* The parameters below are read in the input data file */
+struct Parameters_t {
+  double Porosity;
+  double IntrinsicPermeability;
+  double SolidVolumetricHeat;
+  double SolidThermalConductivity;
+  double SolidMatrixBulkModulus;
+  double SolidMatrixShearModulus;
+  double SolidMatrixThermalDilation;
+  double ReferencePressure;
+  double ReferenceTemperature;
+  double YoungModulus;
+  double PoissonRatio;
+  double BiotCoefficient;
+  double Thickness;
+  double YoungFraction;
+  double Gravity;
+  double SolidSkeletonMassDensity;
+  double CapillaryPressureFraction;
+};
+}
+
+using namespace BaseName();
 
 static MPM_t mpm;
 
@@ -327,29 +344,6 @@ static double vr_salt ;
 
 
 
-/* The parameters below are read in the input data file */
-
-#define Parameters_t    BaseName(_Parameters_t)
-
-struct Parameters_t {
-  double Porosity;
-  double IntrinsicPermeability;
-  double SolidVolumetricHeat;
-  double SolidThermalConductivity;
-  double SolidMatrixBulkModulus;
-  double SolidMatrixShearModulus;
-  double SolidMatrixThermalDilation;
-  double ReferencePressure;
-  double ReferenceTemperature;
-  double YoungModulus;
-  double PoissonRatio;
-  double BiotCoefficient;
-  double Thickness;
-  double YoungFraction;
-  double Gravity;
-  double SolidSkeletonMassDensity;
-  double CapillaryPressureFraction;
-};
 
 static Parameters_t param;
 static double* cijkl ;
@@ -456,7 +450,7 @@ void GetProperties(Element_t* el,double t)
     param.SolidMatrixThermalDilation *= param.Thickness ;
   }
   
-  elasty  = Element_FindMaterialData(el,Elasticity_t,"Elasticity") ;
+  elasty  = Element_FindMaterialData(el,"Elasticity") ;
   cijkl   = Elasticity_GetStiffnessTensor(elasty) ;
 #undef GetProperty
 }
@@ -590,7 +584,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 /** Read the material properties in the stream file ficd 
  *  Return the nb of (scalar) properties of the model */
 {
-  int  NbOfProp = 16 ;
+  int  NbOfProp = ((int) sizeof(Parameters_t)/sizeof(double)) ;
 
   /* By default */
   {
@@ -644,12 +638,12 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     elasty = Elasticity_Create() ;
       
-    Material_AppendData(mat,1,elasty,Elasticity_t,"Elasticity") ;
+    Material_AppendData(mat,1,elasty,"Elasticity") ;
   }
   
   /* The 4th rank elastic tensor */
   {
-    elasty = Material_FindData(mat,Elasticity_t,"Elasticity") ;
+    elasty = Material_FindData(mat,"Elasticity") ;
 
     /* isotropic Hooke's law */
     { 

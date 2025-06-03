@@ -145,6 +145,13 @@ work_11:
 	); done
 
 
+work_12:
+	for file in ${ALLFILES}; do (\
+	cp $$file $$file.bak && \
+	sed 's/^  Element_GetNbOfImplicitTerms(el) = /#include "PredefinedModelMethods.h/g' $$file.bak > $$file \
+	); done
+
+
 work_test:
 	for file in M52b.c; do (\
 	cp $$file $$file.bak && \

@@ -32,17 +32,12 @@
 
 
 
-#include "BaseName.h"
 #include "CustomValues.h"
 #include "MaterialPointMethod.h"
-
-#define ImplicitValues_t BaseName(_ImplicitValues_t)
-#define ExplicitValues_t BaseName(_ExplicitValues_t)
-#define ConstantValues_t BaseName(_ConstantValues_t)
-#define OtherValues_t    BaseName(_OtherValues_t)
+#include "BaseName.h"
 
 
-
+namespace BaseName() {
 template<typename T>
 struct ImplicitValues_t ;
 
@@ -57,21 +52,12 @@ struct OtherValues_t;
 
 
 
-
-#define Values_t    BaseName(_Values_t)
-#define Values_d    BaseName(_Values_d)
-
 template<typename T>
 using Values_t = CustomValues_t<T,ImplicitValues_t,ExplicitValues_t,ConstantValues_t,OtherValues_t> ;
 
 using Values_d = Values_t<double> ;
 
 #define Values_Index(V)  CustomValues_Index(Values_d,V,double)
-
-
-#define MPM_t      BaseName(_MPM_t)
-
-
 
 
 struct MPM_t: public MaterialPointMethod_t<Values_t> {
@@ -81,9 +67,6 @@ struct MPM_t: public MaterialPointMethod_t<Values_t> {
   MaterialPointMethod_SetTangentMatrix_t<Values_t> SetTangentMatrix;
   MaterialPointMethod_SetTransferMatrix_t<Values_t> SetTransferMatrix;
 } ;
-
-
-
 
 
 /* We define some names for implicit terms */
@@ -124,6 +107,9 @@ struct OtherValues_t {
   T MassDensity_liquid;
   T Porosity;
 };
+}
+
+using namespace BaseName();
 
 
 static MPM_t mpm;
@@ -251,7 +237,7 @@ void GetProperties(Element_t* el,double t)
   sig0    = &GetProperty("sig0") ;
   //hardv0  = GetProperty("hardv0") ;
   
-  plasty = Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty = Element_FindMaterialData(el,"Plasticity") ;
   {
     Elasticity_t* elasty = Plasticity_GetElasticity(plasty) ;
     
@@ -312,7 +298,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Plasticity_Create() ;
       
-    Material_AppendData(mat,1,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,1,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */

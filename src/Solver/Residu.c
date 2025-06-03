@@ -4,7 +4,12 @@
 #include "Message.h"
 #include "Mry.h"
 #include "BilExtraLibs.h"
+#include "Mesh.h"
+#include "Element.h"
+#include "Options.h"
 #include "Residu.h"
+#include "Context.h"
+#include "CommandLine.h"
 #include "DistributedMS.h"
 
 

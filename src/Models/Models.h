@@ -27,9 +27,9 @@ struct Models_t       ; typedef struct Models_t       Models_t ;
 /* Declaration of Macros, Methods and Structures */
 
 /* 1. Models_t */
-#include "Model.h"
-#include "Geometry.h"
-#include "DataFile.h"
+struct Model_t;
+struct Geometry_t;
+struct DataFile_t;
 
 
 extern Models_t* (Models_New)(const int) ;

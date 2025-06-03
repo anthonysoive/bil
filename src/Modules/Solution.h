@@ -5,18 +5,13 @@
 extern "C" {
 #endif
 
-/* class-like structures "Solution_t" and attributes */
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Solution_t; //typedef struct Solution_t     Solution_t ;
+struct NodesSol_t;
+struct ElementsSol_t;
+struct Mesh_t;
 
-/* class-like structure "Solutions_t" */
-struct Solution_s     ; typedef struct Solution_s     Solution_t ;
-
-
-
-/* Declaration of Macros, Methods and Structures */
-
-#include "Mesh.h"
  
 extern Solution_t*  (Solution_Create)  (Mesh_t*) ;
 extern void         (Solution_Delete)  (void*) ;
@@ -36,6 +31,48 @@ extern Solution_t*  (Solution_GetSolutionInDistantPast)(Solution_t*,unsigned int
 #define Solution_GetElementsSol(SOL)          ((SOL)->elementssol)
 #define Solution_GetPreviousSolution(SOL)     ((SOL)->sol_p)
 #define Solution_GetNextSolution(SOL)         ((SOL)->sol_n)
+
+
+#define Solution_SetNbOfSequences(SOL,A)\
+        do {\
+          Solution_GetNbOfSequences(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetSequentialTime(SOL,A)\
+        do {\
+          Solution_GetSequentialTime(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetSequentialTimeStep(SOL,A)\
+        do {\
+          Solution_GetSequentialTimeStep(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetSequentialStepIndex(SOL,A)\
+        do {\
+          Solution_GetSequentialStepIndex(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetNodesSol(SOL,A)\
+        do {\
+          Solution_GetNodesSol(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetElementsSol(SOL,A)\
+        do {\
+          Solution_GetElementsSol(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetPreviousSolution(SOL,A)\
+        do {\
+          Solution_GetPreviousSolution(SOL) = A;\
+        } while(0)
+        
+#define Solution_SetNextSolution(SOL,A)\
+        do {\
+          Solution_GetNextSolution(SOL) = A;\
+        } while(0)
+        
 
 
 
@@ -191,10 +228,8 @@ extern Solution_t*  (Solution_GetSolutionInDistantPast)(Solution_t*,unsigned int
 
 
 
-#include "NodesSol.h"
-#include "ElementsSol.h"
 
-struct Solution_s {           /* solution at a time t */
+struct Solution_t {           /* solution at a time t */
   int   nbofsequences ;
   //double  t ;
   //double  dt ;
@@ -208,6 +243,10 @@ struct Solution_s {           /* solution at a time t */
   Solution_t* sol_n ;         /* next solution */
 } ;
 
+
+/* For the macros */
+#include "NodesSol.h"
+#include "ElementsSol.h"
 
 #ifdef __CPLUSPLUS
 }

@@ -1,0 +1,475 @@
+#ifndef CEMENTSOLUTIONCHEMISTRY_HPP
+#define CEMENTSOLUTIONCHEMISTRY_HPP
+
+/* Forward declarations */
+//struct CementSolutionChemistry_t;
+template<typename T> struct CementSolutionChemistry_t;
+struct Temperature_t;
+
+
+#define CementSolutionChemistry_GetTemperature(CSC) \
+        ((CSC)->GetTemperature())
+        
+#define CementSolutionChemistry_GetPrimaryVariableIndex(CSC) \
+        ((CSC)->GetPrimaryVariableIndex())
+        
+#define CementSolutionChemistry_GetPrimaryVariable(CSC) \
+        ((CSC)->GetPrimaryVariable())
+
+#define CementSolutionChemistry_GetConcentration(CSC) \
+        ((CSC)->GetConcentration())
+
+#define CementSolutionChemistry_GetLogConcentration(CSC) \
+       ((CSC)->GetLogConcentration())
+
+#define CementSolutionChemistry_GetActivity(CSC) \
+        ((CSC)->GetActivity())
+
+#define CementSolutionChemistry_GetLogActivity(CSC) \
+       ((CSC)->GetLogActivity())
+
+#define CementSolutionChemistry_GetElementConcentration(CSC) \
+        ((CSC)->GetElementConcentration())
+
+#define CementSolutionChemistry_GetOtherVariable(CSC) \
+        ((CSC)->GetOtherVariable())
+
+#define CementSolutionChemistry_GetLog10Keq(CSC) \
+        ((CSC)->GetLog10Keq())
+
+#define CementSolutionChemistry_GetElectricPotential(CSC) \
+        ((CSC)->GetElectricPotential())
+        
+        
+
+
+
+#define CementSolutionChemistry_SetTemperature(CSC,A) \
+        ((CSC)->SetTemperature(A))
+        
+#define CementSolutionChemistry_SetPrimaryVariableIndex(CSC,A) \
+        ((CSC)->SetPrimaryVariableIndex(A))
+        
+#define CementSolutionChemistry_SetPrimaryVariable(CSC,A) \
+        ((CSC)->SetPrimaryVariable(A))
+
+#define CementSolutionChemistry_SetConcentration(CSC,A) \
+        ((CSC)->SetConcentration(A))
+
+#define CementSolutionChemistry_SetLogConcentration(CSC,A) \
+       ((CSC)->SetLogConcentration(A))
+
+#define CementSolutionChemistry_SetActivity(CSC,A) \
+        ((CSC)->SetActivity(A))
+
+#define CementSolutionChemistry_SetLogActivity(CSC,A) \
+       ((CSC)->SetLogActivity(A))
+
+#define CementSolutionChemistry_SetElementConcentration(CSC,A) \
+        ((CSC)->SetElementConcentration(A))
+
+#define CementSolutionChemistry_SetOtherVariable(CSC,A) \
+        ((CSC)->SetOtherVariable(A))
+
+#define CementSolutionChemistry_SetLog10Keq(CSC,A) \
+        ((CSC)->SetLog10Keq(A))
+
+#define CementSolutionChemistry_SetElectricPotential(CSC,A) \
+        ((CSC)->SetElectricPotential(A))
+
+
+
+
+/* Macros for the room temperature
+ * -------------------------------*/
+#define CementSolutionChemistry_GetRoomTemperature(CSC) \
+        Temperature_GetRoomValue(CementSolutionChemistry_GetTemperature(CSC))
+        
+
+#define CementSolutionChemistry_SetRoomTemperature(CSC,T) \
+        Temperature_SetRoomTemperature(CementSolutionChemistry_GetTemperature(CSC),T)
+
+
+
+/* Macros for primary variables
+ * ----------------------------*/
+ 
+#define CementSolutionChemistry_NbOfPrimaryVariables  (13)
+
+/* Different primary variables may be used */
+#define CementSolutionChemistry_CaO          (0)
+#define CementSolutionChemistry_LogQ_CH      (0)
+#define CementSolutionChemistry_LogA_Ca \
+        (0 + CementSolutionChemistry_NbOfPrimaryVariables) // not used yet
+
+#define CementSolutionChemistry_SiO2         (1)
+#define CementSolutionChemistry_LogQ_SH      (1)
+#define CementSolutionChemistry_LogA_H4SiO4 \
+        (1 + CementSolutionChemistry_NbOfPrimaryVariables) // not used yet
+
+#define CementSolutionChemistry_Al2O3        (2)
+#define CementSolutionChemistry_LogQ_AH3     (2)
+#define CementSolutionChemistry_LogA_AlO4H4 \
+        (2 + CementSolutionChemistry_NbOfPrimaryVariables)
+
+#define CementSolutionChemistry_Na20         (3)
+#define CementSolutionChemistry_LogA_Na      (3)
+
+#define CementSolutionChemistry_K2O          (4)
+#define CementSolutionChemistry_LogA_K       (4)
+
+#define CementSolutionChemistry_CO2          (5)
+#define CementSolutionChemistry_LogA_CO2     (5)
+
+#define CementSolutionChemistry_LogA_OH      (6)
+
+#define CementSolutionChemistry_SO3          (7)
+#define CementSolutionChemistry_LogA_H2SO4   (7)
+#define CementSolutionChemistry_LogA_SO4 \
+        (7 + CementSolutionChemistry_NbOfPrimaryVariables)
+
+#define CementSolutionChemistry_Cl           (8)
+#define CementSolutionChemistry_LogA_Cl      (8)
+
+#define CementSolutionChemistry_Fe2O3        (9)
+
+#define CementSolutionChemistry_MgO          (10)
+
+#define CementSolutionChemistry_TiO2         (11)
+
+#define CementSolutionChemistry_P2O5         (12)
+
+
+       
+/* Inputs: definition
+ * ------------------ */
+#define CementSolutionChemistry_GetInput(CSC,U) \
+        CementSolutionChemistry_GetPrimaryVariable(CSC)[CementSolutionChemistry_InputIndex(U)]
+
+#define CementSolutionChemistry_SetIndex(CSC,U) \
+        do{ \
+          CementSolutionChemistry_GetIndex(CSC,U) = CementSolutionChemistry_Index(U) ; \
+        } while(0)
+        
+#define CementSolutionChemistry_SetInput(CSC,U,...) \
+        do{ \
+          CementSolutionChemistry_GetIndex(CSC,U) = CementSolutionChemistry_Index(U) ; \
+          CementSolutionChemistry_GetInput(CSC,U) = __VA_ARGS__ ; \
+        } while(0)
+        
+#define CementSolutionChemistry_InputCaOIs(CSC,V) \
+        CementSolutionChemistry_InputIs(CSC,CaO,V)
+        
+#define CementSolutionChemistry_InputSO3Is(CSC,V) \
+        CementSolutionChemistry_InputIs(CSC,SO3,V)
+
+#define CementSolutionChemistry_InputAl2O3Is(CSC,V) \
+        CementSolutionChemistry_InputIs(CSC,Al2O3,V)
+
+        
+/* Inputs: implementation
+ * ---------------------- */
+#define CementSolutionChemistry_Index(U) \
+        (CementSolutionChemistry_##U)
+
+#define CementSolutionChemistry_InputIndex(U) \
+        (CementSolutionChemistry_Index(U) % CementSolutionChemistry_NbOfPrimaryVariables)
+        
+#define CementSolutionChemistry_GetIndex(CSC,U) \
+        CementSolutionChemistry_GetPrimaryVariableIndex(CSC)[CementSolutionChemistry_InputIndex(U)]
+        
+#define CementSolutionChemistry_InputIs(CSC,U,V) \
+        (CementSolutionChemistry_GetIndex(CSC,U) == CementSolutionChemistry_Index(V))
+
+
+       
+       
+/* List of compound names
+ * ----------------------*/
+#define CementSolutionChemistry_NbOfSpecies  (31)
+
+
+/* Macros for the activities/concentrations
+ * ----------------------------------------*/
+
+#define CementSolutionChemistry_A_H2O         (0)
+#define CementSolutionChemistry_A_H           (1)
+#define CementSolutionChemistry_A_OH          (2)
+
+#define CementSolutionChemistry_A_Ca          (3)
+#define CementSolutionChemistry_A_CaOH        (4)
+#define CementSolutionChemistry_A_CaO2H2      (5)
+
+#define CementSolutionChemistry_A_H2SiO4      (6)
+#define CementSolutionChemistry_A_H3SiO4      (7)
+#define CementSolutionChemistry_A_H4SiO4      (8)
+
+#define CementSolutionChemistry_A_CaH2SiO4    (9)
+#define CementSolutionChemistry_A_CaH3SiO4    (10)
+
+#define CementSolutionChemistry_A_Na          (11)
+#define CementSolutionChemistry_A_NaOH        (12)
+
+#define CementSolutionChemistry_A_K           (13)
+#define CementSolutionChemistry_A_KOH         (14)
+
+#define CementSolutionChemistry_A_H2CO3       (15)
+#define CementSolutionChemistry_A_HCO3        (16)
+#define CementSolutionChemistry_A_CO3         (17)
+#define CementSolutionChemistry_A_CO2         (18)
+
+#define CementSolutionChemistry_A_CaHCO3      (19)
+#define CementSolutionChemistry_A_CaCO3       (20)
+
+#define CementSolutionChemistry_A_NaHCO3      (21)
+#define CementSolutionChemistry_A_NaCO3       (22)
+
+#define CementSolutionChemistry_A_H2SO4       (23)
+#define CementSolutionChemistry_A_HSO4        (24)
+#define CementSolutionChemistry_A_SO4         (25)
+#define CementSolutionChemistry_A_SO3         (xx)
+#define CementSolutionChemistry_A_S2O3        (xx)
+
+#define CementSolutionChemistry_A_H2S         (xx)
+#define CementSolutionChemistry_A_HS          (xx)
+#define CementSolutionChemistry_A_S           (xx)
+#define CementSolutionChemistry_A_S0          (xx)
+
+#define CementSolutionChemistry_A_CaHSO4      (26)
+#define CementSolutionChemistry_A_CaSO4       (27)
+
+#define CementSolutionChemistry_A_Cl          (28)
+
+#define CementSolutionChemistry_A_Al          (29)
+#define CementSolutionChemistry_A_AlO4H4      (30)
+
+
+
+
+#define CementSolutionChemistry_GetIndexOf(CPD) \
+        Utils_CAT(CementSolutionChemistry_A_,CPD)
+
+
+#define CementSolutionChemistry_GetConcentrationOf(CSC,CPD) \
+       (CementSolutionChemistry_GetConcentration(CSC)[CementSolutionChemistry_GetIndexOf(CPD)])
+
+       
+#define CementSolutionChemistry_GetLogConcentrationOf(CSC,CPD) \
+       (CementSolutionChemistry_GetLogConcentration(CSC)[CementSolutionChemistry_GetIndexOf(CPD)])
+
+
+#define CementSolutionChemistry_GetActivityOf(CSC,CPD) \
+       (CementSolutionChemistry_GetActivity(CSC)[CementSolutionChemistry_GetIndexOf(CPD)])
+
+       
+#define CementSolutionChemistry_GetLogActivityOf(CSC,CPD) \
+       (CementSolutionChemistry_GetLogActivity(CSC)[CementSolutionChemistry_GetIndexOf(CPD)])
+
+
+
+/* Macros for other variables
+ * --------------------------*/
+#define CementSolutionChemistry_NbOfOtherVariables       (3)
+
+/* 1. Liquid mass density */
+#define CementSolutionChemistry_GetLiquidMassDensity(CSC) \
+       (CementSolutionChemistry_GetOtherVariable(CSC)[0])
+        
+#define CementSolutionChemistry_SetLiquidMassDensity(CSC,A) \
+        do {\
+          CementSolutionChemistry_GetLiquidMassDensity(CSC) = A;\
+        } while(0)
+
+
+/* 2. Charge density */
+#define CementSolutionChemistry_GetChargeDensity(CSC) \
+       (CementSolutionChemistry_GetOtherVariable(CSC)[1])
+        
+#define CementSolutionChemistry_SetChargeDensity(CSC,A) \
+        do {\
+          CementSolutionChemistry_GetChargeDensity(CSC) = A;\
+        } while(0)
+
+
+/* 3. Ionic strength */
+#define CementSolutionChemistry_GetIonicStrength(CSC) \
+       (CementSolutionChemistry_GetOtherVariable(CSC)[2])
+        
+#define CementSolutionChemistry_SetIonicStrength(CSC,A) \
+        do {\
+          CementSolutionChemistry_GetIonicStrength(CSC) = A;\
+        } while(0)
+
+
+
+/* Macros for element concentrations
+ * ---------------------------------*/
+#define CementSolutionChemistry_NbOfElementConcentrations       (12)
+
+#define CementSolutionChemistry_E_Ca          (0)
+#define CementSolutionChemistry_E_Si          (1)
+#define CementSolutionChemistry_E_Na          (2)
+#define CementSolutionChemistry_E_K           (3)
+#define CementSolutionChemistry_E_C           (4)
+#define CementSolutionChemistry_E_S           (5)
+#define CementSolutionChemistry_E_Al          (6)
+#define CementSolutionChemistry_E_Cl          (7)
+#define CementSolutionChemistry_E_Fe          (8)
+#define CementSolutionChemistry_E_Mg          (9)
+#define CementSolutionChemistry_E_Ti          (10)
+#define CementSolutionChemistry_E_P           (11)
+
+#define CementSolutionChemistry_GetElementConcentrationOf(CSC,A) \
+        (CementSolutionChemistry_GetElementConcentration(CSC)[CementSolutionChemistry_E_##A])
+
+#define CementSolutionChemistry_SetElementConcentrationOf(CSC,A,B) \
+        do {\
+          (CementSolutionChemistry_GetElementConcentration(CSC)[CementSolutionChemistry_E_##A]) = B;\
+        } while(0)
+
+
+
+
+/* Macros for equilibrium constants (same indices as A_CPD)
+ * -------------------------------------------------------*/
+#define CementSolutionChemistry_GetLog10EquilibriumConstant(CSC,CPD) \
+       (CementSolutionChemistry_GetLog10Keq(CSC)[CementSolutionChemistry_GetIndexOf(CPD)])
+
+
+
+
+/* Macro for the resolution of the system
+ * --------------------------------------*/
+#define CementSolutionChemistry_ComputeSystem(CSC,SYS) \
+       (CementSolutionChemistry_ComputeSystem_##SYS(CSC))
+       
+#define CementSolutionChemistry_SupplementSystemWith(CSC,A) \
+       (CementSolutionChemistry_SupplementSystemWith_##A(CSC))
+
+
+
+/* Primary template */
+template<typename T = double>
+struct CementSolutionChemistry_t {
+  private:
+  Temperature_t* _temperature ;
+  int*    _primaryvariableindex ;
+  T* _primaryvariable ;
+  T* _concentration ;
+  T* _logconcentration ;
+  T* _activity ;
+  T* _logactivity ;
+  T* _elementconcentration ;
+  T* _othervariable ;
+  double* _log10equilibriumconstant ;
+  T  _electricpotential ;
+  
+  public:
+  void SetTemperature(Temperature_t* x){_temperature = x;}
+  void SetPrimaryVariableIndex(int* x){_primaryvariableindex = x;}
+  void SetPrimaryVariable(T* x){_primaryvariable = x;}
+  void SetConcentration(T* x){_concentration = x;}
+  void SetLogConcentration(T* x){_logconcentration = x;}
+  void SetActivity(T* x){_activity = x;}
+  void SetLogActivity(T* x){_logactivity = x;}
+  void SetElementConcentration(T* x){_elementconcentration = x;}
+  void SetOtherVariable(T* x){_othervariable = x;}
+  void SetLog10Keq(double* x){_log10equilibriumconstant = x;}
+  void SetElectricPotential(T x){_electricpotential = x;}
+  
+  /* Accessors */
+  Temperature_t* GetTemperature(void){return(_temperature);}
+  int*    GetPrimaryVariableIndex(void){return(_primaryvariableindex);}
+  T* GetPrimaryVariable(void){return(_primaryvariable);}
+  T* GetConcentration(void){return(_concentration);}
+  T* GetLogConcentration(void){return(_logconcentration);}
+  T* GetActivity(void){return(_activity);}
+  T* GetLogActivity(void){return(_logactivity);}
+  T* GetElementConcentration(void){return(_elementconcentration);}
+  T* GetOtherVariable(void){return(_othervariable);}
+  double* GetLog10Keq(void){return(_log10equilibriumconstant);}
+  T& GetElectricPotential(void){return(_electricpotential);}
+} ;
+
+
+
+inline double* (CementSolutionChemistry_GetValence)(void);
+inline double* (CementSolutionChemistry_CreateValence)(void) ;
+inline void    (CementSolutionChemistry_InitializeValence)(double*) ;
+template<typename T>
+inline T poly4(T,T,T,T,T,T,T) ;
+template<typename T>
+inline void   (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_UpdateChemicalConstants)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline T (CementSolutionChemistry_ComputeChargeDensity)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline T (CementSolutionChemistry_ComputeLiquidMassDensity)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_UpdateElementConcentrations)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_Initialize)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_TranslateConcentrationsIntoActivities)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_SO3_LogA_H2SO4)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_SO3_LogA_SO4)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_Al2O3_LogQ_AH3)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_Al2O3_LogA_AlO4H4)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline CementSolutionChemistry_t<T>* (CementSolutionChemistry_Create)(void) ;
+template<typename T>
+inline void  (CementSolutionChemistry_Delete)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_CO2_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_Al2O3_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_Al2O3_Cl_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_Al2O3_CO2_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_Al2O3_CO2_Cl_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_Al2O3_SO3_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_ComputeSystem_CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_Cl)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_CO2)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_SO3)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void (CementSolutionChemistry_SupplementSystemWith_Al2O3)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_PrintChemicalConstants)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline int    (CementSolutionChemistry_SolveElectroneutrality)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline int    (CementSolutionChemistry_SolveExplicitElectroneutrality) (CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_UpdateSolution)(CementSolutionChemistry_t<T>*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_CopyConcentrations)(CementSolutionChemistry_t<T>*,T*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_CopyLogConcentrations)(CementSolutionChemistry_t<T>*,T*) ;
+template<typename T>
+inline void   (CementSolutionChemistry_CopyChemicalPotential)(CementSolutionChemistry_t<T>*,T*) ;
+
+//inline double* instancevalence = NULL ;
+
+
+#include "Utils.h"
+
+#include "CementSolutionChemistry.h.in"
+
+#endif

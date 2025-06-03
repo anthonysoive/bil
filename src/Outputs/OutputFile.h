@@ -6,14 +6,11 @@ extern "C" {
 #endif
 
 
-/* class-like structures "OutputFiles_t" */
-
-/* vacuous declarations and typedef names */
-struct OutputFile_s  ; typedef struct OutputFile_s  OutputFile_t ;
-
+/* Forward declarations */
+struct OutputFile_t; //typedef struct OutputFile_t  OutputFile_t ;
+struct TextFile_t;
 
 
-/* Declaration of Macros, Methods and Structures */
 
 extern char    OutputFile_TypeOfCurrentFile ;
 
@@ -30,7 +27,7 @@ extern void           (OutputFile_Delete)(void*) ;
 
 
 
-struct OutputFile_s {             /* Output file */
+struct OutputFile_t {             /* Output file */
   TextFile_t* textfile ;          /* The file */
 } ;
 

@@ -6,15 +6,11 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
+/* Forward declarations */
+struct Geometry_t; //typedef struct Geometry_t     Geometry_t ;
+struct DataFile_t;
+struct Periodicities_t;
 
-/* class-like structure */
-struct Geometry_s     ; typedef struct Geometry_s     Geometry_t ;
-
-
-/* 1. Geometry_t 
- * -------------*/
-#include "DataFile.h"
 
 extern Geometry_t*  (Geometry_Create)(DataFile_t*) ;
 extern void         (Geometry_Delete)(void*) ;
@@ -68,9 +64,8 @@ extern Geometry_t*  (Geometry_New)   (void) ;
 
 #include "Symmetry.h"
 #include "CoorSys.h"
-#include "Periodicities.h"
 
-struct Geometry_s {
+struct Geometry_t {
   int dim ;    /* Dimension (1,2,3) */
   Symmetry_t symmetry ;       /* Symmetry */
   CoorSys_t coorsys ;         /* Coordinate system */
@@ -78,8 +73,8 @@ struct Geometry_s {
 } ;
 
 
-
 #ifdef __CPLUSPLUS
 }
 #endif
+
 #endif

@@ -6,10 +6,9 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Region_s         ; typedef struct Region_s         Region_t ;
+/* Forward declarations */
+struct Region_t; //typedef struct Region_t         Region_t ;
 
 
 extern Region_t*  (Region_New)   (void) ;
@@ -26,7 +25,7 @@ extern void       (Region_Delete)(void*) ;
 #define Region_GetRegionName(R)           ((R)->RegionName)
 
 
-struct Region_s {
+struct Region_t {
   //int   RegionIndex ;
   //int   RegionTag ;
   char* RegionName ;

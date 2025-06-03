@@ -5,10 +5,9 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct View_s       ; typedef struct View_s       View_t ;
+/* Forward declarations */
+struct View_t; //typedef struct View_t       View_t ;
 
 
 extern View_t*    (View_Create)(void) ;
@@ -24,7 +23,7 @@ extern void       (View_Delete)(void*) ;
 
 
 
-struct View_s {               /* View (scalar, vector, tensor) */
+struct View_t {               /* View (scalar, vector, tensor) */
   short int n ;               /* Nb of components (1,3,9) */
   char*   name ;              /* Name of the view */
   int     index ;             /* Index of the view in the global set of views */

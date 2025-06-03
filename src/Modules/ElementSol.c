@@ -76,7 +76,7 @@ void (ElementSol_AllocateMemoryForImplicitTerms)(ElementSol_t* elementsol)
 {
   int ni = ElementSol_GetNbOfImplicitTerms(elementsol) ;
   double* vi = (double*) Mry_New(double[ni]) ;
-  GenericData_t* gdat = GenericData_Create(ni,vi,double,"implicit terms") ;
+  GenericData_t* gdat = GenericData_Create(ni,vi,"implicit terms") ;
   
   free(GenericData_GetName(ElementSol_GetImplicitGenericData(elementsol))) ;
   ElementSol_GetImplicitGenericData(elementsol)[0] = gdat[0] ;
@@ -91,7 +91,7 @@ void (ElementSol_AllocateMemoryForExplicitTerms)(ElementSol_t* elementsol)
 {
   int ne = ElementSol_GetNbOfExplicitTerms(elementsol) ;
   double* ve = (double*) Mry_New(double[ne]) ;
-  GenericData_t* gdat = GenericData_Create(ne,ve,double,"explicit terms") ;
+  GenericData_t* gdat = GenericData_Create(ne,ve,"explicit terms") ;
   
   free(GenericData_GetName(ElementSol_GetExplicitGenericData(elementsol))) ;
   ElementSol_GetExplicitGenericData(elementsol)[0] = gdat[0] ;
@@ -106,7 +106,7 @@ void (ElementSol_AllocateMemoryForConstantTerms)(ElementSol_t* elementsol)
 {
   int n0 = ElementSol_GetNbOfConstantTerms(elementsol) ;
   double* v0 = (double*) Mry_New(double[n0]) ;
-  GenericData_t* gdat = GenericData_Create(n0,v0,double,"constant terms") ;
+  GenericData_t* gdat = GenericData_Create(n0,v0,"constant terms") ;
   
   free(GenericData_GetName(ElementSol_GetConstantGenericData(elementsol))) ;
   ElementSol_GetConstantGenericData(elementsol)[0] = gdat[0] ;
@@ -125,7 +125,7 @@ void (ElementSol_AllocateMemoryForImplicitTerms)(ElementSol_t* elementsol)
   int ni = ElementSol_GetNbOfImplicitTerms(elementsol) ;
   double* vi = (double*) Mry_New(double[ni]) ;
         
-  GenericData_Initialize(gdat,ni,vi,double,"implicit terms") ;
+  GenericData_Initialize(gdat,ni,vi,"implicit terms") ;
 }
 
 
@@ -138,7 +138,7 @@ void (ElementSol_AllocateMemoryForExplicitTerms)(ElementSol_t* elementsol)
   int ne = ElementSol_GetNbOfExplicitTerms(elementsol) ;
   double* ve = (double*) Mry_New(double[ne]) ;
         
-  GenericData_Initialize(gdat,ne,ve,double,"explicit terms") ;
+  GenericData_Initialize(gdat,ne,ve,"explicit terms") ;
 }
 
 
@@ -151,7 +151,7 @@ void (ElementSol_AllocateMemoryForConstantTerms)(ElementSol_t* elementsol)
   int n0 = ElementSol_GetNbOfConstantTerms(elementsol) ;
   double* v0 = (double*) Mry_New(double[n0]) ;
         
-  GenericData_Initialize(gdat,n0,v0,double,"constant terms") ;
+  GenericData_Initialize(gdat,n0,v0,"constant terms") ;
 }
 #endif
 

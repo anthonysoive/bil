@@ -5,11 +5,10 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Entry_s  ; typedef struct Entry_s  Entry_t ;
-
+/* Forward declarations */
+struct Entry_t; //typedef struct Entry_t  Entry_t ;
+struct Context_t;
 
 
 extern Entry_t*    (Entry_Create)   (int,char**) ;
@@ -20,11 +19,7 @@ extern int         (Entry_Main)     (int,char**) ;
 
 #define Entry_GetContext(E)          ((E)->context)
 
-
-
-#include "Context.h"
-
-struct Entry_s {
+struct Entry_t {
   Context_t*     context ;
 } ;
 

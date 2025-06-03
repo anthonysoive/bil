@@ -877,7 +877,7 @@ struct ConstitutiveIntegrator_t {
     int np  = IntFct_GetNbOfPoints(intfct) ;
     int    ind[9+Model_MaxNbOfEquations];
     double dui[9+Model_MaxNbOfEquations];
-    int shift;
+    int shift = 0;
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
@@ -922,7 +922,7 @@ struct ConstitutiveIntegrator_t {
     IntFct_t*  intfct = Element_GetIntFct(_el) ;
     int np  = IntFct_GetNbOfPoints(intfct) ;
     int    ind[9+Model_MaxNbOfEquations];
-    int shift;
+    int shift = 0;
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
@@ -965,7 +965,7 @@ struct ConstitutiveIntegrator_t {
     int nn = Element_GetNbOfNodes(_el) ;
     int    ind[9+Model_MaxNbOfEquations];
     double dui[9+Model_MaxNbOfEquations];
-    int shift;
+    int shift = 0;
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
@@ -1013,7 +1013,7 @@ struct ConstitutiveIntegrator_t {
   int SetAutodiffTangentMatrixForFVM(int const& ncols,double* c) {
     int nn = Element_GetNbOfNodes(_el) ;
     int ind[9+Model_MaxNbOfEquations];
-    int shift;
+    int shift = 0;
     
     for(int i = 0 ; i < ncols ; i++) ind[i] = -1 ;
     
@@ -1059,7 +1059,7 @@ struct ConstitutiveIntegrator_t {
   int SetTransferMatrixForFEM(int const& ncols,double* c) {
     IntFct_t*  intfct = Element_GetIntFct(_el) ;
     int np  = IntFct_GetNbOfPoints(intfct) ;
-    int shift;
+    int shift = 0;
     
     /* initialization */
     {

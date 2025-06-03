@@ -1,16 +1,14 @@
 #ifndef ICONDS_H
 #define ICONDS_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure and */
-struct IConds_s       ; typedef struct IConds_s       IConds_t ;
-
-
-#include "DataFile.h"
-#include "Functions.h"
-#include "Mesh.h"
-#include "Fields.h"
+/* Forward declarations */
+struct IConds_t; //typedef struct IConds_t       IConds_t ;
+struct DataFile_t;
+struct Functions_t;
+struct Mesh_t;
+struct Fields_t;
+struct ICond_t;
 
 
 //extern IConds_t* IConds_Create(DataFile_t*,Mesh_t*,Fields_t*) ;
@@ -28,11 +26,7 @@ extern void      (IConds_AssignInitialConditions)(IConds_t*,Mesh_t*,double) ;
 #define IConds_GetFileNameOfNodalValues(ICS)   ((ICS)->file)
 
 
-
-#include "ICond.h"
-
-
-struct IConds_s {             /* Initial Conditions */
+struct IConds_t {             /* Initial Conditions */
   char*  file ;               /* Name of file containing nodal values */
   unsigned int n_ic ;         /* Nb of IC */
   ICond_t* ic ;               /* Initial condition */

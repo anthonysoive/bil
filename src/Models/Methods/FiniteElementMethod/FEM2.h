@@ -6,16 +6,13 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
-
-/* class-like structure */
-struct FEM2_s     ; typedef struct FEM2_s     FEM2_t ;
-
-
-#include "Mesh.h"
-#include "Solvers.h"
-#include "DataSet.h"
-#include "Solutions.h"
+/* Forward declarations */
+struct FEM2_t; //typedef struct FEM2_t     FEM2_t ;
+struct Mesh_t;
+struct Solvers_t;
+struct DataSet_t;
+struct Solutions_t;
+struct Buffers_t;
 
 extern FEM2_t*  (FEM2_GetInstance)(DataSet_t*,Solvers_t*,Solutions_t*,Solutions_t*) ;
 extern void     (FEM2_Delete)(void*) ;
@@ -59,10 +56,9 @@ extern void     (FEM2_InitializeMicrostructureDataSet)(FEM2_t*) ;
 
 
 
-#include "Buffers.h"
 #include "GenericObject.h"
 
-struct FEM2_s {               /* (FEM)^2 */
+struct FEM2_t {               /* (FEM)^2 */
   DataSet_t* dataset ;
   Solvers_t* solvers ;
   Solutions_t* sols ;
@@ -74,5 +70,10 @@ struct FEM2_s {               /* (FEM)^2 */
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include "Buffers.h"
+#include "Buffer.h"
+#include "Solvers.h"
 
 #endif

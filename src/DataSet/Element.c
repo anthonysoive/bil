@@ -8,6 +8,10 @@
 #include "Mry.h"
 #include "Node.h"
 #include "Element.h"
+#include "ShapeFcts.h"
+#include "ShapeFct.h"
+#include "IntFcts.h"
+#include "IntFct.h"
 #include "Math_.h"
 #include "Message.h"
 
@@ -206,7 +210,7 @@ void (Element_AllocateMicrostructureSolutions)(Element_t const* el,Mesh_t* mesh,
           
         {
           ElementSol_t* elementsol = Solution_GetElementSol(solution) + ie ;
-          GenericData_t* gdat  = GenericData_Create(NbOfIntPoints,sols,Solutions_t,"Solutions") ;
+          GenericData_t* gdat  = GenericData_Create(NbOfIntPoints,sols,"Solutions") ;
           
           ElementSol_AddImplicitGenericData(elementsol,gdat) ;
         }
@@ -1852,7 +1856,7 @@ void (Element_CheckNumberingOfOverlappingNodes)(Element_t const* el,const int nf
     int jj = Element_OverlappingNode(el,j) ;
 
     if(jj != j && jj < nf) {
-      arret("FEM_CheckNumberingOfOverlappingNodes: bad numbering") ;
+      arret("Element_CheckNumberingOfOverlappingNodes: bad numbering") ;
     }
   }
 }

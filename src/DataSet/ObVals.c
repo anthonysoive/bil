@@ -6,9 +6,14 @@
 #include "DataFile.h"
 #include "Mesh.h"
 #include "Models.h"
+#include "Model.h"
 #include "String_.h"
 #include "Mry.h"
 #include "ObVals.h"
+#include "ObVal.h"
+#include "Materials.h"
+#include "Material.h"
+#include "Nodes.h"
 
 
 

@@ -19,7 +19,7 @@ static void  (CementSolutionDiffusion_UpdateElementFluxes)(CementSolutionDiffusi
 
 
 
-CementSolutionDiffusion_t* CementSolutionDiffusion_Create(void)
+CementSolutionDiffusion_t* (CementSolutionDiffusion_Create)(void)
 {
   CementSolutionDiffusion_t* csd = (CementSolutionDiffusion_t*) malloc(sizeof(CementSolutionDiffusion_t)) ;
   
@@ -38,7 +38,7 @@ CementSolutionDiffusion_t* CementSolutionDiffusion_Create(void)
 
 
 
-void CementSolutionDiffusion_AllocateMemory(CementSolutionDiffusion_t* csd)
+void (CementSolutionDiffusion_AllocateMemory)(CementSolutionDiffusion_t* csd)
 {
   
   
@@ -128,6 +128,70 @@ void CementSolutionDiffusion_AllocateMemory(CementSolutionDiffusion_t* csd)
 
 
 
+void (CementSolutionDiffusion_Delete)(void* self)
+{
+  CementSolutionDiffusion_t* csd = (CementSolutionDiffusion_t*) self;
+
+  {
+    Temperature_t* temp = CementSolutionDiffusion_GetTemperature(csd);
+    
+    if(temp) {
+      Temperature_Delete(temp);
+      free(temp);
+    }
+  }
+  
+  {
+    double* d = CementSolutionDiffusion_GetDiffusionCoefficient(csd);
+    
+    if(d) {
+      free(d);
+    }
+  }
+
+  {
+    double* grd = CementSolutionDiffusion_GetGradient(csd);
+    
+    if(grd) {
+      free(grd);
+    }
+  }
+
+  {
+    double* pot = CementSolutionDiffusion_GetPotential(csd);
+    
+    if(pot) {
+      free(pot);
+    }
+  }
+
+  {
+    double** ppot = CementSolutionDiffusion_GetPointerToPotentials(csd);
+    
+    if(ppot) {
+      free(ppot);
+    }
+  }
+
+  {
+    double* flx = CementSolutionDiffusion_GetFlux(csd);
+    
+    if(flx) {
+      free(flx);
+    }
+  }
+  
+  {
+    double* efx = CementSolutionDiffusion_GetElementFlux(csd);
+    
+    if(efx) {
+      free(efx);
+    }
+  }
+}
+
+
+
 
 /* Intern functions */
 
@@ -137,7 +201,7 @@ void CementSolutionDiffusion_AllocateMemory(CementSolutionDiffusion_t* csd)
 #define Diff(CPD)             CementSolutionDiffusion_GetDiffusionCoefficientOf(csd,CPD)
 
 
-void CementSolutionDiffusion_Initialize(CementSolutionDiffusion_t* csd)
+void (CementSolutionDiffusion_Initialize)(CementSolutionDiffusion_t* csd)
 {
   /* Diffusion coefficients */
   {
@@ -246,7 +310,7 @@ void CementSolutionDiffusion_Initialize(CementSolutionDiffusion_t* csd)
 
 
 
-void CementSolutionDiffusion_ComputeFluxes(CementSolutionDiffusion_t* csd)
+void (CementSolutionDiffusion_ComputeFluxes)(CementSolutionDiffusion_t* csd)
 {
   /* The fluxes */
   {
@@ -275,7 +339,7 @@ void CementSolutionDiffusion_ComputeFluxes(CementSolutionDiffusion_t* csd)
 /* Shorthands of macros */
 #define Flux(CPD)             CementSolutionDiffusion_GetFluxOf(csd,CPD)
 
-void CementSolutionDiffusion_UpdateElementFluxes(CementSolutionDiffusion_t* csd)
+void (CementSolutionDiffusion_UpdateElementFluxes)(CementSolutionDiffusion_t* csd)
 /** Update the element concentrations **/
 {
   double w_ca       = Flux(Ca) ;

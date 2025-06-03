@@ -8,12 +8,17 @@
 #include "Geometry.h"
 #include "Nodes.h"
 #include "IntFcts.h"
+#include "ShapeFcts.h"
+#include "ShapeFct.h"
 #include "Materials.h"
+#include "Material.h"
 #include "Node.h"
 #include "Elements.h"
+#include "Element.h"
 #include "Message.h"
 #include "Math_.h"
 #include "Curves.h"
+#include "Regions.h"
 #include "Mry.h"
 
 
@@ -213,9 +218,9 @@ void  (Elements_DefineProperties)(Elements_t* elements)
     Material_t* mat = Element_GetMaterial(el) ;
 
     /* Size of tables: initialization */
-    Element_GetNbOfImplicitTerms(el) = 0 ;
-    Element_GetNbOfExplicitTerms(el) = 0 ;
-    Element_GetNbOfConstantTerms(el) = 0 ;
+    Element_SetNbOfImplicitTerms(el,0) ;
+    Element_SetNbOfExplicitTerms(el,0) ;
+    Element_SetNbOfConstantTerms(el,0) ;
 
     if(mat) {
       /* Size of tables for (im/ex)plicit terms and constant terms
@@ -243,9 +248,9 @@ void  (Elements_DefineProperties)(Elements_t* elements)
           do {
             ElementSol_t* elementsol = Solution_GetElementSol(solution) + ie ;
             
-            ElementSol_GetNbOfImplicitTerms(elementsol) = ni ;
-            ElementSol_GetNbOfExplicitTerms(elementsol) = ne ;
-            ElementSol_GetNbOfConstantTerms(elementsol) = n0 ;
+            ElementSol_SetNbOfImplicitTerms(elementsol,ni) ;
+            ElementSol_SetNbOfExplicitTerms(elementsol,ne) ;
+            ElementSol_SetNbOfConstantTerms(elementsol,n0) ;
             
             solution = Solution_GetPreviousSolution(solution) ;
           } while(solution != Element_GetSolution(el)) ;

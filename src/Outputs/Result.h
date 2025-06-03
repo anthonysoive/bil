@@ -5,11 +5,10 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Result_s       ; typedef struct Result_s       Result_t ;
-
+/* Forward declarations */
+struct Result_t; //typedef struct Result_t       Result_t ;
+struct View_t;
 
 
 extern Result_t* (Result_Create)(void) ;
@@ -30,9 +29,8 @@ extern void      (Result_SetValuesToZero)(Result_t*) ;
 #define Result_GetNameOfView(result)      (View_GetNameOfView(Result_GetView(result)))
 
 
-#include "View.h"
 
-struct Result_s {             /* Result */
+struct Result_t {             /* Result */
   double* v ;                 /* Values */
   short int n ;               /* Nb of values (1,3,9) */
   char*   text ;              /* Name of the result */
@@ -42,6 +40,9 @@ struct Result_s {             /* Result */
 /* Old notations which I try to eliminate little by little */
 #define resu_t    Result_t
 
+
+/* For the macros */
+#include "View.h"
 
 #ifdef __CPLUSPLUS
 }

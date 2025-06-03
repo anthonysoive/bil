@@ -2,14 +2,9 @@
 #define LDUSKLFORMAT_H
 
 
-
-/* class-like structure "LDUSKLFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-struct LDUSKLFormat_s   ; typedef struct LDUSKLFormat_s   LDUSKLFormat_t ;
-
-
-#include "Mesh.h"
+/* Forward declarations */
+struct LDUSKLFormat_t; //typedef struct LDUSKLFormat_t   LDUSKLFormat_t ;
+struct Mesh_t;
 
 
 //extern LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t*) ;
@@ -74,7 +69,7 @@ extern void            (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t*,unsigned int,c
 /* complete the structure types by using the typedef */
 
 /* LDU Skyline format */
-struct LDUSKLFormat_s {       /* LDU Skyline storage format */
+struct LDUSKLFormat_t {       /* LDU Skyline storage format */
   unsigned int    nnz ;       /* Nb of non zero values */
   double* d ;                 /* Diagonal matrix values */
   double** l ;                /* Pointer to strictly lower triangular matrix values */

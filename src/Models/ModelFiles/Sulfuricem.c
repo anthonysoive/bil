@@ -382,7 +382,7 @@ static double n_afm_0,n_aft_0,n_c3ah6_0,n_csh2_0 ;
 static Curve_t* MolarVolumeOfCSH_Curve = NULL ;
 
 static CementSolutionDiffusion_t* csd = NULL ;
-static HardenedCementChemistry_t* hcc = NULL ;
+static HardenedCementChemistry_t<double>* hcc = NULL ;
 
 
 
@@ -586,7 +586,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 
   {
     if(!csd) csd = CementSolutionDiffusion_Create() ;
-    if(!hcc) hcc = HardenedCementChemistry_Create() ;
+    if(!hcc) hcc = HardenedCementChemistry_Create<double>() ;
     
     HardenedCementChemistry_SetRoomTemperature(hcc,TEMPERATURE) ;
     
@@ -597,7 +597,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
         Curve_t* curve = Material_FindCurve(mat,"X_CSH") ;
       
         if(curve) {
-          HardenedCementChemistry_GetCurveOfCalciumSiliconRatioInCSH(hcc) = curve ;
+          HardenedCementChemistry_SetCurveOfCalciumSiliconRatioInCSH(hcc,curve) ;
         }
       }
 
@@ -605,7 +605,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
         Curve_t* curve = Material_FindCurve(mat,"Z_CSH") ;
       
         if(curve) {
-          HardenedCementChemistry_GetCurveOfWaterSiliconRatioInCSH(hcc) = curve ;
+          HardenedCementChemistry_SetCurveOfWaterSiliconRatioInCSH(hcc,curve) ;
         }
       }
 
@@ -613,7 +613,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
         Curve_t* curve = Material_FindCurve(mat,"S_SH") ;
       
         if(curve) {
-          HardenedCementChemistry_GetCurveOfSaturationIndexOfSH(hcc) = curve ;
+          HardenedCementChemistry_SetCurveOfSaturationIndexOfSH(hcc,curve) ;
         }
       }
     }
@@ -687,9 +687,9 @@ int PrintModelChar(Model_t* model,FILE *ficd)
 
 int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
 {
-  Element_GetNbOfImplicitTerms(el) = NVI ;
-  Element_GetNbOfExplicitTerms(el) = NVE ;
-  Element_GetNbOfConstantTerms(el) = NV0 ;
+  Element_SetNbOfImplicitTerms(el,NVI) ;
+  Element_SetNbOfExplicitTerms(el,NVE) ;
+  Element_SetNbOfConstantTerms(el,NV0) ;
   return(0) ;
 }
 
@@ -752,8 +752,8 @@ int ComputeInitialState(Element_t* el)
         HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
         HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
     
-        HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = c_cl ;
-        HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = logc_cl ;
+        HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,c_cl) ;
+        HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,logc_cl) ;
   
         HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O) ;
       
@@ -1648,10 +1648,10 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x)
     HardenedCementChemistry_SetInput(hcc,LogC_Na,logc_na) ;
     HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
     HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
-    HardenedCementChemistry_GetElectricPotential(hcc) = psi ;
+    HardenedCementChemistry_SetElectricPotential(hcc,psi) ;
     
-    HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = c_cl ;
-    HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = logc_cl ;
+    HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,c_cl) ;
+    HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,logc_cl) ;
   
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O) ;
 

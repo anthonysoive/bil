@@ -129,7 +129,7 @@ Plasticity_t*  (Plasticity_Create)(void)
     
     Plasticity_GetParameter(plasty) = par ;
       
-    Plasticity_AppendData(plasty,Plasticity_MaxNbOfParameters,par,double,"Parameters") ;
+    Plasticity_AppendData(plasty,Plasticity_MaxNbOfParameters,par,"Parameters") ;
   }
 
   /* Curves */

@@ -600,9 +600,9 @@ int DefineElementProp(Element_t *el,IntFcts_t *intfcts)
 {
   
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI ;
-  Element_GetNbOfExplicitTerms(el) = NVE ;
-  Element_GetNbOfConstantTerms(el) = NV0 ;
+  Element_SetNbOfImplicitTerms(el,NVI) ;
+  Element_SetNbOfExplicitTerms(el,NVE) ;
+  Element_SetNbOfConstantTerms(el,NV0) ;
   
   return(0) ;
 }

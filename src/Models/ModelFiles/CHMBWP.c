@@ -7,7 +7,7 @@
 #include "FEM.h"
 
 #define TITLE   "Chemo-hydro-mechanics of bituminized waste products"
-#define AUTHORS "MELOT-CHEN"
+#define AUTHORS "G.MELOT, Yujiong CHEN"
 
 #include "PredefinedMethods.h"
 
@@ -79,6 +79,7 @@
 #define SIG_D_n     (vim_n + 23)
 
 #define EPSI_e      (vim   + 32)
+#define EPSI_en     (vim_n   + 32)
 
 #define EPSI_vp     (vim   + 41)
 #define EPSI_vpn    (vim_n + 41)
@@ -116,9 +117,9 @@
 
 
 /* Physical constant */
-#define RT        (2436.)   /* product of R=8.3143 and T=293 (Pa.m3/mol) */ 
-#define M_w       (18.e-3)  // molar mass of water (kg/mol)
-
+#define RT          (2436.)   /* product of R=8.3143 and T=293 (Pa.m3/mol) */ 
+#define M_w       (18.e-3)  // water molar mass (kg/mol)
+#define nu        (2.0)     // dissociation coefficient of NaNO3 
 
 /* Fluid properties
  * ---------------- */
@@ -138,26 +139,30 @@
         ((1 - (n))*(Ks)*4*(Gs)/(3*(n)*(Ks) + 4*(Gs)))
         
 #define ShearModulusMoriTanaka(Ks,Gs,n) \
-        ((1 - (n))*(Gs)*(9*(Ks) + 8*(Gs))/(9*(Ks)*(1 + 2*(n)/3) + 8*(Gs)*(1 + 3*(n)/2)))
-        
+        ((1 - (n))*(Gs)/(1 + 2*(n)/3))
+
 #define BiotCoefficientMoriTanaka(Ks,Gs,n) \
         (1 - (1 - (n))*4*(Gs)/(3*(n)*(Ks) + 4*(Gs)))
         
-#define BiotModulusMoriTanaka(Ks,Gs,n) \
-        ((3*(n)*(Ks) + 4*(Gs))/(3*(n)*(1-(n))))
+#define InverseBiotModulusMoriTanaka(Ks,Gs,n) \
+        ((3*(n)*(1-(n)))/(3*(n)*(Ks) + 4*(Gs)))
 
-/* Permeability */
-#define IntrinsicPermeability(n) \
-        ((K_dep == 0) ? k_i : ((K_dep == 1) ? IntrinsicPermeability_UPC(n) : ((K_dep == 2) ? IntrinsicPermeability_Maxwell(n) : 0)))
+/* Permeability */    //faut pas ecrire des commentaires apres \ la ligne dessous !!!!!!
+#define Permeability(n,w_s,rho_l) \
+        ((K_dep == 0) ? k_i : ((K_dep == 1) ? Permeability_Coupled_homogenization_MT(n,w_s,rho_l) : ((K_dep == 2) ? IntrinsicPermeability_Maxwell(n) : 0)))
+
 /* Implementation */
 #define IntrinsicPermeability_UPC(n) \
         (k_i * (pow(((n)/phi_l_i),3)*(pow(((1-phi_l_i)/(1-(n))),2))))
 #define IntrinsicPermeability_Maxwell(n) \
         (k_i * (1 + 3*(n)/(1 - (n))))
+#define Permeability_Coupled_homogenization_MT(n,w_s,rho_l) \
+    ((1+2*(n))/((1-(n))*RT*((rho_l)*(rho_l)))*((1-(w_s)*(rho_l)*v_spv)*M_w*alpha_w_bit*(1-(w_s))*(rho_l)*d_w_bit + (1.+(1.-(w_s))*(rho_l)*v_spv)*alpha_s_bit*(w_s)*(rho_l)*Molarm_s*d_s_bit/(nu)))
+// for coupled homogenization 
         
 /* Diffusion coefficient */
-#define DiffusionCoefficient(n,tau) \
-        ((D_dep == 0) ? d_i : ((D_dep == 1) ? DiffusionCoefficient_1(n,tau) : ((D_dep == 2) ? DiffusionCoefficient_2(n) : ((D_dep == 3) ? DiffusionCoefficient_3(tau) : ((D_dep == 4) ? DiffusionCoefficient_4(n) : 0)))))
+#define DiffusionCoefficient(n,tau,rho_l,tau0,Q,w_s) \
+        ((D_dep == 0) ? d_i : ((D_dep == 1) ? Diffusion_Coupled_homogenization_MT(n,tau,rho_l,tau0,Q,w_s) : ((D_dep == 2) ? DiffusionCoefficient_2(n) : ((D_dep == 3) ? DiffusionCoefficient_3(tau) : ((D_dep == 4) ? DiffusionCoefficient_4(n) : 0)))))
 /* Implementation */
 #define DiffusionCoefficient_1(n,tau) \
         (DiffusionCoefficient_2(n) * (1 - (tau)))
@@ -167,10 +172,13 @@
         (d_i * (1 - (tau)))
 #define DiffusionCoefficient_4(n) \
         (d_i * (n) / phi_l_i)
+#define Diffusion_Coupled_homogenization_MT(n,tau,rho_l,tau0,Q,w_s) \
+        (((1.+2.*(n))/(1.-(n)))*(1.-((tau)*(tau_sat))/(tau0))*(nu*(w_s)*Q/(1.-(w_s)))*(alpha_w_bit*(1-(w_s))*(rho_l)*d_w_bit*M_w)/(Molarm_s*(rho_l)))
+// for coupled homogenization  
         
 /* Osmotic efficiency coefficient */
-#define OsmoticEfficiencyCoefficient(n) \
-        ((Tau_dep == 0) ? tau_i : ((Tau_dep == 2) ? OsmoticEfficiencyCoefficient_UPC(n) : ((Tau_dep == 3) ?OsmoticEfficiencyCoefficient_Maxwell01(n) : ((Tau_dep == 4) ? OsmoticEfficiencyCoefficient_Maxwell05(n) : ((Tau_dep == 5) ? OsmoticEfficiencyCoefficient_5(n) : ((Tau_dep == 6) ? OsmoticEfficiencyCoefficient_Maxwell08(n) : ((Tau_dep == 7) ? OsmoticEfficiencyCoefficient_Sigmoid(n) : 0)))))))
+#define OsmoticEfficiencyCoefficient(n,w_s,rho_l,tau0) \
+        ((Tau_dep == 0) ? tau_i : ((Tau_dep == 1) ? Osmosis_Coupled_homogenization_MT(n,w_s,rho_l,tau0) : ((Tau_dep == 3) ?OsmoticEfficiencyCoefficient_Maxwell01(n) : ((Tau_dep == 4) ? OsmoticEfficiencyCoefficient_Maxwell05(n) : ((Tau_dep == 5) ? OsmoticEfficiencyCoefficient_5(n) : ((Tau_dep == 6) ? OsmoticEfficiencyCoefficient_Maxwell08(n) : ((Tau_dep == 7) ? OsmoticEfficiencyCoefficient_Sigmoid(n) : 0)))))))
 /* Implementation */
 #define OsmoticEfficiencyCoefficient_UPC(n) \
         (tau_i * (phi_l_i/(n)))
@@ -184,6 +192,9 @@
         (tau_i * (1 - 3*0.8*(n)/(2 + (n))))
 #define OsmoticEfficiencyCoefficient_Sigmoid(n) \
         (tau_i * (1 - 1/(1 + exp(-A_tau*((n) - B_tau)))))
+#define Osmosis_Coupled_homogenization_MT(n,w_s,rho_l,tau0) \
+    ((tau0)*(1.-(alpha_s_bit*Molarm_s*d_s_bit)/((w_s)*alpha_s_bit*Molarm_s*d_s_bit*(1.+(1.-(w_s))*(rho_l)*v_spv)+(1.-(w_s)*(rho_l)*v_spv)*nu*((alpha_w_bit*(1-(w_s))*M_w*d_w_bit)))))
+// for coupled homogenization 
 #define A_tau  30
 #define B_tau  0.3
         
@@ -254,7 +265,21 @@ static double rho_l_dep;      // 0 -> rho_l = cte = p / 1 -> rho_l = f(w_s)
 /**********************************************************************/
 static double SampleSurface;  //Sample exchange surface [m²]
 static double ElementSize;     //Element size [m]  
-
+/**********************************************************************/
+/**Parameters for coupled homogeneization*/
+/**********************************************************************/
+static double  d_w_bit;   // water diffusion coefficient in bitumen 
+static double  d_s_bit;   // salt diffusion coefficient in bitumen
+static double  alpha_w_bit; // water concentration in bitumen
+static double  alpha_s_bit; // constant linked with salt concentration in bitumen: rho_s_bit = alpha_s_bit*w_s*rho_w
+static double  tau_sat ;  // osmotic coefficient at w_s = w_s_sat
+static double  beta_0 ;   // Pitzer parameter
+static double  beta_1 ;   // Pitzer parameter   
+static double  C_gamma ;    // Pitzer parameter 
+static double  A_phi ;    // Pitzer parameter 
+static double  b_gamma ;    // Pitzer parameter 
+static double  alpha_gamma ;    // Pitzer parameter 
+static double  v_spv ;    //difference of water and salt specific partial volume
 
 
 
@@ -366,6 +391,18 @@ int pm(const char* s)
   else if(!strcmp(s,"rho_l_dep"))         return(27); 
   else if(!strcmp(s,"SampleSurface"))     return(28);
   else if(!strcmp(s,"ElementSize"))       return(29); 
+  else if(!strcmp(s,"d_w_bit"))           return(30);     
+  else if(!strcmp(s,"d_s_bit"))           return(31);     
+  else if(!strcmp(s,"alpha_w_bit"))         return(32);     
+  else if(!strcmp(s,"alpha_s_bit"))       return(33);     
+  else if(!strcmp(s,"tau_sat"))           return(34);     
+  else if(!strcmp(s,"beta_0"))          return(35);     
+  else if(!strcmp(s,"beta_1"))          return(36);     
+  else if(!strcmp(s,"C_gamma"))           return(37);     
+  else if(!strcmp(s,"A_phi"))           return(38);     
+  else if(!strcmp(s,"b_gamma"))           return(39);     
+  else if(!strcmp(s,"alpha_gamma"))           return(40);     
+  else if(!strcmp(s,"v_spv"))           return(41);     
   else return(-1);
 }
 
@@ -409,9 +446,27 @@ void GetProperties(Element_t* el)// copy the value of material properties
   rho_l_dep     = GetProperty("rho_l_dep");
   SampleSurface  = GetProperty("SampleSurface");
   ElementSize  = GetProperty("ElementSize");
+  d_w_bit  = GetProperty("d_w_bit");  
+  d_s_bit  = GetProperty("d_s_bit");
+  alpha_w_bit  = GetProperty("alpha_w_bit");
+  alpha_s_bit  = GetProperty("alpha_s_bit");
+  beta_0  = GetProperty("beta_0");
+  beta_1  = GetProperty("beta_1");
+  C_gamma  = GetProperty("C_gamma");
+  A_phi  = GetProperty("A_phi");
+  b_gamma  = GetProperty("b_gamma");
+  alpha_gamma  = GetProperty("alpha_gamma");
+  v_spv  = GetProperty("v_spv");
+  {
+    double molality_sat = w_s_sat/((1.-w_s_sat)*Molarm_s) ; //number of moles of solute per kg of solvent
+      double sqm_sat = sqrt(molality_sat) ;         //square root of molality
+      double Q_sat = 1./(w_s_sat*(1.-w_s_sat))+1./(Molarm_s*((1.-w_s_sat)*(1.-w_s_sat)))*(-A_phi*(3.+2.*b_gamma*sqm_sat)/(2.*sqm_sat*(1.+b_gamma*sqm_sat)*(1.+b_gamma*sqm_sat))+2.*beta_0+2.*beta_1/(alpha_gamma*alpha_gamma)*exp(-alpha_gamma*sqm_sat)*(alpha_gamma*alpha_gamma-0.25*alpha_gamma*alpha_gamma*alpha_gamma*sqm_sat)+2.*molality_sat*C_gamma) ;
+      double rho_l_sat = LiquidDensity(p_i,w_s_sat) ;      //liquid density at atmosphetic pressure and w_s_sat
+      double tau0_sat = nu*w_s_sat*Q_sat/((1.-w_s_sat)*(1.-w_s_sat*rho_l_sat*v_spv))  ;
+    tau_sat = OsmoticEfficiencyCoefficient(phi_l_i,w_s_sat,rho_l_sat,tau0_sat) ;
+  }
 #undef GetProperty
 }
-
 
 
 int SetModelProp(Model_t *model)
@@ -457,9 +512,8 @@ int SetModelProp(Model_t *model)
 int ReadMatProp(Material_t *mat,DataFile_t *datafile)
 /* Reading of material properties in file ficd */
 {
-  int  NbOfProp = 30;
+  int  NbOfProp = 35;     
   Material_ScanProperties(mat,datafile,pm) ;
-
   return(NbOfProp) ;
 }
 
@@ -530,9 +584,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+  Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ;
   
   return(0) ;
 }
@@ -609,6 +663,8 @@ int ComputeInitialState(Element_t* el)
       SIG[4] = sig0_22 ;
       SIG[8] = sig0_33 ;
       
+      for(i = 0 ; i < 9 ; i++) EPSI_e[i] = 0 ;
+      
       Phi_c = phi_c_i ;
       Phi_l = phi_l_i ;
       Poro_E = phi_l_i ;
@@ -617,9 +673,8 @@ int ComputeInitialState(Element_t* el)
         double K_s = young/(3 - 6*poisson) ;
         double G_s = young/(2 + 2*poisson) ;
         double n   = phi_l_i ;
-        //double biot = BiotCoefficientMoriTanaka(K_s,G_s,n) ;
         double sigm = (SIG[0]+SIG[4]+SIG[8])/3 ;
-        double biot_v = 1 ;
+        double biot_v = BiotCoefficientMoriTanaka(eta_v,eta_d,n) ;    
       
         for(i = 0 ; i < 9 ; i++) SIG_D[i] = SIG[i] ;
         
@@ -627,7 +682,6 @@ int ComputeInitialState(Element_t* el)
         SIG_D[4] -= sigm ;
         SIG_D[8] -= sigm ; 
       
-        //EFFSIG_M = sigm - biot*(p - p_i) ;
         EFFSIG_M = sigm + biot_v * p ;
       }
     }
@@ -635,20 +689,25 @@ int ComputeInitialState(Element_t* el)
     /* storage in vex */
     {
       double * vex = vex0 + m*NVE ;
-      /** transfert coefficient */
-      double n    = phi_l_i ;
-      double k_l  = IntrinsicPermeability(n) ;
-      double tau  = OsmoticEfficiencyCoefficient(n) ;
-      double d    = DiffusionCoefficient(n,tau) ;
-    
-      K_l = k_l ;
+      /** transfert coefficient */  
+    double molality = w_s/((1.-w_s)*Molarm_s) ; //number of moles of solute per kg of solvent
+      double sqm = sqrt(molality) ;         //square root of molality
+      double Q = 1./(w_s*(1.-w_s))+1./(Molarm_s*((1.-w_s)*(1.-w_s)))*(-A_phi*(3.+2.*b_gamma*sqm)/(2.*sqm*(1.+b_gamma*sqm)*(1.+b_gamma*sqm))+2.*beta_0+2.*beta_1/(alpha_gamma*alpha_gamma)*exp(-alpha_gamma*sqm)*(alpha_gamma*alpha_gamma-0.25*alpha_gamma*alpha_gamma*alpha_gamma*sqm)+2.*molality*C_gamma) ;
+      double tau0 = nu*w_s*Q/((1.-w_s)*(1.-w_s*rho_l*v_spv))  ;
+      double n    = phi_l_i ;      
+      double k_l  = Permeability(n,w_s,rho_l) ;   //k_l here is already k_eff instead of k_intrinsic
+      double tau  = OsmoticEfficiencyCoefficient(n,w_s,rho_l,tau0)/tau_sat ;  //normalized by tau_sat
+      double d    = DiffusionCoefficient(n,tau,rho_l,tau0,Q,w_s) ;
+
+
+      K_l = k_l ; 
       D   = d ;
       Tau = tau ;
       
       {
-        double k_darcy = rho_l * k_l / viscosity_w ;
+        double k_darcy = rho_l * k_l ;    
         double d_fick = rho_l * d ;
-        double k_osmosis = k_darcy*(RT*rho_l/Molarm_s)*tau ;
+        double k_osmosis = k_darcy*(RT*rho_l/Molarm_s)*tau*tau_sat ;  
       
         K_Darcy = k_darcy ;
         D_Fick  = d_fick ;
@@ -678,12 +737,16 @@ int ComputeInitialState(Element_t* el)
     
       for(i = 0 ; i < 9 ; i++) SIG[i] = x[I_SIG + i] ;
       for(i = 0 ; i < 9 ; i++) SIG_D[i] = x[I_SIG_D + i] ;
+      for(i = 0 ; i < 9 ; i++) EPSI_e[i] = x[I_EPS + i] ;     
+      
+      
       
       EFFSIG_M = x[I_EFFSIG_M] ;
     
       Phi_l = x[I_PHI_L] ;
       Phi_c = x[I_PHI_C] ;
       Poro_E = x[I_Poro_E] ;
+    
     
       /* For post-treatment of M_salt_leached and m_water_absorbed */
       M_W_water = 0 ;
@@ -724,10 +787,19 @@ int  ComputeExplicitTerms(Element_t *el,double t)
     /* eulerian porosity */
     double n     = x[I_Poro_E] ;
     
+    /* solute mass fraction */      
+    double w_s = x[I_W_S] ;
+
     /* Transfer coefficients */
-    double k_l = IntrinsicPermeability(n) ;
-    double tau = OsmoticEfficiencyCoefficient(n) ;
-    double d   = DiffusionCoefficient(n,tau) ;
+    double molality = w_s/((1.-w_s)*Molarm_s) ; //number of moles of solute per kg of solvent
+    double sqm = sqrt(molality) ;         //square root of molality
+    double Q = 1./(w_s*(1.-w_s))+1./(Molarm_s*((1.-w_s)*(1.-w_s)))*(-A_phi*(3.+2.*b_gamma*sqm)/(2.*sqm*(1.+b_gamma*sqm)*(1.+b_gamma*sqm))+2.*beta_0+2*beta_1/(alpha_gamma*alpha_gamma)*exp(-alpha_gamma*sqm)*(alpha_gamma*alpha_gamma-0.25*alpha_gamma*alpha_gamma*alpha_gamma*sqm)+2.*molality*C_gamma) ;
+    double tau0 = nu*w_s*Q/((1.-w_s)*(1.-w_s*rho_l*v_spv))  ;
+    
+    double k_l  = Permeability(n,w_s,rho_l) ;   
+    double tau  = OsmoticEfficiencyCoefficient(n,w_s,rho_l,tau0)/tau_sat ;
+    double d    = DiffusionCoefficient(n,tau,rho_l,tau0,Q,w_s) ;
+
     
     /* Storage in vex */
     {
@@ -737,9 +809,9 @@ int  ComputeExplicitTerms(Element_t *el,double t)
     }
       
     {
-      double k_darcy = rho_l * k_l / viscosity_w ;
+      double k_darcy = rho_l * k_l ;        
       double d_fick = rho_l * d ;
-      double k_osmosis = k_darcy*(RT*rho_l/Molarm_s)*tau ;
+      double k_osmosis = (k_darcy*RT*rho_l*tau*tau_sat)/Molarm_s ;    
       
       K_Darcy = k_darcy ;
       D_Fick  = d_fick ;
@@ -792,10 +864,10 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
     
       Rho_l = x[I_RHO_L] ;    
       Rho_w = x[I_RHO_W] ;    
-      // manque Dm_s par rapport à CHM21 ... utile ??
     
       for(i = 0 ; i < 9 ; i++) SIG[i] = x[I_SIG + i] ;
       for(i = 0 ; i < 9 ; i++) SIG_D[i] = x[I_SIG_D + i] ;
+      for(i = 0 ; i < 9 ; i++) EPSI_e[i] = x[I_EPS + i] ;
       EFFSIG_M = x[I_EFFSIG_M] ;
     
       Phi_l = x[I_PHI_L] ;
@@ -903,8 +975,8 @@ int  ComputeMatrix(Element_t *el,double t,double dt,double *k)
       FEM_TransformMatrixFromDegree2IntoDegree1(fem,U_Salt,E_Salt,k) ;
     }
   }
-    
   return(0) ;
+ 
 #undef K
 }
 
@@ -1021,6 +1093,7 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
   FEM_t *fem = FEM_GetInstance(el) ;
   double zero = 0. ;
 
+
   if(Element_IsSubmanifold(el)) return(0) ;
   
   /* initialization */
@@ -1060,7 +1133,6 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     ////////////////////////////////////////////////////////////////////
     double msalt_element = 0 ;
     double mwater_element = 0 ;
-    //double indicateur =0 ;
     
     /* VE = k,d and tau */
     double k = 0 ;
@@ -1075,7 +1147,7 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     
     
     /* Averaging */
-    for(i = 0 ; i < np ; i++) {    // np = 2; permet de moyenner sur chaque élément 
+    for(i = 0 ; i < np ; i++) {   
       double * vim = vim0 + i*NVI ;
       double * vex = vex0 + i*NVE ;
       int j ;
@@ -1089,30 +1161,24 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
       phic += Phi_c/np ;
       mwcsalt += M_Wc_salt/np ;
       mwcwater += M_Wc_water/np ;
-          ///////////////////////////////////////////////////////////////////////////////////////////////////
-      //~ printf("\n valeur 1 %.2f | valeur deux  %.2f | valeur 3 %i ",Phi_l,phil,np);
-     ///////////////////////////////////////////////////////////////////////////////////////////////////
-          ///////////////////////////////////////////////////////////////////////////////////////////////////
-      //~ printf("\n valeur i %i | valeur np  %i | valeur 3 %i ",i,np,2);
-     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
       {
-        double* eps =  FEM_ComputeLinearStrainTensor(fem,u,intfct,i,U_Mech) ;
-        
+        double* eps =  FEM_ComputeLinearStrainTensor(fem,u,intfct,i,U_Mech) ;    
         tre   += (eps[0] + eps[4] + eps[8])/np ;
       }
       
       k += K_l/np ;
       d += D/np ;
       tau += Tau/np ;
+      
       ////////////////////////////////////////////////
       msalt_element += M_salt* SampleSurface * ElementSize /np ;  // msalt_element [kg] = M_Salt [kg/m3] x SampleSurface [m2] x ElementSize [m] / np [-]
       mwater_element += (M_total - M_salt)* SampleSurface * ElementSize /np ;
       
       phil_Eulerian += Poro_E/np ;
+
     }
-    
-    
+
     msaltleached = -mwcsalt * SampleSurface *1e6 ;
     mwaterabsorbed = mwcwater * SampleSurface *1e6;
       
@@ -1134,12 +1200,8 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     Result_Store(r + i++,&tau,"tau",1) ;
     
     Result_Store(r + i++,&tre,"tre",1) ;
-     ///////////////////////////////////////////////////////////////////////////////////////////////////
-     //~ printf("\n juste avant la sauvegarde de la valeur  %.2f ",phil_Eulerian);
-     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     Result_Store(r + i++,&phil_Eulerian,"Eulerian porosity",1) ;   
-    /////////////////////////
     Result_Store(r + i++,&msalt_element,"msalt_element",1) ;
     Result_Store(r + i++,&mwater_element,"mwater_element",1) ;
            
@@ -1217,24 +1279,25 @@ int ComputeTangentCoefficients(Element_t* el,double dt,double* c)
           double K_s = young/(3 - 6*poisson) ;
           double G_s = young/(2 + 2*poisson) ;
           double n   = Poro_En ;
-    
+          double tre_n = EPSI_en[0]+EPSI_en[4]+EPSI_en[8] ;
+
+
           double K   = BulkModulusMoriTanaka(K_s,G_s,n) ;
           double G   = ShearModulusMoriTanaka(K_s,G_s,n) ;
 
           double eta_v_mt = BulkModulusMoriTanaka(eta_v,eta_d,n) ;
           double eta_d_mt = ShearModulusMoriTanaka(eta_v,eta_d,n);
           
-          double Kt  = K / (1 + (K*dt)/eta_v_mt) ;
-          double Gt  = G / (1 + (2*G*dt)/eta_d_mt) ;
+          double Kt  = K / ((1. + (K*dt)/eta_v_mt)*(1.+tre_n)) ;      
+          double Gt  = G / (1. + (G*dt)/eta_d_mt) ;   
           double Lambdat = Kt - 2./3.*Gt ;
-
+        
           for(i = 0 ; i < 3 ; i++) {
             int j ;
             
             for(j = 0 ; j < 3 ; j++) {
               C1(i,i,j,j) += Lambdat ;
-              C1(i,j,i,j) += Gt ;
-              C1(i,j,j,i) += Gt ;
+              C1(i,j,i,j) += 2.*Gt ;        
             }
           }
         }
@@ -1271,7 +1334,7 @@ int ComputeTangentCoefficients(Element_t* el,double dt,double* c)
           double* c1 = c0 + 81 ;
           int i ;
 
-          for(i = 0 ; i < 9 ; i++) c1[i] = dsigdp[i] ;
+          for(i = 0 ; i < 9 ; i++) c1[i] = dsigdp[i] ;          
         }
         
     
@@ -1303,7 +1366,8 @@ int ComputeTangentCoefficients(Element_t* el,double dt,double* c)
           double* c1 = c0 + 81 + 9 ;
           int i ;
 
-          for(i = 0 ; i < 9 ; i++) c1[i] = dsigdc[i] ;
+          for(i = 0 ; i < 9 ; i++) c1[i] = dsigdc[i] ;        
+          
         }
         
     
@@ -1384,10 +1448,18 @@ int ComputeTransferCoefficients(Element_t* el,double dt,double* c)
       /* 2. Transport of salt 
        * -------------------- */
       /* Advective term */
+   
+  double molality = w_s_n/((1.-w_s_n)*Molarm_s) ; //number of moles of solute per kg of solvent
+    double sqm = sqrt(molality) ;         //square root of molality
+    double rho_l_n = K_Darcy/K_l ;
+    double Q = 1./(w_s_n*(1.-w_s_n))+1./(Molarm_s*((1.-w_s_n)*(1.-w_s_n)))*(-A_phi*(3.+2.*b_gamma*sqm)/(2.*sqm*(1.+b_gamma*sqm)*(1.+b_gamma*sqm))+2.*beta_0+2*beta_1/(alpha_gamma*alpha_gamma)*exp(-alpha_gamma*sqm)*(alpha_gamma*alpha_gamma-0.25*alpha_gamma*alpha_gamma*alpha_gamma*sqm)+2.*molality*C_gamma) ;
+  double a2 = (1.-w_s_n)/(nu*w_s_n*Q) ;
+  double a1 = (D*Molarm_s/(K_l*RT)+(1.-w_s_n)*rho_l_n*tau_sat*tau_sat*Tau*Tau/(nu*Q))/(1./v_spv+(1.-w_s_n)*rho_l_n*Tau*tau_sat/(nu*Q));
+      
       {
         double* c2 = c1 + 2 * 9 ;
         
-        c2[0] = -(1 - Tau) * w_s_n * K_Darcy ;
+        c2[0] = -(1 - a2*(tau_sat*Tau-a1)) * w_s_n * K_Darcy ;    
         c2[4] = c2[0] ;
         c2[8] = c2[0] ;
       }
@@ -1396,7 +1468,7 @@ int ComputeTransferCoefficients(Element_t* el,double dt,double* c)
       {
         double* c2 = c1 + 3 * 9 ;
         
-        c2[0] = -D_Fick + (1 - Tau) * w_s_n * K_Osmosis ;
+        c2[0] = -D_Fick + (1 - a2*(tau_sat*Tau-a1)) * w_s_n * K_Osmosis ; 
         c2[4] = c2[0] ;
         c2[8] = c2[0] ;
       }
@@ -1563,7 +1635,10 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x_n,double* x)
     double G_s = young/(2 + 2*poisson) ;
     double n_n = x_n[I_Poro_E] ;
     double biot = BiotCoefficientMoriTanaka(K_s,G_s,n_n) ;
-    double Nbiot = BiotModulusMoriTanaka(K_s,G_s,n_n) ;
+    double biot_v = BiotCoefficientMoriTanaka(eta_v,eta_d,n_n) ;    
+    double InverseNbiot = InverseBiotModulusMoriTanaka(K_s,G_s,n_n) ;
+    double eta_v_mt = BulkModulusMoriTanaka(eta_v,eta_d,n_n) ;    
+    double effsig_m_n = x_n[I_EFFSIG_M] ; 
     /** Strain */
     double tre   = eps[0] + eps[4] + eps[8] ;
     double tre_n   = eps_n[0] + eps_n[4] + eps_n[8] ;
@@ -1572,11 +1647,11 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x_n,double* x)
     double phi_c = CrystalVolumeFraction(phi_c_n,w_s,dt) ;
     /** Porosity evolution */
     double phi_l_n = x_n[I_PHI_L] ;
-    double dphi_l_epsi = biot*(tre - tre_n) + (p - p_n)/Nbiot ;
-    double dphi_l_salt = phi_c_n - phi_c ;
-    double phi_l = phi_l_n + dphi_l_epsi + dphi_l_salt ;
+    double dphi_l_salt = phi_c_n - phi_c ;    
+    double dphi_l_epsi = exp(biot*(log(1.+tre) - log(1.+tre_n))/n_n + (p - p_n)*(InverseNbiot)/n_n + (biot_v - biot)*dt*effsig_m_n/(eta_v_mt*n_n)) ;  
+    double phi_l = (phi_l_n) * (dphi_l_epsi) + dphi_l_salt ;    
     double n   = phi_l / (1 + tre) ;
-    
+
     if (phi_l < 0) {
       Message_Direct("\nNegative porosity: %e\n",phi_l) ;
       Exception_Interrupt ;
@@ -1620,12 +1695,19 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x_n,double* x)
     double* w_salt = x + I_W_SALT ;
     int i ;
     
+    double molality = w_s_n/((1.-w_s_n)*Molarm_s) ; //number of moles of solute per kg of solvent
+    double sqm = sqrt(molality) ;         //square root of molality
+    double rho_l_n = x[I_RHO_L] ;
+    double Q = 1./(w_s_n*(1.-w_s_n))+1./(Molarm_s*((1.-w_s_n)*(1.-w_s_n)))*(-A_phi*(3.+2.*b_gamma*sqm)/(2.*sqm*(1.+b_gamma*sqm)*(1.+b_gamma*sqm))+2.*beta_0+2*beta_1/(alpha_gamma*alpha_gamma)*exp(-alpha_gamma*sqm)*(alpha_gamma*alpha_gamma-0.25*alpha_gamma*alpha_gamma*alpha_gamma*sqm)+2.*molality*C_gamma) ;
+  double a2 = (1.-w_s_n)/(nu*w_s_n*Q) ;
+  double a1 = (d_fick*Molarm_s/(k_darcy*RT)+(1.-w_s_n)*rho_l_n*tau_sat*tau_sat*tau*tau/(nu*Q))/(1./v_spv+(1.-w_s_n)*rho_l_n*tau_sat*tau/(nu*Q));
+    
     for(i = 0 ; i < 3 ; i++){
       w_d[i]    = - k_darcy * grd_p[i] ;
       w_o[i]    =   k_osmosis * grd_w_s[i] ;
       w_l[i]    =   w_d[i] + w_o[i] ;
       w_f[i]    = - d_fick * grd_w_s[i] ;
-      w_salt[i] =   w_f[i] + (1 - tau)*w_s_n*w_l[i] ;
+      w_salt[i] =   w_f[i] + (1 - a2*(tau_sat*tau-a1))*w_s_n*w_l[i] ; 
     }
   }
   
@@ -1650,21 +1732,6 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x_n,double* x)
     double  deps[9] ;
     int    i ;
     
-    #if 0
-    {
-      double Nbiot = BiotModulusMoriTanaka(K_s,G_s,n) ;
-      double Mbiot = 1/(1/Nbiot + phi_l_i*compressibility_w) ;
-      double Skempton = Mbiot*biot/(K + Mbiot*biot*biot) ;
-      printf("phi_l_i = %e\n",phi_l_i) ;
-      printf("biot = %e\n",biot) ;
-      printf("Nbiot = %e\n",Nbiot) ;
-      printf("Mbiot = %e\n",Mbiot) ;
-      printf("K = %e\n",K) ;
-      printf("Skempton = %e\n",Skempton) ;
-      printf("eta_v_mt = %e\n",eta_v_mt) ;
-      printf("eta_d_mt = %e\n",eta_d_mt) ;
-    }
-    #endif
       
     /* Incremental deformations */
     for(i = 0 ; i < 9 ; i++) {
@@ -1674,7 +1741,8 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x_n,double* x)
     {     
       double  deps_d[9] ;
       double trde = deps[0] + deps[4] + deps[8] ;
-      
+      double tre   = eps[0] + eps[4] + eps[8] ;   
+
       /* Deviatoric strains */
       for(i = 0 ; i < 9 ; i++) deps_d[i] = deps[i] ;
       
@@ -1687,29 +1755,24 @@ void  ComputeSecondaryVariables(Element_t* el,double dt,double* x_n,double* x)
         double* sig_d_n = x_n + I_SIG_D ;
         
         for(i = 0 ; i < 9 ; i++) {
-          sig_d[i] = (sig_d_n[i] + 2*G*deps_d[i])/(1 + (2*G*dt)/eta_d_mt) ;
+          sig_d[i] = (sig_d_n[i] + 2*G*deps_d[i])/(1 + G*dt/eta_d_mt) ;     
         }
       }
   
-      /* Constitutive law 
-       * d(eps_e)/dt = (d(sig_m)/dt + biot * d(p)/dt) / K
-       * d(eps_v)/dt = (sig_m + biot_v * p) / eta_v
-       * */
+      // Constitutive law 
       {
       /* Mean effective stress = sig_m + biot_v * p */
         double effsig_m_n = x_n[I_EFFSIG_M] ;
         double dp = p - p_n ;
-        //double sig_m   = (sig_m_n + K*trde)/(1 + (K*dt)/eta_v_mt) ;
-        double biot_v  = 1 ;
-        double effsig_m   = (effsig_m_n + K*trde + (biot_v - biot)*dp)/(1 + (K*dt)/eta_v_mt) ;
+        double biot_v = BiotCoefficientMoriTanaka(eta_v,eta_d,n) ;    
+        double effsig_m   = (effsig_m_n + K*trde/(1 + tre) + (biot_v - biot)*dp)/(1 + (K*dt)/eta_v_mt) ;  
       
         x[I_EFFSIG_M] = effsig_m ;
       }
   
       /* Total stresses */
       {
-        double biot_v  = 1 ;
-        //double sig_m = x[I_EFFSIG_M] - biot*(p - p_i) ;
+        double biot_v = BiotCoefficientMoriTanaka(eta_v,eta_d,n) ;    
         double sig_m = x[I_EFFSIG_M] - biot_v * p ;
         
         for(i = 0 ; i < 9 ; i++) sig[i] = sig_d[i] ;

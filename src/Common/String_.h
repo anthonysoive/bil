@@ -5,17 +5,10 @@
 extern "C" {
 #endif
 
-#include <string.h>
-#include <strings.h>
-#include <stdarg.h>
-#include <stdio.h>
 
 
-
-/* vacuous declarations and typedef names */
-
-/* class-like structures */
-struct String_s       ; typedef struct String_s       String_t ;
+/* Forward declarations */
+struct String_t; //typedef struct String_t       String_t ;
 
 
 
@@ -52,11 +45,6 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 
 
 
-#include "Arg.h"
-#include "Tuple.h"
-#include "Algos.h"
-#include "Logic.h"
-#include "Utils.h"
 
 
 /* Scan string
@@ -314,7 +302,7 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 
 
 
-struct String_s {
+struct String_t {
   char*     head ;         /* String content */
   int       length ;        /* String length */
   char*     current ;       /* Current position in the string */
@@ -326,4 +314,14 @@ struct String_s {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#include <string.h>
+#include <strings.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include "Arg.h"
+#include "Tuple.h"
+#include "Algos.h"
+#include "Logic.h"
+#include "Utils.h"
 #endif

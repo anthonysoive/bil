@@ -107,7 +107,7 @@ int   MA38Method_Solve(Solver_t* solver)
       double* b = Solver_GetRHS(solver) ;
       double* x = Solver_GetSolution(solver) ;
       GenericData_t* gw = Solver_GetGenericWorkSpace(solver) ;
-      double* w = GenericData_FindData(gw,double,"work") ;
+      double* w = GenericData_FindData(gw,"work") ;
       int job = 0 ;
       bool transc = false ;
     

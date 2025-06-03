@@ -323,7 +323,7 @@ void ComputePhysicoChemicalProperties(double TK)
   
   d_ca         = DiffusionCoefficientOfMoleculeInWater(Ca,TK)*dm2 ;
   d_caoh       = DiffusionCoefficientOfMoleculeInWater(CaOH,TK)*dm2 ;
-  d_caoh2aq  	 = 7.92e-8 ;
+  d_caoh2aq    = 7.92e-8 ;
   
   d_cahs       = (1.07e-7) ;   /* (radius = 2e-10 m) */
   d_casaq      = (1.43e-7) ;   /* (radius = 1.5e-10 m) */
@@ -534,9 +534,9 @@ int PrintModelChar(Model_t *model,FILE *ficd)
 
 int DefineElementProp(Element_t *el,IntFcts_t *intfcts)
 {
-  Element_GetNbOfImplicitTerms(el) = NVI ;
-  Element_GetNbOfExplicitTerms(el) = NVE ;
-  Element_GetNbOfConstantTerms(el) = NV0 ;
+  Element_SetNbOfImplicitTerms(el,NVI) ;
+  Element_SetNbOfExplicitTerms(el,NVE) ;
+  Element_SetNbOfConstantTerms(el,NV0) ;
   return(0) ;
 }
 
@@ -1203,12 +1203,12 @@ double* Fluxes(Element_t *el,double *grd)
   double w_cl       = - KF_Cl*grd_cl              - Kpsi_Cl*grd_psi ; 
     
   double w_q        = - z_h*KF_H*grd_h \
-                      - z_oh*KF_OH*grd_oh	\
+                      - z_oh*KF_OH*grd_oh \
                       - z_hs*KF_HS*grd_hs \
-                      - z_s*KF_S*grd_s	\
-                      - z_ca*KF_Ca*grd_ca	\
+                      - z_s*KF_S*grd_s  \
+                      - z_ca*KF_Ca*grd_ca \
                       - z_cahs*KF_CaHS*grd_cahs \
-                      - z_h3sio4*KF_H3SiO4*grd_h3sio4	\
+                      - z_h3sio4*KF_H3SiO4*grd_h3sio4 \
                       - z_cah3sio4*KF_CaH3SiO4*grd_cah3sio4 \
                       - z_h2sio4*KF_H2SiO4*grd_h2sio4 \
                       - z_caoh*KF_CaOH*grd_caoh \

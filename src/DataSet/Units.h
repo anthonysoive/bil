@@ -2,14 +2,10 @@
 #define UNITS_H
 
 
-/* vacuous declarations and typedef names */
-
-/* class-like structure */
-struct Units_s        ; typedef struct Units_s        Units_t ;
-
-
-
-#include "DataFile.h"
+/* Forward declarations */
+struct Units_t; //typedef struct Units_t        Units_t ;
+struct DataFile_t;
+struct Unit_t;
  
  
 extern Units_t* (Units_New)     (void) ;
@@ -24,10 +20,7 @@ extern void     (Units_Delete)  (void*) ;
 #define Units_GetUnit(U)              ((U)->unit)
 
 
-#include "Unit.h"
-
-
-struct Units_s {              /* units */
+struct Units_t {              /* units */
   unsigned int n_units ;      /* nb of units */
   Unit_t*  unit ;             /* Unit */
 } ;

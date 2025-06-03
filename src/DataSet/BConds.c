@@ -7,9 +7,12 @@
 #include "DataFile.h"
 #include "Mesh.h"
 #include "Elements.h"
+#include "Element.h"
+#include "Material.h"
 #include "Fields.h"
 #include "Functions.h"
 #include "BConds.h"
+#include "BCond.h"
 #include "Mry.h"
 
 

@@ -5,10 +5,9 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Elasticity_t     ; typedef struct Elasticity_t     Elasticity_t ;
+/* Forward declarations */
+struct Elasticity_t; //typedef struct Elasticity_t     Elasticity_t ;
 
 
 /* 1. Elasticity_t */
@@ -41,7 +40,6 @@ extern double*        (Elasticity_Convert6TermStressVectorIntoStressTensor)(doub
 #define Elasticity_MaxNbOfParameters      (8)
 
 
-#include "Math_.h"
 
 
 /* Isotropy */
@@ -140,5 +138,6 @@ struct Elasticity_t {
 #ifdef __CPLUSPLUS
 }
 #endif
+
 
 #endif

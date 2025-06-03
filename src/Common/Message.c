@@ -27,7 +27,7 @@ Message_t*  (Message_GetInstance)(void)
   if(!gdat) {
     Message_t* msg = Message_Create() ;
     
-    gdat = GenericData_Create(1,msg,Message_t,"Message") ;
+    gdat = GenericData_Create(1,msg,"Message") ;
     
     Session_AddGenericData(gdat) ;
     

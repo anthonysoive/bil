@@ -529,7 +529,7 @@ void ComputePhysicoChemicalProperties(void)
 
 
 static CementSolutionDiffusion_t* csd = NULL ;
-static HardenedCementChemistry_t* hcc = NULL ;
+static HardenedCementChemistry_t<double>* hcc = NULL ;
 
 enum VariableIndexes_e {
 I_Dis = 0,
@@ -738,7 +738,7 @@ void GetProperties(Element_t* el)
   dp_AFt    = GetProperty("B_p") ;
   sig0      = &GetProperty("sig0") ;
   
-  damage = Element_FindMaterialData(el,Damage_t,"Damage") ;
+  damage = Element_FindMaterialData(el,"Damage") ;
   {
     double young = GetProperty("young") ;
     double poisson = GetProperty("poisson") ;
@@ -889,7 +889,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     damage = Damage_Create() ;
       
-    Material_AppendData(mat,1,damage,Damage_t,"Damage") ;
+    Material_AppendData(mat,1,damage,"Damage") ;
   }
   
   /* Elastic and plastic properties */
@@ -948,7 +948,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 
   {
     if(!csd) csd = CementSolutionDiffusion_Create() ;
-    if(!hcc) hcc = HardenedCementChemistry_Create() ;
+    if(!hcc) hcc = HardenedCementChemistry_Create<double>() ;
     
     HardenedCementChemistry_SetRoomTemperature(hcc,TEMPERATURE) ;
     
@@ -965,19 +965,19 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
       if((i = Curves_FindCurveIndex(curves,"X_CSH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfCalciumSiliconRatioInCSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfCalciumSiliconRatioInCSH(hcc,curve) ;
       }
 
       if((i = Curves_FindCurveIndex(curves,"Z_CSH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfWaterSiliconRatioInCSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfWaterSiliconRatioInCSH(hcc,curve) ;
       }
 
       if((i = Curves_FindCurveIndex(curves,"S_SH")) >= 0) {
         Curve_t* curve = Curves_GetCurve(curves) + i ;
       
-        HardenedCementChemistry_GetCurveOfSaturationIndexOfSH(hcc) = curve ;
+        HardenedCementChemistry_SetCurveOfSaturationIndexOfSH(hcc,curve) ;
       }
     }
   }
@@ -1068,9 +1068,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) + 1 ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+  Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ;
   return(0) ;
 }
 
@@ -1168,8 +1168,8 @@ int ComputeInitialState(Element_t* el)
         HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
         HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
     
-        HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = 1.e-99 ;
-        HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = -99 ;
+        HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,1.e-99) ;
+        HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,-99) ;
   
         HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O) ;
       
@@ -2887,10 +2887,10 @@ void  ComputeSecondaryVariables(Element_t* el,double t,double dt,double* x_n,dou
     HardenedCementChemistry_SetInput(hcc,LogC_Na,logc_na) ;
     HardenedCementChemistry_SetInput(hcc,LogC_K,logc_k) ;
     HardenedCementChemistry_SetInput(hcc,LogC_OH,logc_oh) ;
-    HardenedCementChemistry_GetElectricPotential(hcc) = psi ;
+    HardenedCementChemistry_SetElectricPotential(hcc,psi) ;
     
-    HardenedCementChemistry_GetAqueousConcentrationOf(hcc,Cl) = 1.e-99 ;
-    HardenedCementChemistry_GetLogAqueousConcentrationOf(hcc,Cl) = -99 ;
+    HardenedCementChemistry_SetAqueousConcentrationOf(hcc,Cl,1.e-99) ;
+    HardenedCementChemistry_SetLogAqueousConcentrationOf(hcc,Cl,-99) ;
   
     HardenedCementChemistry_ComputeSystem(hcc,CaO_SiO2_Na2O_K2O_SO3_Al2O3_H2O) ;
 

@@ -2,6 +2,7 @@
 #include "Message.h"
 #include "Mry.h"
 #include "Views.h"
+#include "View.h"
 
 
 Views_t* (Views_Create)(int n)

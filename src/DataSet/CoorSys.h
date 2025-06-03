@@ -8,9 +8,6 @@ enum CoorSys_e {              /* coordinate system */
   CARTESIAN = CoorSys_Cartesian /* Should be eliminated */
 } ;
 
-
-/* vacuous declarations and typedef names */
-
 /*     1. CoorSys_t attributes */
 typedef enum CoorSys_e      CoorSys_t ;
 

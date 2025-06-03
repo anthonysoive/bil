@@ -34,7 +34,9 @@ inline Temperature_t* (Temperature_Create)(void){
 
 
 inline void (Temperature_Delete)(void* self){
-  delete (self);
+  Temperature_t* temperature = (Temperature_t*) self;
+  
+  delete(temperature);
 }
 
 #endif

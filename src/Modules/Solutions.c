@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include "Mesh.h"
+#include "Nodes.h"
+#include "Node.h"
+#include "Elements.h"
+#include "Element.h"
 #include "Solutions.h"
+#include "Solution.h"
 #include "Mry.h"
 #include "Message.h"
 
@@ -113,8 +118,8 @@ void   (Solutions_Initialize)(Solutions_t* sols)
       int i_1 = i ;
       int i_n = (i) ? i - 1 : n_sol - 1 ;
     
-      Solution_GetPreviousSolution(sol + i_1) = sol + i_n ;
-      Solution_GetNextSolution(sol + i_n)     = sol + i_1 ;
+      Solution_SetPreviousSolution(sol + i_1,sol + i_n) ;
+      Solution_SetNextSolution(sol + i_n,sol + i_1) ;
     }
   }
 }

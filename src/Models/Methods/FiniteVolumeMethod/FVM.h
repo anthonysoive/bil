@@ -1,56 +1,15 @@
 #ifndef FVM_H
 #define FVM_H
 
-#ifdef __CPLUSPLUS
-extern "C" {
-#endif
 
 
-/* vacuous declarations and typedef names */
-
-/* class-like structure */
-struct FVM_s     ; typedef struct FVM_s     FVM_t ;
-
-
-#include "Element.h"
-#include "Load.h"
-#include "IntFct.h"
+/* Forward eclarations */
+struct FVM_t;  //typedef struct FVM_t     FVM_t ;
+struct Buffers_t;
+struct Element_t;
 
 /*  Typedef names of Methods */
-typedef void     FVM_ComputeFluxes_t(FVM_t*,double*,double*,int,int) ;
-
-
-extern FVM_t*     (FVM_GetInstance)(Element_t*) ;
-extern void       (FVM_Delete)(void*) ;
-
-extern double*    (FVM_ComputeMassMatrix)(FVM_t*,double*,int) ;
-extern double*    (FVM_ComputeIsotropicConductionMatrix)(FVM_t*,double*,int) ;
-extern double*    (FVM_ComputeMassAndIsotropicConductionMatrix)(FVM_t*,double*,int) ;
-
-extern double*    (FVM_ComputeSurfaceLoadResidu)(FVM_t*,Load_t*,double,double) ;
-extern double*    (FVM_ComputeBodyForceResidu)(FVM_t*,double const*,int const) ;
-//extern double*    (FVM_ComputeFluxResidu)(FVM_t*,double const*) ;
-extern double*    (FVM_ComputeFluxResidu)(FVM_t*,double const*,int const) ;
-//extern double*    (FVM_ComputeMassAndFluxResidu)(FVM_t*,double*) ;
-extern double*    (FVM_ComputeMassAndFluxResidu)(FVM_t*,double const*,int const) ;
-extern double*    (FVM_ComputeMassBalanceEquationResidu)(FVM_t*,double const*,double const*,double const) ;
-//extern double*    (FVM_ComputeMassBalanceEquationResidu)(FVM_t*,double const*,double const*,double const,int const) ;
-
-
-extern double*    (FVM_ComputeCellVolumes)(FVM_t*) ;
-extern double*    (FVM_ComputeCellSurfaceAreas)(FVM_t*) ;
-extern double*    (FVM_ComputeCellVolumesAndSurfaceAreas)(FVM_t*) ;
-extern short int  (FVM_FindLocalCellIndex)(FVM_t*,double*) ;
-extern double*    (FVM_ComputeIntercellDistances)(FVM_t*) ;
-
-extern double*    (FVM_ComputeTheNodalFluxVector)(FVM_t*,double*) ;
-
-extern double     (FVM_AverageCurrentImplicitTerm)(Mesh_t*,const char*,const int,const int) ;
-extern double     (FVM_AveragePreviousImplicitTerm)(Mesh_t*,const char*,const int,const int) ;
-
-extern double*    (FVM_ComputeGradient)(FVM_t*,double*,IntFct_t*,int,int);
-
-
+//typedef void     FVM_ComputeFluxes_t(FVM_t*,double*,double*,int,int) ;
 
 
 #define FVM_MaxNbOfNodes                         (Element_MaxNbOfNodes)
@@ -67,14 +26,24 @@ extern double*    (FVM_ComputeGradient)(FVM_t*,double*,IntFct_t*,int,int);
 
 
 
-#define FVM_GetElement(fvm)                      ((fvm)->el)
-#define FVM_GetInput(fvm)                        ((fvm)->input)
-#define FVM_GetOutput(fvm)                       ((fvm)->output)
-#define FVM_GetShiftOfInput(fvm)                 ((fvm)->shift)
-#define FVM_GetBuffers(fvm)                      ((fvm)->buffers)
-#define FVM_GetCellVolumes(fvm)                  ((fvm)->cellvolumes)
-#define FVM_GetCellSurfaceAreas(fvm)             ((fvm)->cellsurfaceareas)
-#define FVM_GetIntercellDistances(fvm)           ((fvm)->celldistances)
+#define FVM_GetElement(fvm)                      ((fvm)->GetElement())
+#define FVM_GetInput(fvm)                        ((fvm)->GetInput())
+#define FVM_GetOutput(fvm)                       ((fvm)->GetOutput())
+#define FVM_GetShiftOfInput(fvm)                 ((fvm)->GetShiftOfInput())
+#define FVM_GetBuffers(fvm)                      ((fvm)->GetBuffers())
+#define FVM_GetCellVolumes(fvm)                  ((fvm)->GetCellVolumes())
+#define FVM_GetCellSurfaceAreas(fvm)             ((fvm)->GetCellSurfaceAreas())
+#define FVM_GetIntercellDistances(fvm)           ((fvm)->GetIntercellDistances())
+
+
+#define FVM_SetElement(fvm,A)                    ((fvm)->SetElement(A))
+#define FVM_SetInput(fvm,A)                      ((fvm)->SetInput(A))
+#define FVM_SetOutput(fvm,A)                     ((fvm)->SetOutput(A))
+#define FVM_SetShiftOfInput(fvm,A)               ((fvm)->SetShiftOfInput(A))
+#define FVM_SetBuffers(fvm,A)                    ((fvm)->SetBuffers(A))
+#define FVM_SetCellVolumes(fvm,A)                ((fvm)->SetCellVolumes(A))
+#define FVM_SetCellSurfaceAreas(fvm,A)           ((fvm)->SetCellSurfaceAreas(A))
+#define FVM_SetIntercellDistances(fvm,A)         ((fvm)->SetIntercellDistances(A))
 
 
 
@@ -96,23 +65,77 @@ extern double*    (FVM_ComputeGradient)(FVM_t*,double*,IntFct_t*,int,int);
 
 
 
-#include "Buffers.h"
 #include "GenericObject.h"
 
-struct FVM_s {                /* Finite Volume Method */
-  Element_t* el ;             /* Element */
-  void*      input ;          /* Input */
-  void*      output ;         /* Output*/
-  int        shift ;          /* Shift of input */
-  Buffers_t* buffers ;        /* Buffer */
-  double*    cellvolumes ;
-  double*    cellsurfaceareas ;
-  double*    celldistances ;
-  GenericObject_Delete_t* Delete ;
+struct FVM_t {
+  public:
+  
+  void SetElement(Element_t* el) {_el = el;}
+  void SetInput(void* input) {_input = input;}
+  void SetOutput(void* output) {_output = output;}
+  void SetShiftOfInput(int shift) {_shift = shift;}
+  void SetBuffers(Buffers_t* buffers) {_buffers = buffers;}
+  void SetCellVolumes(double* cellvolumes) {_cellvolumes = cellvolumes;}
+  void SetCellSurfaceAreas(double* cellsurfaceareas) {_cellsurfaceareas = cellsurfaceareas;}
+  void SetIntercellDistances(double* celldistances) {_celldistances = celldistances;}
+  
+  /* Accessors */
+  Element_t* GetElement() {return(_el);}
+  void*      GetInput() {return(_input);}
+  void*      GetOutput() {return(_output);}
+  int        GetShiftOfInput() {return(_shift);}
+  Buffers_t* GetBuffers() {return(_buffers);}
+  double*    GetCellVolumes() {return(_cellvolumes);}
+  double*    GetCellSurfaceAreas() {return(_cellsurfaceareas);}
+  double*    GetIntercellDistances() {return(_celldistances);}
+  
+  //GenericObject_Delete_t* Delete ;
+  
+  private:
+  Element_t* _el ;             /* Element */
+  void*      _input ;          /* Input */
+  void*      _output ;         /* Output*/
+  int        _shift ;          /* Shift of input */
+  Buffers_t* _buffers ;        /* Buffer */
+  double*    _cellvolumes ;
+  double*    _cellsurfaceareas ;
+  double*    _celldistances ;
 } ;
 
 
-#ifdef __CPLUSPLUS
-}
-#endif
+
+struct Load_t;
+struct Mesh_t;
+struct IntFct_t;
+
+extern FVM_t*     (FVM_GetInstance)(Element_t*) ;
+extern void       (FVM_Delete)(void*) ;
+extern double*    (FVM_ComputeMassMatrix)(FVM_t*,double*,int) ;
+extern double*    (FVM_ComputeIsotropicConductionMatrix)(FVM_t*,double*,int) ;
+extern double*    (FVM_ComputeMassAndIsotropicConductionMatrix)(FVM_t*,double*,int) ;
+extern double*    (FVM_ComputeSurfaceLoadResidu)(FVM_t*,Load_t*,double,double) ;
+extern double*    (FVM_ComputeBodyForceResidu)(FVM_t*,double const*,int const) ;
+extern double*    (FVM_ComputeFluxResidu)(FVM_t*,double const*,int const) ;
+extern double*    (FVM_ComputeMassAndFluxResidu)(FVM_t*,double const*,int const) ;
+extern double*    (FVM_ComputeMassBalanceEquationResidu)(FVM_t*,double const*,double const*,double const) ;
+extern double*    (FVM_ComputeCellVolumes)(FVM_t*) ;
+extern double*    (FVM_ComputeCellSurfaceAreas)(FVM_t*) ;
+extern double*    (FVM_ComputeCellVolumesAndSurfaceAreas)(FVM_t*) ;
+extern short int  (FVM_FindLocalCellIndex)(FVM_t*,double*) ;
+extern double*    (FVM_ComputeIntercellDistances)(FVM_t*) ;
+extern double*    (FVM_ComputeTheNodalFluxVector)(FVM_t*,double*) ;
+extern double     (FVM_AverageCurrentImplicitTerm)(Mesh_t*,const char*,const int,const int) ;
+extern double     (FVM_AveragePreviousImplicitTerm)(Mesh_t*,const char*,const int,const int) ;
+extern double*    (FVM_ComputeGradient)(FVM_t*,double*,IntFct_t*,int,int);
+
+
+/* For the macros */
+#include "Element.h"
+#include "Model.h"
+#include "Buffers.h"
+#include "Buffer.h"
+
+
+//#include "FVM.h.in"
+
 #endif

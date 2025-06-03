@@ -6,13 +6,17 @@ extern "C" {
 #endif
 
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Elements_s     ; typedef struct Elements_s     Elements_t ;
+/* Forward declarations */
+struct Elements_t; //typedef struct Elements_t     Elements_t ;
+struct IntFcts_t;
+struct ShapeFcts_t;
+struct Buffers_t;
+struct Element_t;
+struct Node_t;
+struct Regions_t;
+struct Materials_t;
 
-
-#include "Materials.h"
 
 extern Elements_t*  (Elements_New)                      (const int,const int) ;
 extern void         (Elements_Delete)                   (void*) ;
@@ -42,15 +46,9 @@ extern void         (Elements_InitializeMatrixRowColumnIndexes)(Elements_t*) ;
 
 
 
-#include "IntFcts.h"
-#include "ShapeFcts.h"
-#include "Buffers.h"
-#include "Element.h"
-#include "Node.h"
-#include "Regions.h"
+typedef Node_t*   Node_tt ;
 
-
-struct Elements_s {
+struct Elements_t {
   Element_t* Element ;
   Node_tt* PointerToNode ;
   Regions_t*   Regions ;

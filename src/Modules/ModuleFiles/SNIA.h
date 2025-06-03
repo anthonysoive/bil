@@ -2,9 +2,10 @@
 #define SNIA_H
 
 
-#include "Solutions.h"
-#include "DataSet.h"
-#include "Solver.h"
+struct Solutions_t;
+struct DataSet_t;
+struct Solver_t;
+struct OutputFiles_t;
 
 
 extern int (SNIA_Initialize)(DataSet_t*,Solutions_t*) ;

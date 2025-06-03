@@ -3,10 +3,8 @@
 
 
 
-/* class-like structure "CCSFormat_t" and attributes */
-
-/* vacuous declarations and typedef names */
-struct CCSFormat_s      ; typedef struct CCSFormat_s      CCSFormat_t ;
+/* Forward declarations */
+struct CCSFormat_t; //typedef struct CCSFormat_t      CCSFormat_t ;
 
 
 
@@ -27,7 +25,7 @@ struct CCSFormat_s      ; typedef struct CCSFormat_s      CCSFormat_t ;
  * rowind contains the row indices
  * colptr points to the columns in both rowind and nzval
  * If a_ij = nzval[k] then rowind[k] = i and colptr[j] <= k < colptr[j + 1] */
-struct CCSFormat_s {
+struct CCSFormat_t {
   unsigned int    nnz ;       /* nb of non zero values */
   double* nzval ;             /* Non zero values */
   unsigned int* rowind ;      /* Row indices of the non zeros */

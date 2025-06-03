@@ -204,7 +204,7 @@ void GetProperties(Element_t* el)
   phi0    = Element_GetPropertyValue(el,"initial_porosity") ;
   e0      = phi0/(1 - phi0) ;
   
-  plasty  = Element_FindMaterialData(el,Plasticity_t,"Plasticity") ;
+  plasty  = Element_FindMaterialData(el,"Plasticity") ;
   elasty  = Plasticity_GetElasticity(plasty) ;
 
   cijkl   = Elasticity_GetStiffnessTensor(elasty) ;
@@ -264,7 +264,7 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
   {
     plasty = Plasticity_Create() ;
       
-    Material_AppendData(mat,1,plasty,Plasticity_t,"Plasticity") ;
+    Material_AppendData(mat,1,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */
@@ -363,9 +363,9 @@ int DefineElementProp(Element_t* el,IntFcts_t* intfcts)
   int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) ;
 
   /** Define the length of tables */
-  Element_GetNbOfImplicitTerms(el) = NVI*NbOfIntPoints ;
-  Element_GetNbOfExplicitTerms(el) = NVE*NbOfIntPoints ;
-  Element_GetNbOfConstantTerms(el) = NV0*NbOfIntPoints ;
+  Element_SetNbOfImplicitTerms(el,NVI*NbOfIntPoints) ;
+  Element_SetNbOfExplicitTerms(el,NVE*NbOfIntPoints) ;
+  Element_SetNbOfConstantTerms(el,NV0*NbOfIntPoints) ;
   return(0) ;
 }
 

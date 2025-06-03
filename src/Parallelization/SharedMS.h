@@ -1,10 +1,10 @@
 #ifndef SHAREDMS_H
 #define SHAREDMS_H
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct SharedMS_s     ; typedef struct SharedMS_s     SharedMS_t ;
+
+/* Forward declarations */
+struct SharedMS_t; //typedef struct SharedMS_t     SharedMS_t ;
 
 
 //extern int SharedMS_CurrentThreadId(void) ;
@@ -24,7 +24,6 @@ struct SharedMS_s     ; typedef struct SharedMS_s     SharedMS_t ;
 
 #include "BilConfig.h"
 
-
 #if defined HAVE_PTHREAD
   #include <pthread.h>
   #define SharedMS_API  Pthread
@@ -36,7 +35,6 @@ struct SharedMS_s     ; typedef struct SharedMS_s     SharedMS_t ;
 #endif
 
 
-#include "Utils.h"
 
 /* Test the Multithreading API */
 #define SharedMS_APIis(TYP) \
@@ -51,8 +49,6 @@ struct SharedMS_s     ; typedef struct SharedMS_s     SharedMS_t ;
  * n_cores   = number of physical cores per socket
  * n_threads = number of physical threads per core
  */
-#include <unistd.h>
-#include <sys/sysinfo.h>
 
 
 #define SharedMS_NbOfLogicalCores \
@@ -61,6 +57,7 @@ struct SharedMS_s     ; typedef struct SharedMS_s     SharedMS_t ;
 
 
 
+#include "Utils.h"
 /* The max nb of threads that can be used */
 #if SharedMS_APIis(None)
   #define SharedMS_MaxNbOfThreads   1
@@ -111,10 +108,13 @@ struct SharedMS_s     ; typedef struct SharedMS_s     SharedMS_t ;
 
 
 
-struct SharedMS_s {
+struct SharedMS_t {
   int numberofcores ;
   int numberofphysicalthreads ;
   int maxnumberofthreads ;
 } ;
 
+
+#include <unistd.h>
+#include <sys/sysinfo.h>
 #endif

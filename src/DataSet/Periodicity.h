@@ -5,22 +5,17 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structures */
-struct Periodicity_s         ; typedef struct Periodicity_s        Periodicity_t ;
-
-
-#include "DataFile.h"
+/* Forward declarations */
+struct Periodicity_t;         //typedef struct Periodicity_t        Periodicity_t ;
+struct DataFile_t;
 
 extern Periodicity_t* (Periodicity_New)(void) ;
 extern void           (Periodicity_Delete)(void*) ;
 extern void           (Periodicity_Scan)(Periodicity_t*,DataFile_t*) ;
 
-#include "Region.h"
 
 #define Periodicity_MaxLengthOfRegionName      Region_MaxLengthOfRegionName
-
 
 #define Periodicity_GetMasterRegion(P)         ((P)->MasterRegion)
 #define Periodicity_GetSlaveRegion(P)          ((P)->SlaveRegion)
@@ -30,7 +25,7 @@ extern void           (Periodicity_Scan)(Periodicity_t*,DataFile_t*) ;
 
 
 
-struct Periodicity_s {
+struct Periodicity_t {
   int     MasterRegion ;               /* Master region index */
   int     SlaveRegion ;                /* Slave region index */
   char*   MasterRegionName ;
@@ -39,9 +34,10 @@ struct Periodicity_s {
 } ;
 
 
-
-
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* Needs for the macros */
+#include "Region.h"
 #endif

@@ -6,6 +6,8 @@
 
 #include "Message.h"
 #include "Math_.h"
+#include "Curves.h"
+#include "Curve.h"
 #include "Plasticity.h"
 #include "autodiff.h"
 

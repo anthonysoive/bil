@@ -52,11 +52,9 @@ extern "C" {
   
 
 
-/* vacuous declarations and typedef names */
-
-/* class-like structure */
-struct InternationalSystemOfUnits_s ; 
-typedef struct InternationalSystemOfUnits_s     InternationalSystemOfUnits_t ;
+/* Forward declarations */
+struct InternationalSystemOfUnits_t; 
+//typedef struct InternationalSystemOfUnits_t     InternationalSystemOfUnits_t ;
 
 
 extern InternationalSystemOfUnits_t* (InternationalSystemOfUnits_GetInstance)(void) ;
@@ -182,7 +180,7 @@ extern void (InternationalSystemOfUnits_UseAsMass)(const char*) ;
 
 #include "GenericObject.h"
 
-struct InternationalSystemOfUnits_s {
+struct InternationalSystemOfUnits_t {
   /* Base units */
   double meter ;
   double kilogram ;

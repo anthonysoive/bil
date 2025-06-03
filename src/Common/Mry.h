@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 
-#include <stdlib.h>
+#include <stdio.h>
 
 extern void*     (Mry_Allocate)(size_t) ;
 extern void*     (Mry_AllocateZeroed)(size_t,size_t) ;
@@ -14,8 +14,6 @@ extern void*     (Mry_Realloc)(void*,size_t) ;
 extern void      (Mry_Free)(void*) ;
 
 
-#include <stdarg.h>
-#include "Utils.h"
 
 #define Mry_New(...) \
         Utils_CAT_NARG(Mry_New,__VA_ARGS__)(__VA_ARGS__)
@@ -63,4 +61,8 @@ extern void      (Mry_Free)(void*) ;
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include "Utils.h"
+//#include <stdarg.h>
 #endif

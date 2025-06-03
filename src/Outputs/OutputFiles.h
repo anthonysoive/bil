@@ -6,18 +6,15 @@ extern "C" {
 #endif
 
 
-/* class-like structures "OutputFiles_t" */
+/* Forward declarations */
+struct OutputFiles_t; //typedef struct OutputFiles_t OutputFiles_t ;
+struct DataSet_t;
+struct Views_t;
+struct Models_t;
+struct TextFile_t;
+struct OutputFile_t;
+struct Results_t;
 
-/* vacuous declarations and typedef names */
-struct OutputFiles_s ; typedef struct OutputFiles_s OutputFiles_t ;
-
-
-
-/* Declaration of Macros, Methods and Structures */
-
-#include "DataSet.h"
-#include "Views.h"
-#include "Models.h"
 
 extern OutputFiles_t*   (OutputFiles_Create)(char*,int,int) ;
 extern void             (OutputFiles_Delete)(void*) ;
@@ -30,14 +27,12 @@ extern double   (OutputFiles_Version)(OutputFiles_t*) ;
 
 
 
-#include "Utils.h"
 
 /* Function-like macros */
 #define OutputFiles_ReadLineFromCurrentFilePosition(OFS,textfile) \
         TextFile_ReadLineFromCurrentFilePosition(textfile,OutputFiles_GetTextLine(OFS),OutputFiles_MaxLengthOfTextLine)
         
 
-#include "DistributedMS.h"
 
 #define OutputFiles_BackupSolutionAtTime(OFS,...) \
         do { \
@@ -63,7 +58,6 @@ extern double   (OutputFiles_Version)(OutputFiles_t*) ;
         OutputFiles_BackupSolutionAtPoint3(__VA_ARGS__,NULL)
 
 
-#include "TextFile.h"
 
 #define OutputFiles_MaxNbOfViews           (Views_MaxNbOfViews)
 #define OutputFiles_MaxLengthOfViewName    (View_MaxLengthOfViewName)
@@ -95,11 +89,9 @@ extern double   (OutputFiles_Version)(OutputFiles_t*) ;
 
 
 
-#include "OutputFile.h"
-#include "Results.h"
 
 /* complete the structure types by using the typedef */
-struct OutputFiles_s {            /* Output files */
+struct OutputFiles_t {            /* Output files */
   char*  filename ;               /* name of the data file */
   int    n_dates ;                /* Nb of dates */
   int    n_points ;               /* Nb of points */
@@ -115,9 +107,13 @@ struct OutputFiles_s {            /* Output files */
   char* line ;                    /* Pointer to text lines */
 } ;
 
-
-
 #ifdef __CPLUSPLUS
 }
 #endif
+
+/* For the macros */
+#include "Utils.h"
+#include "TextFile.h"
+#include "Views.h"
+#include "View.h"
 #endif

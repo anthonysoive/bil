@@ -5,11 +5,10 @@
 extern "C" {
 #endif
 
-/* vacuous declarations and typedef names */
 
-/* class-like structure */
-struct Results_s      ; typedef struct Results_s      Results_t ;
-
+/* Forward declarations */
+struct Results_t; //typedef struct Results_t      Results_t ;
+struct Result_t;
 
 extern Results_t* (Results_Create)(int) ;
 extern void       (Results_Delete)(void*) ;
@@ -19,9 +18,8 @@ extern void       (Results_Delete)(void*) ;
 #define Results_GetResult(results)           ((results)->result)
 
 
-#include "Result.h"
 
-struct Results_s {            /* Results */
+struct Results_t {            /* Results */
   unsigned int nbofresults ;  /* nb of results */
   Result_t* result ;          /* result */
 } ;

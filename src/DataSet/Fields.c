@@ -5,6 +5,7 @@
 #include "DataFile.h"
 #include "Mry.h"
 #include "Fields.h"
+#include "Field.h"
 
 /*
 static void   lit_grille(FieldGrid_t* ,int,char*) ;

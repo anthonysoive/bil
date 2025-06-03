@@ -6,6 +6,7 @@
 #include "InternationalSystemOfUnits.h"
 #include "Mry.h"
 #include "Units.h"
+#include "Unit.h"
 
 
 Units_t* (Units_New)(void)

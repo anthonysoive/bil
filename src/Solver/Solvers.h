@@ -5,14 +5,13 @@
 extern "C" {
 #endif
 
-/* class-like structures "Solver_t" and attributes */
 
-/* vacuous declarations and typedef names */
-struct Solvers_s       ; typedef struct Solvers_s       Solvers_t ;
+/* Forward declarations */
+struct Solvers_t; //typedef struct Solvers_t       Solvers_t ;
+struct Mesh_t;
+struct Options_t;
+struct Solver_t;
 
-
-#include "Mesh.h"
-#include "Options.h"
 
 extern Solvers_t*  (Solvers_Create)(Mesh_t*,Options_t*,const int) ;
 extern void        (Solvers_Delete)(void*) ;
@@ -22,11 +21,8 @@ extern void        (Solvers_Delete)(void*) ;
 #define Solvers_GetSolver(SV)             ((SV)->solver)
 
 
-
-#include "Solver.h"
-
 /* complete the structure types by using the typedef */
-struct Solvers_s {
+struct Solvers_t {
   int nbofsolvers ;
   Solver_t* solver ;
 } ;

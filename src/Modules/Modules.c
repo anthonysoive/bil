@@ -7,6 +7,7 @@
 #include "Context.h"
 #include "Mry.h"
 #include "Modules.h"
+#include "Module.h"
 
 
 
@@ -19,7 +20,7 @@ Modules_t* (Modules_New)(const int n_modules)
 {
   Modules_t* modules = (Modules_t*) Mry_New(Modules_t) ;
   
-  Modules_GetNbOfModules(modules) = n_modules ;
+  Modules_SetNbOfModules(modules,n_modules) ;
   
   {
     Module_t* module = (Module_t*) Mry_New(Module_t[n_modules]) ;
@@ -35,7 +36,7 @@ Modules_t* (Modules_New)(const int n_modules)
       }
     }
       
-    Modules_GetModule(modules) = module ;
+    Modules_SetModule(modules,module) ;
   }
   
   return(modules) ;
@@ -53,7 +54,7 @@ Modules_t* (Modules_Create)(void)
     const char* modulenames[] = {Modules_ListOfNames} ;
     int   i ;
   
-    Modules_GetNbOfModules(modules) = n ;
+    Modules_SetNbOfModules(modules,n) ;
     
     for(i = 0 ; i < n ; i++) {
       Module_t* module_i = Modules_GetModule(modules) + i ;
