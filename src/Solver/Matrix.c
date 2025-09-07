@@ -9,7 +9,7 @@
 #include "Message.h"
 #include "Context.h"
 #include "CommandLine.h"
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "Mry.h"
 #include "Matrix.h"
 #include "MatrixStorageFormat.h"
@@ -18,14 +18,14 @@
 #include "CoordinateFormat.h"
 #include "DistributedMS.h"
 
-#if defined (SUPERLULIB) || defined (SUPERLUMTLIB) || defined (SUPERLUDISTLIB)
+#if defined (HAVE_SUPERLU) || defined (HAVE_SUPERLUMT) || defined (HAVE_SUPERLUDIST)
   #define SUPERLU
   #include "SuperLUFormat.h"
 #else
   #undef SUPERLU
 #endif
 
-#if defined (PETSCLIB)
+#if defined (HAVE_PETSC)
   #include "PetscAIJFormat.h"
   #include <petsc.h>
 #endif
@@ -33,7 +33,7 @@
 
 /* Extern functions */
 
-Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,const int imatrix)
+Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,unsigned short int const imatrix)
 {
   Matrix_t* a = (Matrix_t*) Mry_New(Matrix_t) ;
   
@@ -53,8 +53,8 @@ Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,const int imatrix)
   
   /* Allocate space for the permutation of rows */
   {
-    int nrows = Matrix_GetNbOfRows(a) ;
-    int* rowperm = (int*) Mry_New(int[nrows]) ;
+    size_t nrows = Matrix_GetNbOfRows(a) ;
+    int* rowperm = (int*) Mry_New(int,nrows) ;
     
     Matrix_GetRowPermutation(a) = rowperm ;
   }
@@ -62,8 +62,8 @@ Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,const int imatrix)
   
   /* Allocate space for the permutation of columns */
   {
-    int ncols = Matrix_GetNbOfColumns(a) ;
-    int* colperm = (int*) Mry_New(int[ncols]) ;
+    size_t ncols = Matrix_GetNbOfColumns(a) ;
+    int* colperm = (int*) Mry_New(int,ncols) ;
     
     Matrix_GetColumnPermutation(a) = colperm ;
   }
@@ -98,7 +98,7 @@ Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,const int imatrix)
       /*  Work space for NCFormat_AssembleElementMatrix */
       {
         int n_col = Matrix_GetNbOfColumns(a) ;
-        void* work = Mry_New(int[n_col]) ;
+        void* work = Mry_New(int,n_col) ;
         GenericData_t* gw = GenericData_Create(n_col,work,"rowptr") ;
       
         Matrix_AppendGenericWorkSpace(a,gw) ;
@@ -112,7 +112,7 @@ Matrix_t*   (Matrix_Create)(Mesh_t* mesh,Options_t* options,const int imatrix)
       Matrix_GetNbOfNonZeroValues(a) = CoordinateFormat_GetNbOfNonZeroValues(ac) ;
       Matrix_GetNonZeroValue(a) = CoordinateFormat_GetNonZeroValue(ac) ;
 
-    #ifdef PETSCLIB
+    #ifdef HAVE_PETSC
     } else if(Matrix_StorageFormatIs(a,PetscAIJ)) {
       
       /* Initialization */
@@ -209,7 +209,7 @@ void (Matrix_Delete)(void* self)
         free(ac) ;
       }
 
-    #ifdef PETSCLIB
+    #ifdef HAVE_PETSC
     } else if(Matrix_StorageFormatIs(a,PetscAIJ)) {
       PetscAIJFormat_t* petscaij = (PetscAIJFormat_t*) storage ;
     
@@ -246,7 +246,7 @@ void (Matrix_Delete)(void* self)
 }
 
 
-int (Matrix_AssembleElementMatrix)(Matrix_t* a,Element_t* el,double* ke)
+size_t (Matrix_AssembleElementMatrix)(Matrix_t* a,Element_t* el,double* ke)
 /** Assemble the local matrix ke into the global matrix a
  *  except in case ke points to NULL.
  *  Return the nb of entries in any case.*/
@@ -255,7 +255,7 @@ int (Matrix_AssembleElementMatrix)(Matrix_t* a,Element_t* el,double* ke)
   int  ndof = Element_GetNbOfDOF(el) ;
   int* row = Element_ComputeSelectedMatrixRowAndColumnIndices(el,imatrix) ;
   int* col = row + ndof ;
-  int len ;
+  size_t len ;
 
   /* Skyline format */
   if(Matrix_StorageFormatIs(a,LDUSKL)) {
@@ -277,15 +277,15 @@ int (Matrix_AssembleElementMatrix)(Matrix_t* a,Element_t* el,double* ke)
   
   } else if(Matrix_StorageFormatIs(a,Coordinate)) {
     CoordinateFormat_t* ac = (CoordinateFormat_t*) Matrix_GetStorage(a) ;
-    int nen = Matrix_GetNbOfEntries(a) ;
+    size_t nen = Matrix_GetNbOfEntries(a) ;
     
     len = CoordinateFormat_AssembleElementMatrix(ac,ke,col,row,ndof,nen) ;
     
     if(ke) {
       Matrix_GetNbOfEntries(a) = nen + len ;
     }
-    
-#ifdef PETSCLIB
+
+#ifdef HAVE_PETSC
   /* format used in Petsc */
   } else if(Matrix_StorageFormatIs(a,PetscAIJ)) {
       PetscAIJFormat_t* petscaij = (PetscAIJFormat_t*) Matrix_GetStorage(a) ;
@@ -320,7 +320,7 @@ void (Matrix_PrintMatrix)(Matrix_t* a,const char* keyword)
   /* format Sky Line */
   if(Matrix_StorageFormatIs(a,LDUSKL)) {
     LDUSKLFormat_t* askl = (LDUSKLFormat_t*) Matrix_GetStorage(a) ;
-    int nrows = Matrix_GetNbOfRows(a) ;
+    size_t nrows = Matrix_GetNbOfRows(a) ;
     
     LDUSKLFormat_PrintMatrix(askl,nrows,keyword) ;
     
@@ -329,18 +329,18 @@ void (Matrix_PrintMatrix)(Matrix_t* a,const char* keyword)
   } else if(Matrix_StorageFormatIs(a,SuperLU)) {
     SuperLUFormat_t* aslu   = (SuperLUFormat_t*) Matrix_GetStorage(a) ;
     NCFormat_t*    asluNC = (NCFormat_t*) SuperLUFormat_GetStorage(aslu) ;
-    int nrows = Matrix_GetNbOfRows(a) ;
+    size_t nrows = Matrix_GetNbOfRows(a) ;
     
     NCFormat_PrintMatrix(asluNC,nrows,keyword) ;
 #endif
   
   } else if(Matrix_StorageFormatIs(a,Coordinate)) {
     CoordinateFormat_t* ac = (CoordinateFormat_t*) Matrix_GetStorage(a) ;
-    int nrows = Matrix_GetNbOfRows(a) ;
+    size_t nrows = Matrix_GetNbOfRows(a) ;
     
     CoordinateFormat_PrintMatrix(ac,nrows,keyword) ;
     
-  #ifdef PETSCLIB
+  #ifdef HAVE_PETSC
   /* format used in Petsc */
   } else if(Matrix_StorageFormatIs(a,PetscAIJ)) {
     PetscAIJFormat_t* petscaij = (PetscAIJFormat_t*) Matrix_GetStorage(a) ;
@@ -362,7 +362,7 @@ void (Matrix_SetValuesToZero)(Matrix_t* a)
 /** Zeros all entries of the matrix */
 {
   if(0) {
-  #ifdef PETSCLIB
+  #ifdef HAVE_PETSC
   } else if(Matrix_StorageFormatIs(a,PetscAIJ)) {
     PetscAIJFormat_t* petscaij = (PetscAIJFormat_t*) Matrix_GetStorage(a) ;
     Mat* aij = (Mat*) PetscAIJFormat_GetStorage(petscaij) ;

@@ -19,7 +19,7 @@ extern void     (Loads_Delete)(void*) ;
 
 
 struct Loads_t {              /* loadings */
-  unsigned int n_cg ;         /* nb */
+  int n_cg ;         /* nb */
   Load_t* cg ;                /* loading */
 } ;
 

@@ -11,7 +11,7 @@
 #define TITLE "Barcelona Expansive Model for unsaturated soils (2023)"
 #define AUTHORS "Eizaguirre-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

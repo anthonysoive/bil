@@ -10,6 +10,7 @@ extern "C" {
 struct IterProcess_t; //typedef struct IterProcess_t  IterProcess_t ;
 struct DataFile_t;
 struct ObVals_t;
+struct Node_t;
 struct Nodes_t;
 struct Solver_t;
 
@@ -29,6 +30,7 @@ extern void            (IterProcess_PrintCurrentError)(IterProcess_t*) ;
 #define IterProcess_GetError(IPR)                    ((IPR)->error)
 #define IterProcess_GetObValIndexOfCurrentError(IPR) ((IPR)->obvalindex)
 #define IterProcess_GetNodeIndexOfCurrentError(IPR)  ((IPR)->nodeindex)
+#define IterProcess_GetNodeOfCurrentError(IPR)       ((IPR)->node)
 #define IterProcess_GetObVals(IPR)                   ((IPR)->obvals)
 
 
@@ -70,6 +72,11 @@ extern void            (IterProcess_PrintCurrentError)(IterProcess_t*) ;
 #define IterProcess_SetNodeIndexOfCurrentError(IPR,A) \
         do {\
           IterProcess_GetNodeIndexOfCurrentError(IPR) = A;\
+        } while(0)
+        
+#define IterProcess_SetNodeOfCurrentError(IPR,A) \
+        do {\
+          IterProcess_GetNodeOfCurrentError(IPR) = A;\
         } while(0)
         
 #define IterProcess_SetObVals(IPR,A) \
@@ -126,7 +133,8 @@ struct IterProcess_t {        /* Iterative process */
   double tol ;                /* Tolerance */
   double error ;              /* Current error */
   int    obvalindex ;         /* Objective value index pertaining to the greatest error */
-  int    nodeindex ;          /* Node index pertaining to the greatest error */
+  size_t nodeindex ;          /* Node index pertaining to the greatest error */
+  Node_t* node ;              /* Node pertaining to the greatest error */
   ObVals_t* obvals ;          /* Objective variations */
 } ;
 

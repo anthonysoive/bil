@@ -18,7 +18,7 @@ Units_t* (Units_New)(void)
   
   
   {
-    Unit_t* unit = (Unit_t*) Mry_New(Unit_t[Units_MaxNbOfUnits]) ;
+    Unit_t* unit = (Unit_t*) Mry_New(Unit_t,Units_MaxNbOfUnits) ;
     int i ;
   
     for(i = 0 ; i < Units_MaxNbOfUnits ; i++) {

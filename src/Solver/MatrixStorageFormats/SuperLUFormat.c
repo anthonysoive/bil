@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "Options.h"
 #include "Mesh.h"
 #include "Message.h"
@@ -11,7 +11,7 @@
 
 #include "NCFormat.h"
 
-#if defined (SUPERLULIB) || defined (SUPERLUMTLIB) || defined (SUPERLUDISTLIB)
+#if defined (HAVE_SUPERLU) || defined (HAVE_SUPERLUMT) || defined (HAVE_SUPERLUDIST)
   #define SUPERLU
   #include "SuperLUFormat.h"
 #else

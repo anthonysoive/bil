@@ -25,7 +25,7 @@ Points_t*  (Points_New)(const int n_points)
   
   /* Pointer to point */
   {
-    Point_t* point = (Point_t*) Mry_New(Point_t[n_points]) ;
+    Point_t* point = (Point_t*) Mry_New(Point_t,n_points) ;
     int i ;
     
     for(i = 0 ; i < n_points ; i++) {
@@ -83,7 +83,7 @@ Points_t*  (Points_Create)(DataFile_t* datafile,Mesh_t* mesh)
     /* If no token "Reg" is found in the line c1 */
     if(!String_FindToken(c1,"Reg")) {
       int dim = Mesh_GetDimension(mesh) ;
-      double* x = (double*) Mry_New(double[3*n_points]) ;
+      double* x = (double*) Mry_New(double,3*n_points) ;
     
       String_ScanArray(c,dim*n_points," %lf",x) ;
       

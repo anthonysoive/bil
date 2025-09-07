@@ -10,8 +10,8 @@ struct Mesh_t;
 //extern LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t*) ;
 extern LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t*,const int) ;
 extern void            (LDUSKLFormat_Delete)(void*) ;
-extern int             (LDUSKLFormat_AssembleElementMatrix)(LDUSKLFormat_t*,double*,int*,int*,int) ;
-extern void            (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t*,unsigned int,const char*) ;
+extern size_t          (LDUSKLFormat_AssembleElementMatrix)(LDUSKLFormat_t*,double*,int*,int*,int) ;
+extern void            (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t*,size_t,const char*) ;
 
 
 
@@ -70,7 +70,7 @@ extern void            (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t*,unsigned int,c
 
 /* LDU Skyline format */
 struct LDUSKLFormat_t {       /* LDU Skyline storage format */
-  unsigned int    nnz ;       /* Nb of non zero values */
+  size_t    nnz ;       /* Nb of non zero values */
   double* d ;                 /* Diagonal matrix values */
   double** l ;                /* Pointer to strictly lower triangular matrix values */
   double** u ;                /* Pointer to strictly upper triangular matrix values */

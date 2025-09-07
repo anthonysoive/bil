@@ -19,7 +19,7 @@
 #define TITLE   "Internal/External sulfate attack of concrete (2017)" 
 #define AUTHORS "Gu-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 
@@ -74,7 +74,7 @@ enum {
 
 
 
-/* Method chosen at compiling time. 
+/* Method chosen at compile time. 
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with a specific model.
  * Uncomment/comment to let only one unknown per equation */
@@ -310,6 +310,8 @@ struct Parameters_t {
   double dr_AFt;
   double dp_AFt;
 };
+
+static MPM_t mpm;
 }
 
 using namespace BaseName();
@@ -336,8 +338,6 @@ static double ar_AFt;
 static double ap_AFt;
 static double dr_AFt;
 static double dp_AFt;
-
-static MPM_t mpm;
 
 
 /* Math constants */

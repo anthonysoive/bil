@@ -127,10 +127,17 @@ extern void      (Model_Scan)(Model_t*,DataFile_t*,Geometry_t*) ;
           }\
         } while(0)
 
-#define Model_PrintModelProp(MOD,file) \
+#define Model_PrintModelProp(MOD,...) \
         do {\
           if(Model_GetPrintModelProperties(MOD)) {\
-            Model_GetPrintModelProperties(MOD)(MOD,file);\
+            Model_GetPrintModelProperties(MOD)(MOD,__VA_ARGS__);\
+          }\
+        } while(0)
+
+#define Model_ComputeMaterialProperties(MOD,...) \
+        do {\
+          if(Model_GetComputeMaterialProperties(MOD)) {\
+            Model_GetComputeMaterialProperties(MOD)(__VA_ARGS__);\
           }\
         } while(0)
 
@@ -155,7 +162,7 @@ struct Model_t {              /* model */
   char*   shorttitle ;        /* Short title of the model */
   char*   authors ;           /* Authors of the model */
   
-  int      nbofequations ;    /* Number of equations */
+  unsigned short int nbofequations ;    /* Number of equations */
   char**   nameofequations ;  /* Names of equations */
   char**   nameofunknowns ;   /* Names of unknowns */
   int*     sequentialindex ;  /* Sequential indexes of unknowns/equations */

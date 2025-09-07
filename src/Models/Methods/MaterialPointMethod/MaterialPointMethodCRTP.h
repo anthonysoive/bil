@@ -274,7 +274,7 @@ struct MaterialPointMethod_t {
   }
 
 
-  int ComputeTangentStifnessMatrixByFEM(Element_t* el,double const t,double const dt,double* k) {
+  int ComputeTangentStiffnessMatrixByFEM(Element_t* el,double const t,double const dt,double* k) {
     double*  vi   = Element_GetCurrentImplicitTerm(el) ;
     double*  vi_n = Element_GetPreviousImplicitTerm(el) ;
     double** u    = Element_ComputePointerToCurrentNodalUnknowns(el) ;

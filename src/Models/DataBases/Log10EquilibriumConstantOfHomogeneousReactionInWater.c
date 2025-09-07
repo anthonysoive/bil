@@ -78,6 +78,16 @@ void Log10EquilibriumConstantOfHomogeneousReactionInWater_Print(double T)
     printf("\n") ;\
   }
 
+#define REACSUBTITLE(R) \
+  do {\
+    int c1 = 54 ;\
+    int c2 = c1+11 ;\
+    int n = printf(R) ;\
+    while(n < c1) n += printf(" ") ;\
+    n += printf("|") ;\
+    printf("\n") ;\
+  } while(0)
+
 #define PREACT(R,LogK) \
   {\
     double logk = LogK ;\
@@ -96,110 +106,76 @@ void Log10EquilibriumConstantOfHomogeneousReactionInWater_Print(double T)
   
   REACTITLE("Homogeneous reaction at T = %g",T) ;
   
-  printf("Homogeneous reactions involving compounds of type I\n") ;
-  printf("---------------------------------------------------\n") ;
-  printf("\n") ;
-  {
-  printf("Water\n") ;
+  REACSUBTITLE("Homogeneous reactions involving compounds of type I") ;
+  REACSUBTITLE("---------------------------------------------------") ;
+  REACSUBTITLE("Water:") ;
   PREACT("H2O                 = H[+] + OH[-]",logk_h2o) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Calcium compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Calcium compounds:") ;
   PREACT("CaOH[+]             = Ca[2+] + OH[-]",logk_caoh) ;
   PREACT("Ca[2+] + H2O        = CaOH[+] + H[+]",logk_h2o - logk_caoh) ;
   PREACT("Ca(OH)2[0]          = Ca[2+] + 2OH[-]",logk_caoh2) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Silicon compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Silicon compounds:") ;
   PREACT("H3SiO4[-]  + H2O    = H4SiO4[0] + OH[-]",logk_h3sio4) ;
   PREACT("H2SiO4[2-] + H2O    = H3SiO4[-] + OH[-]",logk_h2sio4) ;
   PREACT("H2SiO4[2-] + H[+]   = H3SiO4[-]",logk_h2sio4 - logk_h2o) ;
   PREACT("H2SiO4[2-] + 2H[+]  = H4SiO4[0]",logk_h3sio4 + logk_h2sio4 - (2*logk_h2o)) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Sodium compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Sodium compounds:") ;
   PREACT("NaOH[0]             = Na[+] + OH[-]",logk_naoh) ;
-  printf("\n") ;
-  printf("Potassium compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Potassium compounds:") ;
   PREACT("KOH[0]              = K[+] + OH[-]",logk_koh) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Carbon compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Carbon compounds:") ;
   PREACT("H2CO3[0]            = CO2[0] + H2O",logk_h2co3) ;
   PREACT("HCO3[-] + H2O       = H2CO3[0] + OH[-]",logk_hco3) ;
   PREACT("CO3[2-] + H2O       = HCO3[-] + OH[-]",logk_co3) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Sulfur compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Sulfur compounds:") ;
   PREACT("H2SO4[0]            = HSO4[-] + H[+]",logk_h2so4) ;
   PREACT("HSO4[-]             = SO4[2-] + H[+]",logk_hso4) ;
   PREACT("H2SO4[0] + 2OH[-]   = SO4[2-] + 2H2O",logk_h2so4 + logk_hso4 - 2*logk_h2o) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Aluminium compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Aluminium compounds:") ;
   PREACT("AlO4H4[-]           = Al[3+] + 4OH[-]",logk_alo4h4) ;
-  }
   
-  printf("\n") ;
+  REACSUBTITLE(" ") ;
   
-  printf("Homogeneous reactions involving compounds of type II\n") ;
-  printf("----------------------------------------------------\n") ;
-  
-  printf("\n") ;
-  
-  {
-  printf("Calcium-silicon compounds\n") ;
+  REACSUBTITLE("Homogeneous reactions involving compounds of type II") ;
+  REACSUBTITLE("----------------------------------------------------") ;
+  REACSUBTITLE("Calcium-silicon compounds:") ;
   PREACT("CaH3SiO4[+]         = Ca[2+] + H3SiO4[-]",logk_cah3sio4) ;
   PREACT("CaH2SiO4[0]         = Ca[2+] + H2SiO4[2-]",logk_cah2sio4) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Calcium-carbon compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Calcium-carbon compounds:") ;
   PREACT("CaHCO3[+]           = Ca[2+] + HCO3[-]",logk_cahco3) ;
   PREACT("CaCO3[0]            = Ca[2+] + CO3[2-]",logk_caco3) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Sodium-carbon compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Sodium-carbon compounds:") ;
   PREACT("NaHCO3[0]           = Na[+] + HCO3[-]",logk_nahco3) ;
   PREACT("NaCO3[-]            = Na[+] + CO3[2-]",logk_naco3) ;
-  }
   
-  printf("\n") ;
-  
-  {
-  printf("Calcium-sulfur compounds\n") ;
+  REACSUBTITLE(" ") ;
+  REACSUBTITLE("Calcium-sulfur compounds:") ;
   PREACT("CaHSO4[+]           = Ca[2+] + HSO4[-]",logk_cahso4) ;
   PREACT("CaSO4[0]            = Ca[2+] + SO4[2-]",logk_caso4) ;
-  }
   
-  printf("\n") ;
+  REACSUBTITLE(" ") ;
   
   fflush(stdout) ;
   
   
 #undef PREACT
 #undef REACTITLE
+#undef REACSUBTITLE
 }

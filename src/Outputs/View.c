@@ -11,7 +11,7 @@ View_t* (View_Create)(void)
 
   /* Allocate memory for the name */
   {
-    char* text = (char*) Mry_New(char[View_MaxLengthOfViewName]) ;
+    char* text = (char*) Mry_New(char,View_MaxLengthOfViewName) ;
     
     View_GetNameOfView(view) = text ;
   }

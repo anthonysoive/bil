@@ -630,7 +630,6 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
   /* Mesh
    * ---- */
   if(DataSet_GetMesh(dataset) && (!strncmp(mot,"mesh",4) || !strncmp(mot,"all",3))) {
-    int i ;
     int c1 = 14 ;
     int c2 = 30 ;
     int c3 = 45 ;
@@ -639,12 +638,12 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
     PRINT("Mesh:\n") ;
     
     PRINT("\t Nodes:\n") ;
-    PRINT("\t Nb of nodes = %d\n",N_NO) ;
+    PRINT("\t Nb of nodes = %lu\n",N_NO) ;
     
-    for(i = 0 ; i < (int) N_NO ; i++) {
+    for(size_t i = 0 ; i < N_NO ; i++) {
       Node_t* node_i = NO + i ;
       int ne = Node_GetNbOfElements(node_i) ;
-      int n = PRINT("\t no(%d)",i) ;
+      int n = PRINT("\t no(%lu)",i) ;
       int j ;
       
       while(n < c1) n += PRINT(" ") ;
@@ -660,7 +659,7 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
       if(ne) n += PRINT("  el(") ;
       
       for(j = 0 ; j < ne ; j++) {
-        n += PRINT("%d",Element_GetElementIndex(Node_GetElement(node_i,j))) ;
+        n += PRINT("%lu",Element_GetElementIndex(Node_GetElement(node_i,j))) ;
         n += PRINT(((j < ne - 1) ? "," : ")")) ;
       }
       
@@ -669,12 +668,12 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
     
     PRINT("\n") ;
     PRINT("\t Elements:\n") ;
-    PRINT("\t Nb of elements = %d\n",N_EL) ;
+    PRINT("\t Nb of elements = %lu\n",N_EL) ;
     
-    for(i = 0 ; i < (int) N_EL ; i++) {
+    for(size_t i = 0 ; i < N_EL ; i++) {
       Element_t* elt_i = EL + i ;
       int nn = Element_GetNbOfNodes(elt_i) ;
-      int n = PRINT("\t el(%d)",i) ;
+      int n = PRINT("\t el(%lu)",i) ;
       int j ;
       
       while(n < c1) n += PRINT(" ") ;
@@ -692,7 +691,7 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
       n += PRINT("  no(") ;
       
       for(j = 0 ; j < nn ; j++) {
-        n += PRINT("%d",Node_GetNodeIndex(Element_GetNode(elt_i,j))) ;
+        n += PRINT("%lu",Node_GetNodeIndex(Element_GetNode(elt_i,j))) ;
         n += PRINT(((j < nn - 1) ? "," : ")")) ;
       }
       
@@ -989,21 +988,16 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
         
       } else if(!strncmp(type,"grid",3)) {
         FieldGrid_t* grille =  (FieldGrid_t*) Field_GetFieldFormat(CH + i) ;
-        int    n_x = FieldGrid_GetNbOfPointsAlongX(grille) ;
-        int    n_y = FieldGrid_GetNbOfPointsAlongY(grille) ;
-        int    n_z = FieldGrid_GetNbOfPointsAlongZ(grille) ;
+        size_t    n_x = FieldGrid_GetNbOfPointsAlongX(grille) ;
+        size_t    n_y = FieldGrid_GetNbOfPointsAlongY(grille) ;
+        size_t    n_z = FieldGrid_GetNbOfPointsAlongZ(grille) ;
         double* x  = FieldGrid_GetCoordinateAlongX(grille) ;
         double* y  = FieldGrid_GetCoordinateAlongY(grille) ;
         double* z  = FieldGrid_GetCoordinateAlongZ(grille) ;
-        int u ;
         
-        for(u = 0 ; u < n_x ; u++) {
-          int j ;
-          
-          for(j = 0 ; j < n_y ; j++) {
-            int k ;
-            
-            for(k = 0 ; k < n_z ; k++) {
+        for(size_t u = 0 ; u < n_x ; u++) {          
+          for(size_t j = 0 ; j < n_y ; j++) {            
+            for(size_t k = 0 ; k < n_z ; k++) {
               double* v = FieldGrid_GetValue(grille) ;
               
               PRINT("\t v(%e,%e,%e) = %e\n",x[u],y[j],z[k],v[(u) + (j)*n_x + (k)*n_x*n_y]) ;
@@ -1011,8 +1005,8 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
           }
         }
 
-      } else if(!strcmp(type,"constant")) {
-        FieldConstant_t* cst =  (FieldConstant_t*) Field_GetFieldFormat(CH + i) ;
+      } else if(!strcmp(type,"random")) {
+        FieldRandom_t* cst =  (FieldRandom_t*) Field_GetFieldFormat(CH + i) ;
         
         PRINT("\t Value    = %e\n",FieldConstant_GetValue(cst)) ;
         PRINT("\t RandomRange = %e\n",FieldConstant_GetRandomRangeLength(cst)) ;
@@ -1070,7 +1064,6 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
     
     
     for(i = 0 ; i < (int) N_IC ; i++) {
-      //int reg = ICond_GetRegionTag(IC + i) ;
       char* reg = ICond_GetRegionName(IC + i) ;
       char* name_unk =ICond_GetNameOfUnknown(IC + i) ;
       Field_t* ch = ICond_GetField(IC + i) ;
@@ -1084,9 +1077,9 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
       PRINT("\t Unknown = %s\n",name_unk) ;
       
       if(ch) {
-        int n = ch - CH ;
+        ptrdiff_t n = ch - CH ;
         
-        PRINT("\t Field = %d (type %s)\n",n,Field_GetType(ch)) ;
+        PRINT("\t Field = %td (type %s)\n",n,Field_GetType(ch)) ;
         
       } else {
         PRINT("\t Natural initial condition (null)\n") ;
@@ -1094,9 +1087,9 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
       }
       
       if(fn) {
-        int n = fn - FN ;
+        ptrdiff_t n = fn - FN ;
         
-        PRINT("\t Function = %d\n",n) ;
+        PRINT("\t Function = %td\n",n) ;
         
       } else {
         PRINT("\t Function unity (f(t) = 1)\n") ;
@@ -1113,7 +1106,6 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
     PRINT("\n") ;
     
     for(i = 0 ; i < (int) N_CL ; i++) {
-      //int reg = BCond_GetRegionTag(CL + i) ;
       char* reg = BCond_GetRegionName(CL + i) ;
       char* name_unk =BCond_GetNameOfUnknown(CL + i) ;
       int ich = BCond_GetFieldIndex(CL + i) ;
@@ -1155,7 +1147,6 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
     PRINT("\n") ;
     
     for(i = 0 ; i < (int) N_CG ; i++) {
-      //int reg = Load_GetRegionTag(CG + i) ;
       char* reg = Load_GetRegionName(CG + i) ;
       char* name_eqn = Load_GetNameOfEquation(CG + i) ;
       char* type = Load_GetType(CG + i) ;
@@ -1170,9 +1161,9 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
       PRINT("\t Type     = %s\n",type) ;
       
       if(ch) {
-        int n = ch - CH ;
+        ptrdiff_t n = ch - CH ;
         
-        PRINT("\t Field = %d (type %s)\n",n,Field_GetType(ch)) ;
+        PRINT("\t Field = %td (type %s)\n",n,Field_GetType(ch)) ;
         
       } else {
         PRINT("\t Natural load (null)\n") ;
@@ -1180,9 +1171,9 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
       }
       
       if(fn) {
-        int n = fn - FN ;
+        ptrdiff_t n = fn - FN ;
         
-        PRINT("\t Function = %d\n",n) ;
+        PRINT("\t Function = %td\n",n) ;
         
       } else {
         PRINT("\t Function unity (f(t) = 1)\n") ;
@@ -1202,26 +1193,24 @@ void DataSet_PrintData(DataSet_t* dataset,char* mot)
     PRINT("Points:\n") ;
     
     PRINT("\t Nb of points = %d\n",n_points) ;
-    
+
     for(i = 0 ; i < n_points ; i++) {
       double* coor = Point_GetCoordinate(point + i) ;
       double x = (DIM > 0) ? coor[0] : 0. ;
       double y = (DIM > 1) ? coor[1] : 0. ;
       double z = (DIM > 2) ? coor[2] : 0. ;
       Element_t* elt = Point_GetEnclosingElement(point + i) ;
-      char* reg_el = (elt) ? Element_GetRegionName(elt) : NULL ;
-      int index  = (elt) ? Element_GetElementIndex(elt) : -1 ;
       
       PRINT("\t Point(%d): ",i) ;
       
       PRINT("(%e,%e,%e)",x,y,z) ;
       
-      if(reg_el) {
+      if(elt) {
+        char* reg_el = Element_GetRegionName(elt) ;
+        size_t index  = Element_GetElementIndex(elt) ;
+        
         PRINT(" in region %s",reg_el) ;
-      }
-      
-      if(index >= 0) {
-        PRINT(" in element %d",index) ;
+        PRINT(" in element %lu",index) ;
       }
       
       PRINT("\n") ;

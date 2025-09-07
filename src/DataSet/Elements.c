@@ -26,8 +26,7 @@ static double   (Elements_ComputeMaximumSizeOfElements)(Elements_t*) ;
 static double   (Elements_ComputeMinimumSizeOfElements)(Elements_t*) ;
 
 
-#if 1
-Elements_t*  (Elements_New)(const int n,const int nc)
+Elements_t*  (Elements_New)(const size_t n,const size_t nc)
 {
   Elements_t* elts = (Elements_t*) Mry_New(Elements_t) ;
   
@@ -37,7 +36,7 @@ Elements_t*  (Elements_New)(const int n,const int nc)
   
   /* Allocation of space for the pointers to "node" */
   {
-    Node_t** pnode = (Node_t**) Mry_New(Node_t*[nc]) ;
+    Node_t** pnode = (Node_t**) Mry_New(Node_t*,nc) ;
     
     Elements_GetPointerToNode(elts) = pnode ;
   }
@@ -63,9 +62,8 @@ Elements_t*  (Elements_New)(const int n,const int nc)
   {
     Node_t** pnode = Elements_GetPointerToNode(elts) ;
     Element_t* el = Elements_GetElement(elts) ;
-    int i ;
     
-    for(i = 0 ; i < n ; i++) {
+    for(size_t i = 0 ; i < n ; i++) {
       Element_t* el_i = el + i ;
       
       Element_GetElementIndex(el_i)  = i ;
@@ -78,10 +76,8 @@ Elements_t*  (Elements_New)(const int n,const int nc)
   
   return(elts) ;
 }
-#endif
 
 
-#if 1
 void (Elements_CreateMore)(Elements_t* elements)
 {
   Buffers_t* buffers = Buffers_Create(Element_SizeOfBuffer) ;
@@ -96,11 +92,10 @@ void (Elements_CreateMore)(Elements_t* elements)
   
   /* Create additional memory space for each element */
   {
-    int n_el = Elements_GetNbOfElements(elements) ;
+    size_t n_el = Elements_GetNbOfElements(elements) ;
     Element_t* el = Elements_GetElement(elements) ;
-    int ie ;
     
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       Element_CreateMore(el + ie,buffers,shapefcts,intfcts) ;
     }
   }
@@ -110,7 +105,6 @@ void (Elements_CreateMore)(Elements_t* elements)
   Elements_GetMinimumSizeOfElements(elements) = Elements_ComputeMinimumSizeOfElements(elements) ;
   
 }
-#endif
 
 
 
@@ -128,7 +122,7 @@ void (Elements_Delete)(void* self)
   }
 
   {
-    int nel = Elements_GetNbOfElements(elements) ;
+    size_t nel = Elements_GetNbOfElements(elements) ;
     Element_t* el = Elements_GetElement(elements) ;
       
     Mry_Delete(el,nel,Element_Delete) ;
@@ -177,16 +171,14 @@ void (Elements_Delete)(void* self)
 
 void (Elements_LinkUp)(Elements_t* elements,Materials_t* materials)
 {
-  int n_el = Elements_GetNbOfElements(elements) ;
+  size_t n_el = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
   int n_mat = Materials_GetNbOfMaterials(materials) ;
   
   
   /* Link up element and material */
-  {
-    int ie ;
-    
-    for(ie = 0 ; ie < n_el ; ie++) {
+  {    
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       int imat = Element_GetMaterialIndex(el + ie) ;
     
       if(imat >= 0 && imat < n_mat) {
@@ -207,13 +199,11 @@ void  (Elements_DefineProperties)(Elements_t* elements)
  **  3. the size of tables for (im/ex)plicit and constant terms 
  **     for default allocation (see below) */
 {
-  int n_el = Elements_GetNbOfElements(elements) ;
+  size_t n_el = Elements_GetNbOfElements(elements) ;
   ShapeFcts_t* shapefcts = Elements_GetShapeFcts(elements) ;
-  IntFcts_t* intfcts = Elements_GetIntFcts(elements) ;
-  int    ie ;
+  IntFcts_t* intfcts = Elements_GetIntFcts(elements) ;  
   
-  
-  for(ie = 0 ; ie < n_el ; ie++) {
+  for(size_t ie = 0 ; ie < n_el ; ie++) {
     Element_t* el = Elements_GetElement(elements) + ie ;
     Material_t* mat = Element_GetMaterial(el) ;
 
@@ -239,9 +229,9 @@ void  (Elements_DefineProperties)(Elements_t* elements)
       
       /* Update the size of tables in all the elementsol of the circularly linked list */
       {
-        int ni = Element_GetNbOfImplicitTerms(el) ;
-        int ne = Element_GetNbOfExplicitTerms(el) ;
-        int n0 = Element_GetNbOfConstantTerms(el) ;
+        size_t ni = Element_GetNbOfImplicitTerms(el) ;
+        size_t ne = Element_GetNbOfExplicitTerms(el) ;
+        size_t n0 = Element_GetNbOfConstantTerms(el) ;
         Solution_t* solution = Element_GetSolution(el) ;
   
         if(solution) {
@@ -266,12 +256,11 @@ void  (Elements_DefineProperties)(Elements_t* elements)
 
 double (Elements_ComputeMaximumSizeOfElements)(Elements_t* elements)
 {
-  int n_el = Elements_GetNbOfElements(elements) ;
+  size_t n_el = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
-  int ie ;
   double hmax = 0 ;
   
-  for(ie = 0 ; ie < n_el ; ie++) {
+  for(size_t ie = 0 ; ie < n_el ; ie++) {
     double h = Element_ComputeSize(el + ie) ;
     
     if(Element_IsSubmanifold(el + ie)) continue ;
@@ -286,12 +275,11 @@ double (Elements_ComputeMaximumSizeOfElements)(Elements_t* elements)
 
 double (Elements_ComputeMinimumSizeOfElements)(Elements_t* elements)
 {
-  int n_el = Elements_GetNbOfElements(elements) ;
+  size_t n_el = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
-  int ie ;
   double hmin = -1 ;
   
-  for(ie = 0 ; ie < n_el ; ie++) {
+  for(size_t ie = 0 ; ie < n_el ; ie++) {
     double h = Element_ComputeSize(el + ie) ;
     
     if(Element_IsSubmanifold(el + ie)) continue ;
@@ -307,16 +295,14 @@ double (Elements_ComputeMinimumSizeOfElements)(Elements_t* elements)
 
 
 
-int (Elements_ComputeNbOfMatrixEntries)(Elements_t* elements)
+size_t (Elements_ComputeNbOfMatrixEntries)(Elements_t* elements)
 {
-  int nel = Elements_GetNbOfElements(elements) ;
+  size_t nel = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
-  int len = 0 ;
+  size_t len = 0 ;
       
-  {
-    int ie ;
-      
-    for(ie = 0 ; ie < nel ; ie++) {
+  {      
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_FreeBuffer(el + ie) ;
       len += Element_ComputeNbOfMatrixEntries(el + ie) ;
     }
@@ -328,16 +314,14 @@ int (Elements_ComputeNbOfMatrixEntries)(Elements_t* elements)
 
 
 
-int (Elements_ComputeNbOfSelectedMatrixEntries)(Elements_t* elements,const int imatrix)
+size_t (Elements_ComputeNbOfSelectedMatrixEntries)(Elements_t* elements,const int imatrix)
 {
-  int nel = Elements_GetNbOfElements(elements) ;
+  size_t nel = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
-  int len = 0 ;
+  size_t len = 0 ;
       
-  {
-    int ie ;
-      
-    for(ie = 0 ; ie < nel ; ie++) {
+  {      
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_FreeBuffer(el + ie) ;
       len += Element_ComputeNbOfSelectedMatrixEntries(el + ie,imatrix) ;
     }
@@ -354,23 +338,20 @@ void  (Elements_InitializeMatrixRowColumnIndexes)(Elements_t* elements)
 {
   {
     Element_t* el = Elements_GetElement(elements) ;
-    int n_el = Elements_GetNbOfElements(elements) ;
-    int    ie ;
+    size_t n_el = Elements_GetNbOfElements(elements) ;
   
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       Element_t* elt_i = el + ie ;
       Material_t* mat = Element_GetMaterial(elt_i) ;
     
       if(mat) {
         int    nn  = Element_GetNbOfNodes(elt_i) ;
         int    neq = Element_GetNbOfEquations(elt_i) ;
-        int i ;
 
-        for(i = 0 ; i < nn ; i++) {
+        for(int i = 0 ; i < nn ; i++) {
           Node_t* node_i = Element_GetNode(elt_i,i) ;
-          int   j ;
 
-          for(j = 0 ; j < neq ; j++) {
+          for(int j = 0 ; j < neq ; j++) {
             int ij = i*neq + j ;
           
             /*  columns (unknowns) set to arbitrary >= 0 */
@@ -401,24 +382,21 @@ void  (Elements_EliminateMatrixRowColumnIndexesOfOverlappingNodes)(Elements_t* e
  *  of zero-thickness interface element.
  **/
 {
-  int n_el = Elements_GetNbOfElements(elements) ;
+  size_t n_el = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
-  int ie ;
     
-  for(ie = 0 ; ie < n_el ; ie++) {
+  for(size_t ie = 0 ; ie < n_el ; ie++) {
     Element_t* el_i = el + ie ;
       
     if(Element_HasZeroThickness(el_i)) {
       int neq = Element_GetNbOfEquations(el_i) ;
       ShapeFct_t* shapefct = Element_GetShapeFct(el_i) ;
       int nf = ShapeFct_GetNbOfFunctions(shapefct) ;
-      int in ;
       
-      for(in = 0 ; in < nf ; in++) {
+      for(int in = 0 ; in < nf ; in++) {
         Node_t* node_in = Element_GetNode(el_i,in) ;
-        int ieq ;
     
-        for(ieq = 0 ; ieq < neq ; ieq++) {
+        for(int ieq = 0 ; ieq < neq ; ieq++) {
           char* unk = Element_GetNameOfUnknown(el_i)[ieq] ;
           char* eqn = Element_GetNameOfEquation(el_i)[ieq] ;
           
@@ -439,24 +417,21 @@ void  (Elements_UpdateMatrixRowColumnIndexesOfOverlappingNodes)(Elements_t* elem
  *  of zero-thickness interface element.
  **/
 {
-  int n_el = Elements_GetNbOfElements(elements) ;
+  size_t n_el = Elements_GetNbOfElements(elements) ;
   Element_t* el = Elements_GetElement(elements) ;
-  int ie ;
     
-  for(ie = 0 ; ie < n_el ; ie++) {
+  for(size_t ie = 0 ; ie < n_el ; ie++) {
     Element_t* el_i = el + ie ;
       
     if(Element_HasZeroThickness(el_i)) {
       int neq = Element_GetNbOfEquations(el_i) ;
       ShapeFct_t* shapefct = Element_GetShapeFct(el_i) ;
       int nf = ShapeFct_GetNbOfFunctions(shapefct) ;
-      int in ;
       
-      for(in = 0 ; in < nf ; in++) {
+      for(int in = 0 ; in < nf ; in++) {
         Node_t* node_in = Element_GetNode(el_i,in) ;
-        int ieq ;
     
-        for(ieq = 0 ; ieq < neq ; ieq++) {
+        for(int ieq = 0 ; ieq < neq ; ieq++) {
           char* unk = Element_GetNameOfUnknown(el_i)[ieq] ;
           char* eqn = Element_GetNameOfEquation(el_i)[ieq] ;
           

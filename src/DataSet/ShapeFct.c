@@ -16,7 +16,7 @@ ShapeFct_t* (ShapeFct_New)(void)
   
   {
     int k = 3 + ShapeFct_MaxNbOfNodes*(1 + 3) ;
-    double* b = (double*) Mry_New(double[k]) ;
+    double* b = (double*) Mry_New(double,k) ;
     
     ShapeFct_GetCoordinate(shapefct)       = b ;
     ShapeFct_GetFunction(shapefct)         = b + 3 ;
@@ -32,7 +32,7 @@ ShapeFct_t* (ShapeFct_New)(void)
 
 /* Extern functions */
 
-ShapeFct_t* (ShapeFct_Create)(int nn,int dim)
+ShapeFct_t* (ShapeFct_Create)(unsigned short int nn,unsigned short int dim)
 {
   ShapeFct_t* shapefct = (ShapeFct_t*) ShapeFct_New() ;
   
@@ -60,7 +60,7 @@ void  (ShapeFct_Delete)(void* self)
 
 
 
-void (ShapeFct_ComputeValuesAtPoint)(int dim,int nn,double* x,double* h,double* dh)
+void (ShapeFct_ComputeValuesAtPoint)(unsigned short int dim,unsigned short int nn,double* x,double* h,double* dh)
 /* Compute shape functions (h) and their gradients (dh) at point x */
 {
 #define X         x[0]

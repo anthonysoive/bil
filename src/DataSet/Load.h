@@ -25,7 +25,6 @@ extern void    (Load_Scan)   (Load_t*,DataFile_t*) ;
 #define Load_MaxLengthOfKeyWord               (30)
 
 
-#define Load_GetRegionTag(LOAD)          ((LOAD)->RegionTag)
 #define Load_GetRegionName(LOAD)         ((LOAD)->RegionName)
 #define Load_GetType(LOAD)               ((LOAD)->Type)
 #define Load_GetNameOfEquation(LOAD)     ((LOAD)->NameOfEquation)
@@ -45,7 +44,6 @@ struct Load_t {
   Field_t*     Field ;
   Functions_t* Functions ;
   Fields_t*    Fields ;
-  int    RegionTag ;
   char*  RegionName ;
   char*  Type ;
   char*  NameOfEquation ;

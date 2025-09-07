@@ -11,10 +11,9 @@ struct MatrixStorageFormat_t;
 struct GenericData_t;
  
  
-//extern Matrix_t*   (Matrix_Create)                (Mesh_t*,Options_t*) ;
-extern Matrix_t*   (Matrix_Create)                (Mesh_t*,Options_t*,const int) ;
+extern Matrix_t*   (Matrix_Create)                (Mesh_t*,Options_t*,unsigned short int const) ;
 extern void        (Matrix_Delete)                (void*) ;
-extern int         (Matrix_AssembleElementMatrix) (Matrix_t*,Element_t*,double*) ;
+extern size_t      (Matrix_AssembleElementMatrix) (Matrix_t*,Element_t*,double*) ;
 extern void        (Matrix_PrintMatrix)           (Matrix_t*,const char* keyword) ;
 extern void        (Matrix_SetValuesToZero)       (Matrix_t*) ;
 
@@ -91,11 +90,11 @@ extern void        (Matrix_SetValuesToZero)       (Matrix_t*) ;
 
 
 struct Matrix_t {             /* Matrix */
-  int index ;                 /* Matrix index */
+  unsigned short int index ;  /* Matrix index */
   MatrixStorageFormat_t* fmt ; /* Storage format */
-  unsigned int    n ;         /* Nb of rows/columns */
-  unsigned int    nnz ;       /* Nb of non zero values */
-  unsigned int    len ;       /* Nb of entries in nzval */
+  size_t    n ;         /* Nb of rows/columns */
+  size_t    nnz ;       /* Nb of non zero values */
+  size_t    len ;       /* Nb of entries in nzval */
   double*         nzval ;     /* Pointer to the non zero values */
   void*   store ;             /* Pointer to the actual storage of the matrix */
   GenericData_t* genericwork ; /* Working space */

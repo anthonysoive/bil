@@ -9,7 +9,7 @@ struct Mesh_t;
 
 extern PetscAIJFormat_t* (PetscAIJFormat_Create)(Mesh_t*,const int) ;
 extern void              (PetscAIJFormat_Delete)(void*) ;
-extern int               (PetscAIJFormat_AssembleElementMatrix)(PetscAIJFormat_t*,double*,int*,int*,int) ;
+extern size_t            (PetscAIJFormat_AssembleElementMatrix)(PetscAIJFormat_t*,double*,int*,int*,int) ;
 extern void              (PetscAIJFormat_PrintMatrix)(PetscAIJFormat_t*,const char*) ;
 
 
@@ -28,7 +28,7 @@ extern void              (PetscAIJFormat_PrintMatrix)(PetscAIJFormat_t*,const ch
 /* complete the structure types by using the typedef */
 #if 1
 struct PetscAIJFormat_t {
-  int    nnz ;          /* nb of non zero values */
+  size_t    nnz ;          /* nb of non zero values */
   double* nzval ;       /* Non zero values */
   int* idxrow ;         /* Indices of the rows */
   int* idxcol ;         /* Indices of the columns */

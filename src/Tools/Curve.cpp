@@ -24,7 +24,7 @@ static double icourbe_log(const double,Curve_t const*) ;
 
 /* Extern functions */
 
-Curve_t* (Curve_Create)(unsigned int n_points)
+Curve_t* (Curve_Create)(int n_points)
 {
   Curve_t* curve   = (Curve_t*) Mry_New(Curve_t) ;
 
@@ -33,8 +33,8 @@ Curve_t* (Curve_Create)(unsigned int n_points)
   
   /* Allocate memory space for the values */
   {
-    unsigned int n = n_points + 2 ;
-    double* mry = (double *) Mry_New(double[n]) ;
+    int n = n_points + 2 ;
+    double* mry = (double *) Mry_New(double,n) ;
     
     Curve_GetXRange(curve) = mry ;
     Curve_GetYValue(curve) = mry + 2 ;
@@ -43,7 +43,7 @@ Curve_t* (Curve_Create)(unsigned int n_points)
   
   /* Allocate memory space for the names of axis */
   {
-    char* name = (char*) Mry_New(char[2*Curve_MaxLengthOfCurveName]) ;
+    char* name = (char*) Mry_New(char,2*Curve_MaxLengthOfCurveName) ;
     
     Curve_GetNameOfXAxis(curve) = name ;
     Curve_GetNameOfYAxis(curve) = name + Curve_MaxLengthOfCurveName ;
@@ -219,7 +219,7 @@ double* Curve_CreateSamplingOfX(Curve_t const* curve)
   int ni    = n_points - 1 ;
   double x1 = x[0] ;
   double x2 = x[1] ;
-  double* xs = (double*) Mry_New(double[n_points]) ;
+  double* xs = (double*) Mry_New(double,n_points) ;
   
   if(scale == 'n') {
     double dx = (x2 - x1) ;
@@ -258,6 +258,11 @@ double (Curve_ComputeValue<double>)(Curve_t const* cb,const double& a)
 /** Return the value at a */
 {
   if(cb) {
+    if(isnan(a)) {
+      arret("Curve_ComputeValue: in curve %s, %s is nan",Curve_GetNameOfYAxis(cb),Curve_GetNameOfXAxis(cb));
+    } else if(isinf(a)) {
+      arret("Curve_ComputeValue: in curve %s, %s is inf",Curve_GetNameOfYAxis(cb),Curve_GetNameOfXAxis(cb));
+    }
     if(Curve_GetScaleType(cb) == 'n') return(courbe_nor(a,cb)) ;
     else if(Curve_GetScaleType(cb) == 'l') return(courbe_log(a,cb)) ;
     else arret("Curve_ComputeValue: option non prevue") ;
@@ -291,6 +296,9 @@ double Curve_ComputeDerivative(Curve_t const* cb,const double& a)
 /** Return the derivative at a */
 {
   if(cb) {
+    if(isnan(a) || isinf(a)) {
+      arret("Curve_ComputeDerivative: in curve %s, undefined value for %s",Curve_GetNameOfYAxis(cb),Curve_GetNameOfXAxis(cb));
+    }
     if(Curve_GetScaleType(cb) == 'n') return(dcourbe_nor(a,cb)) ;
     else if(Curve_GetScaleType(cb) == 'l') return(dcourbe_log(a,cb)) ;
     else arret("Curve_ComputeDerivative: option non prevue") ;
@@ -307,6 +315,9 @@ double Curve_ComputeIntegral(Curve_t const* cb,const double& a)
 /** Return the integral from begin to a */
 {
   if(cb) {
+    if(isnan(a) || isinf(a)) {
+      arret("Curve_ComputeIntegral: in curve %s, undefined value for %s",Curve_GetNameOfYAxis(cb),Curve_GetNameOfXAxis(cb));
+    }
     if(Curve_GetScaleType(cb) == 'n') return(icourbe_nor(a,cb)) ;
     else if(Curve_GetScaleType(cb) == 'l') return(icourbe_log(a,cb)) ;
     else arret("Curve_ComputeIntegral: option non prevue") ;

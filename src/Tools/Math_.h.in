@@ -92,7 +92,7 @@ _INLINE_ double* (Math_ComputeRealEigenvaluesAndEigenvectorsOf3x3Matrix)(double*
   size_t SizeNeeded = 3*(sizeof(double)) ;
   double* eval = (double*) Math_AllocateInBuffer(math,SizeNeeded) ;
   
-  #ifdef LAPACKLIB
+  #ifdef HAVE_LAPACK
   {
     double wr[3] ; /* real part */
     double wi[3] ; /* imaginary part (not used) */

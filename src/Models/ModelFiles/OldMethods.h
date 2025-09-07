@@ -30,7 +30,7 @@
 
 /* Methods */
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 int SetModelProp(Model_t* model)
 {

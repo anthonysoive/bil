@@ -13,7 +13,7 @@
 #define TITLE   "Drying-Wetting with Salt (only dissolved) (1D case)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 
@@ -50,7 +50,7 @@ enum {
 
 
 
-/* Method chosen at compiling time. 
+/* Method chosen at compile time. 
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with a specific model.
  * Uncomment/comment to let only one unknown per equation */

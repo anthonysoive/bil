@@ -123,9 +123,9 @@ struct GenericData_t {
 
 inline GenericData_t* (GenericData_New)       (void) ;
 template<typename T>
-inline GenericData_t* (GenericData_Create)    (int,T*,const char*) ;
+inline GenericData_t* (GenericData_Create)    (size_t,T*,const char*) ;
 template<typename T>
-inline void           (GenericData_Initialize)(GenericData_t*,int,T*,const char*) ;
+inline void           (GenericData_Initialize)(GenericData_t*,size_t,T*,const char*) ;
 inline GenericData_t* (GenericData_Append)    (GenericData_t*,GenericData_t*) ;
 inline GenericData_t* (GenericData_First)     (GenericData_t*) ;
 inline GenericData_t* (GenericData_Last)      (GenericData_t*) ;

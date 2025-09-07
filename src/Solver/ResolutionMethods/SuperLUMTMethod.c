@@ -1,6 +1,6 @@
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#ifdef SUPERLUMTLIB
+#ifdef HAVE_SUPERLUMT
 
 #include <stdio.h>
 #include <stdlib.h>

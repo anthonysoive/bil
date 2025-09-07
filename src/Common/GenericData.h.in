@@ -17,7 +17,7 @@ _INLINE_ GenericData_t* (GenericData_New)(void)
   
   /* Allocation for the name */
   {
-    char* name = (char*) Mry_New(char[GenericData_MaxLengthOfKeyWord + 1]) ;
+    char* name = (char*) Mry_New(char,GenericData_MaxLengthOfKeyWord + 1) ;
     
     GenericData_SetName(gdat,name) ;
     strcpy(GenericData_GetName(gdat),"\0") ;
@@ -45,7 +45,7 @@ _INLINE_ GenericData_t* (GenericData_New)(void)
 
 
 template<typename T>
-_INLINE_ GenericData_t* (GenericData_Create)(int n,T* data,const char* name)
+_INLINE_ GenericData_t* (GenericData_Create)(size_t n,T* data,const char* name)
 {
   GenericData_t* gdat = GenericData_New() ;
   
@@ -126,7 +126,7 @@ _INLINE_ void (GenericData_Delete)(void* self)
 
 
 template<typename T>
-_INLINE_ void (GenericData_Initialize)(GenericData_t* gdat,int n,T* data,const char* name)
+_INLINE_ void (GenericData_Initialize)(GenericData_t* gdat,size_t n,T* data,const char* name)
 {
   //GenericData_SetTypeId(gdat,typ) ;
   GenericData_Set(gdat,data);

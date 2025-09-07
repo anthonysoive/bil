@@ -9,7 +9,7 @@
 #define TITLE   "Dual Porosity for Coal Seam"
 #define AUTHORS "Nikoosokhan"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Macros */
 #define NEQ     (1+dim)

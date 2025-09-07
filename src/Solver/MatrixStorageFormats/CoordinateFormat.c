@@ -6,7 +6,7 @@
 #include "Options.h"
 #include "Mesh.h"
 #include "Message.h"
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "Mry.h"
 #include "DistributedMS.h"
 #include "CoordinateFormat.h"
@@ -21,18 +21,18 @@ CoordinateFormat_t* (CoordinateFormat_Create)(Mesh_t* mesh,Options_t* options,co
   {
     /* Nb of entries */
     {
-      int nnz = Mesh_ComputeNbOfSelectedMatrixEntries(mesh,imatrix) ;
+      size_t nnz = Mesh_ComputeNbOfSelectedMatrixEntries(mesh,imatrix) ;
       
       CoordinateFormat_GetNbOfNonZeroValues(cfmt) = nnz ;
     }
     
     /* Allocate memory space for the values */
     {
-      int nnz = CoordinateFormat_GetNbOfNonZeroValues(cfmt) ;
+      size_t nnz = CoordinateFormat_GetNbOfNonZeroValues(cfmt) ;
       /* The length required by ma38 must not be lower than 2*nnz */
-      double ff = Options_GetFillFactor(options) ;
-      int lv  = (int) floor(ff*(2*nnz)) ;
-      double* v = (double*) Mry_New(double[lv]) ;
+      size_t ff = Options_GetFillFactor(options) ;
+      size_t lv = ff*2*nnz ;
+      double* v = (double*) Mry_New(double,lv) ;
       
       CoordinateFormat_GetLengthOfArrayValue(cfmt) = lv ;
       CoordinateFormat_GetNonZeroValue(cfmt) = v ;
@@ -42,12 +42,12 @@ CoordinateFormat_t* (CoordinateFormat_Create)(Mesh_t* mesh,Options_t* options,co
      * the row and column indices;
      * some other informations provided by ma38 */
     {
-      int nnz = CoordinateFormat_GetNbOfNonZeroValues(cfmt) ;
-      int n = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
+      size_t nnz = CoordinateFormat_GetNbOfNonZeroValues(cfmt) ;
+      size_t n = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
       /* The length required by ma38 must not be lower than 3*nnz+2*n+1 */
-      double ff = Options_GetFillFactor(options) ;
-      int lindex = (int) floor(ff*(3*nnz + 2*n + 1)) ;
-      int* index = (int*) Mry_New(int[lindex]) ;
+      size_t ff = Options_GetFillFactor(options) ;
+      size_t lindex = ff*(3*nnz + 2*n + 1) ;
+      int* index = (int*) Mry_New(int,lindex) ;
       
       CoordinateFormat_GetLengthOfArrayIndex(cfmt) = lindex ;
       CoordinateFormat_GetIndex(cfmt)              = index ;
@@ -70,7 +70,7 @@ void (CoordinateFormat_Delete)(void* self)
 
 
 
-int (CoordinateFormat_AssembleElementMatrix)(CoordinateFormat_t* a,double* ke,int* col,int* row,int ndof,int nnz)
+size_t (CoordinateFormat_AssembleElementMatrix)(CoordinateFormat_t* a,double* ke,int* col,int* row,int ndof,size_t nnz)
 /** Assemble the local matrix ke into the global matrix a 
  *  Return the nb of entries */
 {
@@ -78,22 +78,19 @@ int (CoordinateFormat_AssembleElementMatrix)(CoordinateFormat_t* a,double* ke,in
   double*  val = CoordinateFormat_GetNonZeroValue(a) ;
   int*  colind = CoordinateFormat_GetColumnIndexOfValue(a) ;
   int*  rowind = CoordinateFormat_GetRowIndexOfValue(a) ;
-  int len = 0 ;
+  size_t len = 0 ;
   int rank = DistributedMS_RankOfCallingProcess ;
   
   if(rank > 0) return(len) ;
   
   
   {
-    int   je ;
-
-    for(je = 0 ; je < ndof ; je++) {
+    for(int je = 0 ; je < ndof ; je++) {
       int jcol = col[je] ;
-      int ie ;
     
       if(jcol < 0) continue ;
 
-      for(ie = 0 ; ie < ndof ; ie++) {
+      for(int ie = 0 ; ie < ndof ; ie++) {
         int irow = row[ie] ;
       
         if(irow < 0) continue ;
@@ -121,24 +118,22 @@ int (CoordinateFormat_AssembleElementMatrix)(CoordinateFormat_t* a,double* ke,in
 
 
 
-void (CoordinateFormat_PrintMatrix)(CoordinateFormat_t* a,const int n_col,const char* keyword)
+void (CoordinateFormat_PrintMatrix)(CoordinateFormat_t* a,size_t n_col,const char* keyword)
 {
   double* val  = CoordinateFormat_GetNonZeroValue(a) ;
   int*  colind = CoordinateFormat_GetColumnIndexOfValue(a) ;
   int*  rowind = CoordinateFormat_GetRowIndexOfValue(a) ;
-  int   nnz    = CoordinateFormat_GetNbOfNonZeroValues(a) ;
+  size_t   nnz    = CoordinateFormat_GetNbOfNonZeroValues(a) ;
 
   fprintf(stdout,"\n") ;
   fprintf(stdout,"Matrix in coordinate format with duplicate entries:\n") ;
-  fprintf(stdout,"order = %u ; nb of entries = %d\n",n_col,nnz) ;
+  fprintf(stdout,"order = %lu ; nb of entries = %lu\n",n_col,nnz) ;
   fprintf(stdout,"\n") ;
   
-  {
-    int k ;
+  {    
+    for(size_t k = 0 ; k < nnz ; k++) {
     
-    for(k = 0 ; k < nnz ; k++) {
-    
-      fprintf(stdout,"%d: K(%d,%d) = %e",k,rowind[k],colind[k],val[k]) ;
+      fprintf(stdout,"%lu: K(%d,%d) = %e",k,rowind[k],colind[k],val[k]) ;
     
       fprintf(stdout,"\n") ;
     }

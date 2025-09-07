@@ -229,7 +229,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the primary variable indexes */
   {
-    int* ind = (int*) Mry_New(int[CementSolutionChemistry_NbOfPrimaryVariables]) ;
+    int* ind = (int*) Mry_New(int,CementSolutionChemistry_NbOfPrimaryVariables) ;
     
     CementSolutionChemistry_SetPrimaryVariableIndex(csc,ind) ;
   }
@@ -237,7 +237,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the primary variables */
   {
-    T* var = (T*) Mry_New(T[CementSolutionChemistry_NbOfPrimaryVariables]) ;
+    T* var = (T*) Mry_New(T,CementSolutionChemistry_NbOfPrimaryVariables) ;
     
     CementSolutionChemistry_SetPrimaryVariable(csc,var) ;
   }
@@ -245,7 +245,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the activities */
   {
-    T* a = (T*) Mry_New(T[CementSolutionChemistry_NbOfSpecies]) ;
+    T* a = (T*) Mry_New(T,CementSolutionChemistry_NbOfSpecies) ;
     
     CementSolutionChemistry_SetActivity(csc,a) ;
   }
@@ -253,7 +253,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the log of activities */
   {
-    T* loga = (T*) Mry_New(T[CementSolutionChemistry_NbOfSpecies]) ;
+    T* loga = (T*) Mry_New(T,CementSolutionChemistry_NbOfSpecies) ;
     
     CementSolutionChemistry_SetLogActivity(csc,loga) ;
   }
@@ -261,7 +261,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the concentrations */
   {
-    T* c = (T*) Mry_New(T[CementSolutionChemistry_NbOfSpecies]) ;
+    T* c = (T*) Mry_New(T,CementSolutionChemistry_NbOfSpecies) ;
     
     CementSolutionChemistry_SetConcentration(csc,c) ;
   }
@@ -269,7 +269,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the log of concentrations */
   {
-    T* logc = (T*) Mry_New(T[CementSolutionChemistry_NbOfSpecies]) ;
+    T* logc = (T*) Mry_New(T,CementSolutionChemistry_NbOfSpecies) ;
     
     CementSolutionChemistry_SetLogConcentration(csc,logc) ;
   }
@@ -277,7 +277,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the element concentrations */
   {
-    T* ec = (T*) Mry_New(T[CementSolutionChemistry_NbOfElementConcentrations]) ;
+    T* ec = (T*) Mry_New(T,CementSolutionChemistry_NbOfElementConcentrations) ;
     
     CementSolutionChemistry_SetElementConcentration(csc,ec) ;
   }
@@ -285,7 +285,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for other variables */
   {
-    T* var = (T*) Mry_New(T[CementSolutionChemistry_NbOfOtherVariables]) ;
+    T* var = (T*) Mry_New(T,CementSolutionChemistry_NbOfOtherVariables) ;
     
     CementSolutionChemistry_SetOtherVariable(csc,var) ;
   }
@@ -293,7 +293,7 @@ _INLINE_ void (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t
   
   /* Allocation of space for the equilibrium constants */
   {
-    double* keq = (double*) Mry_New(double[CementSolutionChemistry_NbOfSpecies]) ;
+    double* keq = (double*) Mry_New(double,CementSolutionChemistry_NbOfSpecies) ;
     
     CementSolutionChemistry_SetLog10Keq(csc,keq) ;
   }
@@ -1337,7 +1337,7 @@ _INLINE_ int (CementSolutionChemistry_SolveElectroneutrality)(CementSolutionChem
       T a_oh    = pow(10,loga_oh) ;
       
       /* Solve for x = (c_h/c_h0) as root of the 4th order polynomial */
-      x = poly4(a2,a1,a0+b0,b1,b2,a_h,a_oh) ;
+      x = CementSolutionChemistry_SolvePoly4(a2,a1,a0+b0,b1,b2,a_h,a_oh) ;
     
     } else {
       T loga_oh = LogActivity(OH) ;
@@ -1345,7 +1345,7 @@ _INLINE_ int (CementSolutionChemistry_SolveElectroneutrality)(CementSolutionChem
       T a_h     = pow(10,loga_h) ;
       T a_oh    = pow(10,loga_oh) ;
   
-      x = poly4(a2,a1,a0+b0,b1,b2,a_h,a_oh) ;
+      x = CementSolutionChemistry_SolvePoly4(a2,a1,a0+b0,b1,b2,a_h,a_oh) ;
       
       {
         T y[6] = {a3,a2,a1,a0+b0,b1,b2} ;
@@ -1918,7 +1918,7 @@ _INLINE_ void (CementSolutionChemistry_TranslateConcentrationsIntoActivities)(Ce
 
 
 template<typename T>
-_INLINE_ T (poly4)(T a,T b,T c,T d,T e,T a_h,T a_oh)
+_INLINE_ T (CementSolutionChemistry_SolvePoly4)(T a,T b,T c,T d,T e,T a_h,T a_oh)
 /* Solve ax^4 + bx^3 + cx^2 + dx + e = 0 
  * for x in the range defined by x*a_h < 1 and a_oh/x < 1 (a_oh < x < 1/a_h)
  * because a_h and a_oh should be < 1 (ie 0 < pH < -logKw) 
@@ -1949,7 +1949,7 @@ _INLINE_ T (poly4)(T a,T b,T c,T d,T e,T a_h,T a_oh)
       printf("a_h  = %e\n",a_h) ;
       printf("a_oh = %e\n",a_oh) ;
       // Raise an interrupt signal instead of exit
-      Message_Warning("poly4: a_h = %e > 1 or a_oh = %e > 1!",x*a_h,a_oh/x) ;
+      Message_Warning("CementSolutionChemistry_SolvePoly4: a_h = %e > 1 or a_oh = %e > 1!",x*a_h,a_oh/x) ;
       return(-1) ;
     }
     */

@@ -20,10 +20,10 @@ struct CRSFormat_t; //typedef struct CRSFormat_t      CRSFormat_t ;
 /* Compressed row storage format
  * If a_ij = nzval[k] then colind[k] = j and rowptr[i] <= k < rowptr[i + 1] */
 struct CRSFormat_t {
-  unsigned int    nnz ;       /* nb of non zero values */
+  size_t    nnz ;       /* nb of non zero values */
   double* nzval ;             /* Non zero values */
-  unsigned int* colind ;      /* Column indices of the non zeros */
-  unsigned int* rowptr ;      /* Index of element in nzval which starts a row */
+  size_t* colind ;      /* Column indices of the non zeros */
+  size_t* rowptr ;      /* Index of element in nzval which starts a row */
 } ;
 
 #endif

@@ -248,10 +248,11 @@ struct ConstitutiveIntegrator_t {
   }
   
   double* ComputeConductionMatrixByFEM(void) {
-    int neq = Element_GetNbOfEquations(_el);
-    int ndif = neq;
-    int const n = 3*ndif;
-    double c[IntFct_MaxNbOfIntPoints*n*n] ;    
+    size_t neq = Element_GetNbOfEquations(_el);
+    size_t ndif = neq;
+    size_t n = 3*ndif;
+    constexpr size_t nmax = 3*Model_MaxNbOfEquations;
+    double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;    
     int dec = SetTransferMatrixForFEM(n,c);
       
     if(dec < 0) {
@@ -268,7 +269,7 @@ struct ConstitutiveIntegrator_t {
   double* ComputePoromechanicalMatrixByFEM(int const& e_mech) {
     int dim = Element_GetDimensionOfSpace(_el);
     int neq = Element_GetNbOfEquations(_el);
-    int ndif = neq - dim;
+    int ndif = (neq > ndif) ? neq - dim : 0;
     int ncols = 9 + ndif;
     FEM_t* fem = FEM_GetInstance(_el) ;
     IntFct_t*  intfct = Element_GetIntFct(_el) ;
@@ -276,8 +277,9 @@ struct ConstitutiveIntegrator_t {
     double* kc;
     
     {
-      int const n = ncols;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;
+      int n = ncols;
+      constexpr size_t nmax = 9+Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;
       int dec = SetTangentMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -288,8 +290,9 @@ struct ConstitutiveIntegrator_t {
     }
     
     {
-      int const n = 3*ndif;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;    
+      int n = 3*ndif;
+      constexpr size_t nmax = 3*Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;    
       int dec = SetTransferMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -321,8 +324,9 @@ struct ConstitutiveIntegrator_t {
     double* kc;
     
     {
-      int const n = ndif;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;
+      int n = ndif;
+      constexpr size_t nmax = Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;
       int dec = SetTangentMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -333,8 +337,9 @@ struct ConstitutiveIntegrator_t {
     }
     
     {
-      int const n = 3*ndif;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;    
+      int n = 3*ndif;
+      constexpr size_t nmax = 3*Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;    
       int dec = SetTransferMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -366,7 +371,7 @@ struct ConstitutiveIntegrator_t {
   double* ComputeAutodiffPoromechanicalMatrixByFEM(int const& e_mech) {
     int dim = Element_GetDimensionOfSpace(_el);
     int neq = Element_GetNbOfEquations(_el);
-    int ndif = neq - dim;
+    int ndif = (neq > dim) ? neq - dim : 0;
     int ncols = 9 + ndif;
     FEM_t* fem = FEM_GetInstance(_el) ;
     IntFct_t*  intfct = Element_GetIntFct(_el) ;
@@ -374,8 +379,9 @@ struct ConstitutiveIntegrator_t {
     double* kc;
     
     {
-      int const n = ncols;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;
+      int n = ncols;
+      constexpr size_t nmax = 9+Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;
       int dec = SetAutodiffTangentMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -386,8 +392,9 @@ struct ConstitutiveIntegrator_t {
     }
     
     {
-      int const n = 3*ndif;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;    
+      int n = 3*ndif;
+      constexpr size_t nmax = 3*Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;    
       int dec = SetTransferMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -419,8 +426,9 @@ struct ConstitutiveIntegrator_t {
     double* kc;
     
     {
-      int const n = ndif;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;
+      int n = ndif;
+      constexpr size_t nmax = Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;
       int dec = SetAutodiffTangentMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -431,8 +439,9 @@ struct ConstitutiveIntegrator_t {
     }
     
     {
-      int const n = 3*ndif;
-      double c[IntFct_MaxNbOfIntPoints*n*n] ;    
+      int n = 3*ndif;
+      constexpr size_t nmax = 3*Model_MaxNbOfEquations;
+      double c[IntFct_MaxNbOfIntPoints*nmax*nmax] ;    
       int dec = SetTransferMatrixForFEM(n,c);
       
       if(dec < 0) {
@@ -466,7 +475,8 @@ struct ConstitutiveIntegrator_t {
     int nn  = Element_GetNbOfNodes(_el);
     int neq = Element_GetNbOfEquations(_el);
     int ndof = nn*neq;
-    double c[ndof*ndof] ;
+    constexpr size_t ndofmax = Element_MaxNbOfDOF;
+    double c[ndofmax*ndofmax] ;
     int dec = SetTangentMatrixForFVM(neq,c);
     
     if(dec < 0) {
@@ -484,7 +494,8 @@ struct ConstitutiveIntegrator_t {
     int nn  = Element_GetNbOfNodes(_el);
     int neq = Element_GetNbOfEquations(_el);
     int ndof = nn*neq;
-    double c[ndof*ndof] ;
+    constexpr size_t ndofmax = Element_MaxNbOfDOF;
+    double c[ndofmax*ndofmax] ;
     int dec = SetAutodiffTangentMatrixForFVM(neq,c);
     
     if(dec < 0) {
@@ -541,13 +552,13 @@ struct ConstitutiveIntegrator_t {
     if(istress >= 0) {
       rw = FEM_ComputeStrainWorkResidu(fem,intfct,stress,nvi) ;
     } else {
-      int dim = Element_GetDimensionOfSpace(_el) ;
-      int nn = Element_GetNbOfNodes(_el) ;
-      int ndof = nn*dim ;
+      unsigned int dim = Element_GetDimensionOfSpace(_el) ;
+      unsigned int nn = Element_GetNbOfNodes(_el) ;
+      unsigned int ndof = nn*dim ;
       size_t SizeNeeded = ndof*(sizeof(double)) ;
       rw = (double*) FEM_AllocateInBuffer(fem,SizeNeeded) ;
       
-      for(int i = 0 ; i < ndof ; i++) {      
+      for(unsigned int i = 0 ; i < ndof ; i++) {      
         rw[i] = 0;
       }
     }
@@ -586,7 +597,7 @@ struct ConstitutiveIntegrator_t {
     FEM_t* fem = FEM_GetInstance(_el) ;
     IntFct_t*  intfct = Element_GetIntFct(_el) ;
     int np = IntFct_GetNbOfFunctions(intfct);
-    int nn = Element_GetNbOfNodes(_el);
+    unsigned short int nn = Element_GetNbOfNodes(_el);
     double* rm = NULL;
     
     if(imass >= 0) {
@@ -594,7 +605,7 @@ struct ConstitutiveIntegrator_t {
       double* mass_n = x_n + imass;
       double g1[IntFct_MaxNbOfIntPoints] ;
     
-      for(int i = 0 ; i < np ; i++) {
+      for(unsigned short int i = 0 ; i < np ; i++) {
         g1[i] = mass[i*nvi] - mass_n[i*nvi] ;
       }
     
@@ -603,7 +614,7 @@ struct ConstitutiveIntegrator_t {
       size_t SizeNeeded = nn*(sizeof(double)) ;
       rm = (double*) FEM_AllocateInBuffer(fem,SizeNeeded) ;
       
-      for(int i = 0 ; i < nn ; i++) {
+      for(unsigned short int i = 0 ; i < nn ; i++) {
         rm[i] = 0 ;
       }
     }
@@ -612,7 +623,7 @@ struct ConstitutiveIntegrator_t {
       double* flow = x + iflow;
       double* rf = FEM_ComputeFluxResidu(fem,intfct,flow,nvi) ;
       
-      for(int i = 0 ; i < nn ; i++) {
+      for(unsigned short int i = 0 ; i < nn ; i++) {
         rm[i] += -_dt*rf[i] ;
       }
 
@@ -630,7 +641,7 @@ struct ConstitutiveIntegrator_t {
     int nvi = CustomValues_NbOfImplicitValues(V<double>);
     double* x = (double*) val ;
     FVM_t* fvm = FVM_GetInstance(_el) ;
-    int nn = Element_GetNbOfNodes(_el);
+    unsigned short int nn = Element_GetNbOfNodes(_el);
     double* rbf;
     
     if(index >= 0) {
@@ -641,7 +652,7 @@ struct ConstitutiveIntegrator_t {
       size_t SizeNeeded = nn*(sizeof(double)) ;
       rbf = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
       
-      for(int i = 0 ; i < nn ; i++) {
+      for(unsigned short int i = 0 ; i < nn ; i++) {
         rbf[i] = 0 ;
       }
     }
@@ -656,7 +667,7 @@ struct ConstitutiveIntegrator_t {
     double* x = (double*) val ;
     int nvi = CustomValues_NbOfImplicitValues(V<double>);
     FVM_t* fvm = FVM_GetInstance(_el) ;
-    int nn = Element_GetNbOfNodes(_el);
+    unsigned short int nn = Element_GetNbOfNodes(_el);
     double* rf;       
     
     if(iflow >= 0) {
@@ -667,7 +678,7 @@ struct ConstitutiveIntegrator_t {
       size_t SizeNeeded = nn*(sizeof(double)) ;
       rf = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
       
-      for(int i = 0 ; i < nn ; i++) {
+      for(unsigned short int i = 0 ; i < nn ; i++) {
         rf[i] = 0 ;
       }
     }

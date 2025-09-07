@@ -12,7 +12,7 @@
 #define TITLE "hydration of expansive pellet mixtures (2019)"
 #define AUTHORS "Darde"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

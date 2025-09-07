@@ -14,7 +14,7 @@
 #define TITLE   "Hydrogen Sulfide attack of concrete (Jan. 2015)" 
 #define AUTHORS "Yuan-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Macros */ 
 #define NEQ     (6)

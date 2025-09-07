@@ -29,7 +29,7 @@ IConds_t* (IConds_New)(const int n_iconds)
     
   /* Allocation of space for the name of file of nodal values */
   {
-    char* filename = (char*) Mry_New(char[IConds_MaxLengthOfFileName]) ;
+    char* filename = (char*) Mry_New(char,IConds_MaxLengthOfFileName) ;
       
     IConds_GetFileNameOfNodalValues(iconds) = filename ;
     IConds_GetFileNameOfNodalValues(iconds)[0] = '\0' ;
@@ -38,7 +38,7 @@ IConds_t* (IConds_New)(const int n_iconds)
   
   /* Allocation of space for the boundary conditions */
   if(n_iconds > 0) {
-    ICond_t* icond  = (ICond_t*) Mry_New(ICond_t[n_iconds]) ;
+    ICond_t* icond  = (ICond_t*) Mry_New(ICond_t,n_iconds) ;
     int i ;
 
     for(i = 0 ; i < n_iconds ; i++) {
@@ -171,12 +171,11 @@ void (IConds_Delete)(void* self)
 void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
 /** Assign the initial conditions */
 {
-  unsigned int dim = Mesh_GetDimension(mesh) ;
-  unsigned int n_el = Mesh_GetNbOfElements(mesh) ;
+  int dim = Mesh_GetDimension(mesh) ;
+  size_t n_el = Mesh_GetNbOfElements(mesh) ;
   Element_t* el = Mesh_GetElement(mesh) ;
-  unsigned int n_ic = IConds_GetNbOfIConds(iconds) ;
+  int n_ic = IConds_GetNbOfIConds(iconds) ;
   ICond_t* ic = IConds_GetICond(iconds) ;
-  unsigned int    i_ic ;
   
   
   if(n_ic < 0) {
@@ -184,10 +183,9 @@ void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
     
     /* If a file name is given we read the nodal values */
     if(nom[0]) {
-      int   n_nodes = Mesh_GetNbOfNodes(mesh) ;
+      size_t   n_nodes = Mesh_GetNbOfNodes(mesh) ;
       Node_t*  node = Mesh_GetNode(mesh) ;
       FILE*  fic_ini ;
-      int i ;
 
       fic_ini = fopen(nom,"r") ;
       
@@ -196,7 +194,7 @@ void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
       }
     
       /* We assign the prescribed values to unknowns */
-      for(i = 0 ; i < n_nodes ; i++) {
+      for(size_t i = 0 ; i < n_nodes ; i++) {
         double* u = Node_GetCurrentUnknown(node + i) ;
         int n_unk = Node_GetNbOfUnknowns(node + i) ;
         int j ;
@@ -219,23 +217,19 @@ void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
   
 
 
-  for(i_ic = 0 ; i_ic < n_ic ; i_ic++) {
+  for(int i_ic = 0 ; i_ic < n_ic ; i_ic++) {
     Function_t* fn = ICond_GetFunction(ic + i_ic) ;
     double ft = (fn) ? Function_ComputeValue(fn,t) : 1. ;
-    //int    reg_ic = ICond_GetRegionTag(ic + i_ic) ;
     char*    reg_ic = ICond_GetRegionName(ic + i_ic) ;
     char*  inc_ic = ICond_GetNameOfUnknown(ic + i_ic) ;
     Field_t* ch_ic = ICond_GetField(ic + i_ic) ;
     char* nom = ICond_GetFileNameOfNodalValues(ic + i_ic) ;
-    double* work = NULL ;
-    unsigned int    ie ;
-    
+    double* work = NULL ;    
     
     /* If a file name is given we read the nodal values */
     if(nom[0] && !ch_ic) {
-      int   n_nodes = Mesh_GetNbOfNodes(mesh) ;
+      size_t   n_nodes = Mesh_GetNbOfNodes(mesh) ;
       FILE*  fic_ini ;
-      int i ;
       
       /* Work table */
       work = (double*) malloc(n_nodes*sizeof(double)) ;
@@ -250,7 +244,7 @@ void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
         arret("IConds_AssignInitialConditions(2): can't open file %s",nom) ;
       }
       
-      for(i = 0 ; i < n_nodes ; i++) {
+      for(size_t i = 0 ; i < n_nodes ; i++) {
         fscanf(fic_ini,"%le",work + i) ;
       }
       
@@ -258,10 +252,9 @@ void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
     }
     
     
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       int  nn = Element_GetNbOfNodes(el + ie) ;
       Material_t* mat = Element_GetMaterial(el + ie) ;
-      //int reg_el = Element_GetRegionTag(el + ie) ;
       char* reg_el = Element_GetRegionName(el + ie) ;
       
       if(String_Is(reg_el,reg_ic) && mat != NULL) {
@@ -286,7 +279,7 @@ void   (IConds_AssignInitialConditions)(IConds_t* iconds,Mesh_t* mesh,double t)
               
             } else if(work) {
               Node_t* node = Element_GetNode(el + ie,i) ;
-              int n = Node_GetNodeIndex(node) ;
+              size_t n = Node_GetNodeIndex(node) ;
               
               u[jj] = ft*work[n] ;
     

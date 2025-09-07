@@ -9,7 +9,7 @@
 #define TITLE   "Dual Porosity for Transversely Isotropic Coal Seam"
 #define AUTHORS "Espinoza-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Macros */
 #define NEQ     (1+dim)

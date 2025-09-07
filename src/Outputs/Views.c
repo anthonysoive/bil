@@ -12,7 +12,7 @@ Views_t* (Views_Create)(int n)
   Views_GetNbOfViews(views) = n ;
   
   {
-    View_t* view = (View_t*) Mry_New(View_t[n]) ;
+    View_t* view = (View_t*) Mry_New(View_t,n) ;
     int i ;
     
     for(i = 0 ; i < n ; i++) {

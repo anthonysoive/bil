@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <cstddef>
 #include "Mry.h"
 #include "Buffer.h"
 #include "Message.h"
@@ -54,8 +55,8 @@ void* (Buffer_Allocate)(Buffer_t* buffer,size_t sz)
   
   if(head + sz > end) {
     //size_t dead_sz = end - head ;
-    long int dead_sz = end - head ;
-    Buffer_GetAvailableSize(buffer) -= dead_sz ;
+    ptrdiff_t dead_sz = end - head ;
+    Buffer_GetAvailableSize(buffer) -= (size_t) dead_sz ;
     head = (char*) Buffer_GetBeginOfBuffer(buffer) ;
   }
   
@@ -90,7 +91,7 @@ void (Buffer_FreeFrom)(Buffer_t* buffer,char* p)
       arret("Buffer_FreeFrom(1): pointer out of range") ;
       
     } else {
-      size_t free_sz = head - p ;
+      size_t free_sz = (size_t) (head - p) ;
       Buffer_GetHeadOfBuffer(buffer) = p ;
       Buffer_GetAvailableSize(buffer) += free_sz ; 
     }
@@ -102,12 +103,12 @@ void (Buffer_FreeFrom)(Buffer_t* buffer,char* p)
       arret("Buffer_FreeFrom(2): pointer out of range") ;
       
     } else if(p < head) {
-      size_t free_sz = head - p ;
+      size_t free_sz = (size_t) (head - p) ;
       Buffer_GetHeadOfBuffer(buffer) = p ;
       Buffer_GetAvailableSize(buffer) += free_sz ;
       
     } else if(p >= tail) {
-      size_t busy_sz = p - tail ;
+      size_t busy_sz = size_t (p - tail) ;
       Buffer_GetHeadOfBuffer(buffer) = p ;
       Buffer_GetAvailableSize(buffer) = Buffer_GetSize(buffer) - busy_sz ;
     }

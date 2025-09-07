@@ -18,8 +18,8 @@ extern void         (Solution_Delete)  (void*) ;
 extern void         (Solution_Copy)    (Solution_t*,Solution_t*) ;
 extern void         (Solution_InterpolateCurrentUnknowns)(Solution_t*,const int) ;
 extern void         (Solution_CopySelectedSequentialUnknowns)(Solution_t*,Solution_t*,const int) ;
-//extern Solution_t*  (Solution_GetSolutionInDistantFuture)(Solution_t*,unsigned int) ;
-extern Solution_t*  (Solution_GetSolutionInDistantPast)(Solution_t*,unsigned int) ;
+//extern Solution_t*  (Solution_GetSolutionInDistantFuture)(Solution_t*,int) ;
+extern Solution_t*  (Solution_GetSolutionInDistantPast)(Solution_t*,int) ;
 
 
 //#define Solution_GetTime(SOL)                 ((SOL)->t)

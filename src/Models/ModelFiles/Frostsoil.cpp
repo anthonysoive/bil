@@ -5,7 +5,7 @@
 #include "CommonModel.h"
 
 #ifdef HAVE_AUTODIFF
-//#define USE_AUTODIFF
+//#define USE_AUTODIFF true
 #endif
 
 
@@ -16,7 +16,7 @@
 #define TITLE "Frost actions in soil"
 #define AUTHORS "Li-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations of the model */
@@ -36,7 +36,7 @@
 #define U_THER   E_THER
 
 
-/* Method chosen at compiling time.
+/* Method chosen at compile time.
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with specific modelings.
  * Uncomment/comment to let only one unknown per equation */
@@ -184,11 +184,11 @@ struct Parameters_t {
   double SolidSkeletonMassDensity;
   double CapillaryPressureFraction;
 };
+
+static MPM_t mpm;
 }
 
 using namespace BaseName();
-
-static MPM_t mpm;
 
 
 

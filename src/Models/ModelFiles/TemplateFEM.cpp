@@ -13,7 +13,7 @@
 #define TITLE "XXX"
 #define AUTHORS "XXX"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /*
  * The numbers below are arbitrary and serve only as example
@@ -34,7 +34,7 @@
 #define U_MASS2    E_MASS2
 
 
-/* Method chosen at compiling time.
+/* Method chosen at compile time.
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with specific modelings.
  * Uncomment/comment to let only one unknown per equation */

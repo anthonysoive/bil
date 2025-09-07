@@ -7,7 +7,7 @@
 #include "CommonModel.h"
 
 #ifdef HAVE_AUTODIFF
-//#define USE_AUTODIFF
+#define USE_AUTODIFF true
 #endif
 
 #include "FEM.h"
@@ -16,11 +16,11 @@
 #define TITLE "Barcelona Basic Model for unsaturated soils with gas (2025)"
 #define AUTHORS "Eizaguirre-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */
-#define NEQ     (2+dim)
+#define NEQ     (dim+2)
 
 /* Indices of equation */
 #define E_MASS  (0)
@@ -33,7 +33,7 @@
 #define U_AIR    E_AIR
 #define U_MECH   E_MECH
 
-/* Method chosen at compiling time.
+/* Method chosen at compile time.
  * Each equation is associated with a specific unknown.
  * Each unknown can deal with a specific model.
  * Uncomment/comment to let only one unknown per equation */
@@ -165,12 +165,12 @@ struct Parameters_t {
   double MinimumSuction;
   double MolarMassOfDryGas;
 };
-}
-
-using namespace BaseName();
 
 
 static MPM_t mpm;
+}
+
+using namespace BaseName();
 
 
 
@@ -188,6 +188,7 @@ static double saturationdegree(double,double,Curve_t*) ;
 #define CopyElasticTensor(...)              Plasticity_CopyElasticTensor(plasty,__VA_ARGS__)
 #define UpdateElastoplasticTensor(...)      Plasticity_UpdateElastoplasticTensor(plasty,__VA_ARGS__)
 #define CopyTangentStiffnessTensor(...)     Plasticity_CopyTangentStiffnessTensor(plasty,__VA_ARGS__)
+
 
 
 
@@ -214,8 +215,8 @@ static double saturationdegree(double,double,Curve_t*) ;
 
 
 /* Material properties */
-//#define SaturationDegree(pc)    (Curve_ComputeValue(saturationcurve,pc))
-#define SaturationDegree(pc)    (saturationdegree(pc,p_c3,saturationcurve))
+#define SaturationDegree(pc)    (Curve_ComputeValue(saturationcurve,pc))
+//#define SaturationDegree(pc)    (saturationdegree(pc,p_c3,saturationcurve))
 
 #define RelativePermeabilityToLiquid(pc)  (Curve_ComputeValue(relativepermliqcurve,pc))
 #define RelativePermeabilityToGas(pc)     (Curve_ComputeValue(relativepermgascurve,pc))
@@ -243,9 +244,9 @@ static double saturationdegree(double,double,Curve_t*) ;
 /* Mass density */
 #define MassDensityOfWaterVapor(pv)    (M_H2O*(pv)/RT)
 /* Vapor-Liquid Equilibrium */
-#define RelativeHumidity(pc)           (exp(-V_H2O/RT*(pc)))
+#define RelativeHumidity(pc)           (((pc)>0)?exp(-V_H2O/RT*(pc)):1)
 #define VaporPressure(pc)              (p_v0*RelativeHumidity(pc))
-#define dRelativeHumidity(pc)          (-V_H2O/RT*RelativeHumidity(pc))
+#define dRelativeHumidity(pc)          (((pc)>0)?-V_H2O/RT*exp(-V_H2O/RT*(pc)):0)
 #define dVaporPressure(pc)             (p_v0*dRelativeHumidity(pc))
 
 
@@ -268,6 +269,7 @@ static Curve_t* kappacurve ;
 static double  p_atm ;
 static double  p_v0 ;
 static double  RT ;
+
 
 
 #include "PhysicalConstant.h"
@@ -384,10 +386,9 @@ void GetProperties(Element_t* el,double t)
 int SetModelProp(Model_t* model)
 /** Set the model properties */
 {
-  int dim = Model_GetDimension(model) ;
+  unsigned short int dim = Model_GetDimension(model) ;
   char name_eqn[3][7] = {"meca_1","meca_2","meca_3"} ;
   char name_unk[3][4] = {"u_1","u_2","u_3"} ;
-  int i ;
   
   /** Number of equations to be solved */
   Model_GetNbOfEquations(model) = NEQ ;
@@ -395,14 +396,14 @@ int SetModelProp(Model_t* model)
   /** Names of these equations */
   Model_CopyNameOfEquation(model,E_MASS,"mass") ;
   Model_CopyNameOfEquation(model,E_AIR,"air") ;
-  for(i = 0 ; i < dim ; i++) {
+  for(int i = 0 ; i < dim ; i++) {
     Model_CopyNameOfEquation(model,E_MECH + i,name_eqn[i]) ;
   }
   
   /** Names of the main (nodal) unknowns */
   Model_CopyNameOfUnknown(model,U_P_L,"p_l") ;
   Model_CopyNameOfUnknown(model,U_P_G,"p_g") ;
-  for(i = 0 ; i < dim ; i++) {
+  for(int i = 0 ; i < dim ; i++) {
     Model_CopyNameOfUnknown(model,U_DIS + i,name_unk[i]) ;
   }
   
@@ -539,21 +540,78 @@ int  ComputeLoads(Element_t* el,double t,double dt,Load_t* cg,double* r)
 {
   int dim = Element_GetDimensionOfSpace(el) ;
   IntFct_t* fi = Element_GetIntFct(el) ;
+  char* load_eqn = Load_GetNameOfEquation(cg) ;
+  int ieq = Element_FindEquationPositionIndex(el,load_eqn) ;
   int nn = Element_GetNbOfNodes(el) ;
-  int ndof = nn*NEQ ;
+  int neq = Element_GetNbOfEquations(el) ;
+  int ndof = nn*neq ;
+  Geometry_t* geom = Element_GetGeometry(el) ;
+  Symmetry_t sym = Geometry_GetSymmetry(geom) ;
   FEM_t* fem = FEM_GetInstance(el) ;
-  int    i ;
+  double* vi_n = Element_GetPreviousImplicitTerm(el) ;
+  Node_t** no = Element_GetPointerToNode(el) ;
+  double* x[Element_MaxNbOfNodes] ;
+  
+  for(int i = 0 ; i < nn ; i++) {
+    x[i] = Node_GetCoordinate(no[i]) ;
+  }
 
   {
-    double* r1 = FEM_ComputeSurfaceLoadResidu(fem,fi,cg,t,dt) ;
-  
-    /* hydraulic */
-    if(Element_FindEquationPositionIndex(el,Load_GetNameOfEquation(cg)) == E_MASS) {
-      for(i = 0 ; i < ndof ; i++) r[i] = -r1[i] ;
+    if(Load_TypeIs(cg,"GIT") && ieq == E_MASS) {
+      CustomValues_t<double,ImplicitValues_t>* val = (CustomValues_t<double,ImplicitValues_t>*) vi_n ;
+      int dim_h  = IntFct_GetDimension(fi) ;
+      int    nf  = IntFct_GetNbOfFunctions(fi) ;
+      int    np  = IntFct_GetNbOfPoints(fi) ;
+      double ft = dt ;
+    
+      if(dim == 1 && nn == 1) {
+        double radius = x[0][0] ;
+        double* w = val[0].MassFlow_gas ;
       
-    /* other */
+        r[ieq] = ft*w[0] ;
+      
+        if(Symmetry_IsCylindrical(sym)) r[ieq] *= 2*M_PI*radius ;
+        else if(Symmetry_IsSpherical(sym)) r[ieq] *= 4*M_PI*radius*radius ;
+        
+        return(0) ;
+      }
+
+      if(dim >= 2) {
+        double* rb ;
+        double f[3*IntFct_MaxNbOfIntPoints] ;
+      
+        for(int p = 0 ; p < np ; p++) {
+          double* w = val[p].MassFlow_gas ;
+          //double* h = IntFct_GetFunctionAtPoint(fi,p) ;
+          double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
+          double* n = Element_ComputeNormalVector(el,dh,nf,dim_h) ;
+          double flow = 0;
+          
+          for(int i = 0 ; i < dim ; i++) {
+            flow += w[i]*n[i];
+          }
+          f[p] = ft*flow ;
+        }
+      
+        rb = FEM_ComputeBodyForceResidu(fem,fi,f,1) ;
+      
+        for(int i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
+      
+        FEM_FreeBufferFrom(fem,rb) ;
+        
+        return(0) ;
+      }
     } else {
-      for(i = 0 ; i < ndof ; i++) r[i] = r1[i] ;
+      double* r1 = FEM_ComputeSurfaceLoadResidu(fem,fi,cg,t,dt) ;
+  
+      /* hydraulic */
+      if(Element_FindEquationPositionIndex(el,Load_GetNameOfEquation(cg)) == E_MASS) {
+        for(int i = 0 ; i < ndof ; i++) r[i] = -r1[i] ;
+      
+      /* other */
+      } else {
+        for(int i = 0 ; i < ndof ; i++) r[i] = r1[i] ;
+      }
     }
   }
   
@@ -700,7 +758,6 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     double dlambda = 0 ;
     CustomValues_t<double,ImplicitValues_t>* val1 = (CustomValues_t<double,ImplicitValues_t>*) vim0 ;
     CustomValues_t<double,ExplicitValues_t>* val2 = (CustomValues_t<double,ExplicitValues_t>*) vex0 ;
-    int    i ;
     
     for(int i = 0 ; i < dim ; i++) {
       dis[i] = Element_ComputeUnknown(el,u,intfct,p,U_DIS + i) ;
@@ -731,29 +788,31 @@ int  ComputeOutputs(Element_t* el,double t,double* s,Result_t* r)
     
     tre = eps[0] + eps[4] + eps[8] ;
     e   = (1 + e0) * tre ;
-      
-    i = 0 ;
-    Result_Store(r + i++,&p_l     ,"Liquid_pore_pressure",1) ;
-    Result_Store(r + i++,dis      ,"Displacements",3) ;
-    Result_Store(r + i++,w_tot    ,"Total_mass_flow",3) ;
-    Result_Store(r + i++,sig      ,"Stresses",9) ;
-    Result_Store(r + i++,&sl      ,"Saturation_degree",1) ;
-    Result_Store(r + i++,&e       ,"Void_ratio_variation",1) ;
-    Result_Store(r + i++,eps_p    ,"Plastic_strains",9) ;
-    Result_Store(r + i++,&hardv   ,"Hardening_variable",1) ;
-    Result_Store(r + i++,&p_g     ,"Gas_pore_pressure",1) ;
-    Result_Store(r + i++,w_gas    ,"Gas_mass_flow",3) ;
-    Result_Store(r + i++,j_vap    ,"Diffusive_vapor_mass_flow",3) ;
-    Result_Store(r + i++,&dlambda ,"Plastic_multiplier",1) ;
     
-    if(i != NbOfOutputs) {
-      Message_RuntimeError("ComputeOutputs: wrong number of outputs") ;
+    {
+      int i = 0 ;
+      
+      Result_Store(r + i++,&p_l     ,"Liquid_pore_pressure",1) ;
+      Result_Store(r + i++,dis      ,"Displacements",3) ;
+      Result_Store(r + i++,w_tot    ,"Total_mass_flow",3) ;
+      Result_Store(r + i++,sig      ,"Stresses",9) ;
+      Result_Store(r + i++,&sl      ,"Saturation_degree",1) ;
+      Result_Store(r + i++,&e       ,"Void_ratio_variation",1) ;
+      Result_Store(r + i++,eps_p    ,"Plastic_strains",9) ;
+      Result_Store(r + i++,&hardv   ,"Hardening_variable",1) ;
+      Result_Store(r + i++,&p_g     ,"Gas_pore_pressure",1) ;
+      Result_Store(r + i++,w_gas    ,"Gas_mass_flow",3) ;
+      Result_Store(r + i++,j_vap    ,"Diffusive_vapor_mass_flow",3) ;
+      Result_Store(r + i++,&dlambda ,"Plastic_multiplier",1) ;
+    
+      if(i != NbOfOutputs) {
+        Message_RuntimeError("ComputeOutputs: wrong number of outputs") ;
+      }
     }
   }
   
   return(NbOfOutputs) ;
 }
-
 
 
 double saturationdegree(double pc,double pc3,Curve_t* curve)
@@ -1008,42 +1067,42 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
 {
   /* Parameters */
   Parameters_t& par = ((Parameters_t*) Element_GetProperty(el))[0] ;
-  double gravity = par.Gravity;
-  double rho_s   = par.MassDensity_solidskeleton;
-  double kl_int  = par.IntrinsicPermeability_liquid;
-  double kg_int  = par.IntrinsicPermeability_gas;
-  double mu_l    = par.Viscosity_liquid;
-  double mu_g    = par.Viscosity_gas;
-  double rho_l0  = par.MassDensity_liquid;
-  double* sig0   = par.InitialStress;
-  //double kappa   = par.SlopeOfElasticLoadingLine;
+  double& gravity = par.Gravity;
+  double& rho_s   = par.MassDensity_solidskeleton;
+  double& kl_int  = par.IntrinsicPermeability_liquid;
+  double& kg_int  = par.IntrinsicPermeability_gas;
+  double& mu_l    = par.Viscosity_liquid;
+  double& mu_g    = par.Viscosity_gas;
+  double& rho_l0  = par.MassDensity_liquid;
+  double* sig0    = par.InitialStress;
+  //double& kappa   = par.SlopeOfElasticLoadingLine;
   //mu      = par.shear_modulus;
-  double poisson = par.PoissonRatio;
-  double phi0    = par.InitialPorosity;
+  double& poisson = par.PoissonRatio;
+  double& phi0    = par.InitialPorosity;
   double e0      = phi0/(1 - phi0) ;
-  //double kappa_s = par.SlopeOfElasticWettingDryingLine;
-  double d_vap   = par.DiffusionCoefficient_watervapor;
-  double d_airliq= par.DiffusionCoefficient_dissolvedair;
-  double p_c3    = par.MinimumSuction;
-  double henry   = par.HenryConstant;
-  double M_AIR   = par.MolarMassOfDryGas;
+  //double& kappa_s = par.SlopeOfElasticWettingDryingLine;
+  double& d_vap   = par.DiffusionCoefficient_watervapor;
+  double& d_airliq= par.DiffusionCoefficient_dissolvedair;
+  double& p_c3    = par.MinimumSuction;
+  double& henry   = par.HenryConstant;
+  double& M_AIR   = par.MolarMassOfDryGas;
   /* Inputs 
    * ------*/
   int dim = Element_GetDimensionOfSpace(el) ;
   /* Strains */
   T* eps   =  val.Strain ;
-  double* eps_n =  val_n.Strain ;
+  double const* eps_n =  val_n.Strain ;
   /* Stresses */
-  double* sig_n =  val_n.Stress ;
+  double const* sig_n =  val_n.Stress ;
   /* Plastic strains */
-  double* eps_pn = val_n.PlasticStrain ;
+  double const* eps_pn = val_n.PlasticStrain ;
   /* Pressures */
   T  p_l   = val.Pressure_liquid ;
-  double  p_ln  = val_n.Pressure_liquid ;
+  double const  p_ln  = val_n.Pressure_liquid ;
   T  p_g   = val.Pressure_gas ;
-  double  p_gn  = val_n.Pressure_gas ;
+  double const  p_gn  = val_n.Pressure_gas ;
   T  pc    = p_g - p_l ;
-  double  pc_n  = p_gn - p_ln ;
+  double const  pc_n  = p_gn - p_ln ;
     
 
   /* Outputs 
@@ -1063,8 +1122,10 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
       /* Elastic trial stresses at t */
       {
         T trde      = deps[0] + deps[4] + deps[8] ;
-        T dlns      = log((pc + p_atm)/(pc_n + p_atm)) ;
-        double signet_n  = (sig_n[0] + sig_n[4] + sig_n[8])/3. + p_gn ;
+        T pcm       = Math_Max(pc,0);
+        T pcm_n     = Math_Max(pc_n,0);
+        T dlns      = log((pcm + p_atm)/(pcm_n + p_atm)) ;
+        double const signet_n  = (sig_n[0] + sig_n[4] + sig_n[8])/3. + p_gn ;
         double kappa1    = Kappa(pc_n) ;
         double bulk      = - signet_n*(1 + e0)/kappa1 ;
         double kappa1_s1  = KappaSuction(-signet_n,pc_n) ;
@@ -1077,6 +1138,7 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
         
         #if 1
         if(young < 0) {
+          printf("Element index: %d\n",Element_GetElementIndex(el));
           printf("stress:\n") ;
           Math_PrintMatrix(sig_n,3) ;
           printf("signet = %g\n",signet_n) ;
@@ -1084,7 +1146,7 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
           printf("pc_n = %g\n",pc_n) ;
           printf("bulk = %g\n",bulk) ;
           printf("young = %g\n",young) ;
-          arret("") ;
+          return(NULL);
         }
         #endif
           
@@ -1110,10 +1172,10 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
     
       /* Return mapping */
       {
-        double logp_con = val_n.HardeningVariable ; /* log(pre-consolidation pressure) at 0 suction at the previous time step */
+        double const logp_con = val_n.HardeningVariable ; /* log(pre-consolidation pressure) at 0 suction at the previous time step */
         T hardv[2] = {logp_con,pc} ;
-        T* crit  = ReturnMapping(sig,eps_p,hardv) ;
-        T* dlambda = Plasticity_GetPlasticMultiplier(plasty) ;
+        double* crit  = ReturnMapping(sig,eps_p,hardv) ;
+        double* dlambda = Plasticity_GetPlasticMultiplier(plasty) ;
         
         val.YieldCriterion  = crit[0] ;
         val.HardeningVariable = hardv[0] ;
@@ -1152,10 +1214,10 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
     /* Fluid mass flow */
     {
       /* Transfer coefficients at the previous time */
-      double kd_mass_l = val_n.TransportMass_liquid ;
-      double kd_mass_g = val_n.TransportMass_gas ;
-      double k_air_l   = val_n.TransportAir_liquid ;
-      double k_air_g   = val_n.TransportAir_gas ;
+      double const kd_mass_l = val_n.TransportMass_liquid ;
+      double const kd_mass_g = val_n.TransportMass_gas ;
+      double const k_air_l   = val_n.TransportAir_liquid ;
+      double const k_air_g   = val_n.TransportAir_gas ;
       //double mc_air    = x_n[I_MC_air] ;
     
       /* Pressure gradients */
@@ -1168,16 +1230,17 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
       T* w_gas = val.MassFlow_gas ;
       
       if(p_air < 0) {
-        Message_RuntimeError("Negative air pressure!") ;
+        Message_Direct("Negative air pressure!") ;
+        return(NULL);
       }
     
       for(int i = 0 ; i < 3 ; i++) {
         T w_l   = - kd_mass_l*gpl[i] ;
         T w_g   = - kd_mass_g*gpg[i] ;
         /* w_a      = w_airgas + w_airliq
-         * w_airgas = mc_airgas*w_g + j_airgas
-         * j_airgas = - rho_g * Fick_vap * Grad(mc_airgas)
-         * w_airliq = rho_airliq/rho_l*w_l + j_airliq ~ 0 + j_airliq
+         * w_airgas = rho_airgas/rho_g*w_g + j_airgas
+         * j_airgas = - rho_g * Fick_vap * Grad(rho_airgas/rho_g)
+         * w_airliq = rho_airliq/rho_l*w_l + j_airliq
          * j_airliq = - Fick_air * Grad(rho_airliq)
          */
         T w_a   = - k_air_g*gpg[i] - k_air_l*gpl[i] ;
@@ -1200,19 +1263,37 @@ Values_t<T>* MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Val
       T mc_vap   = rho_vap/rho_g ;
       T dp_vap   = dVaporPressure(pc) ;
       
+      /* w_tot = w_l + w_g */
       /* w_l = - rho_l*Darcy_L*GradPL */
-      val.TransportMass_liquid = rho_l*Darcy_L ;
       /* w_g = - rho_g*Darcy_G*GradPG */
+      val.TransportMass_liquid = rho_l*Darcy_L ;
       val.TransportMass_gas = rho_g*Darcy_G ;
-      /* w_airgas = mc_airgas*w_g + j_airgas */
+      
+      /* w_air = w_airgas + w_airliq */
+      /* w_airgas = rho_air/rho_g*w_g + j_airgas */
+      /* w_airliq = rho_airliq/rho_l*w_l + j_airliq */
+      
+      /* contribution of w_airgas = rho_air/rho_g*w_g */
       val.TransportAir_gas = rho_air*Darcy_G ;
-      /* j_airgas = - rho_g * Fick_vap * Grad(mc_airgas) */
-      val.TransportAir_liquid = (mc_air*M_H2O+mc_vap*M_AIR)/RT*dp_vap*Fick_vap ;
-      val.TransportAir_gas += - val.TransportAir_liquid + mc_vap*M_AIR/RT*Fick_vap;
-      /* w_airliq = rho_airliq/rho_l*w_l + j_airliq = 0 + j_airliq */
-      /* j_airliq = - Fick_air * Grad(rho_airliq) */
-      val.TransportAir_liquid += dp_vap*Fick_air*henry ;
-      val.TransportAir_gas += (1 - dp_vap)*Fick_air*henry ;
+      
+      /* contribution of w_airliq = rho_airliq/rho_l*w_l = 0 */
+      val.TransportAir_liquid = 0; //rho_airliq*Darcy_L;
+      
+      /* contribution of w_airgas = j_airgas */
+      /* j_airgas = - rho_g * Fick_vap * Grad(rho_air/rho_g) */
+      /* rho_g*Grad(rho_air/rho_g) = - rho_air/rho_g*Grad(rho_vap) 
+       *                             + rho_vap/rho_g*Grad(rho_air) 
+       */
+      val.TransportAir_gas    += - mc_air*M_H2O/RT*dp_vap*Fick_vap
+                                 + mc_vap*M_AIR/RT*(1 - dp_vap)*Fick_vap;
+                              
+      val.TransportAir_liquid +=   mc_air*M_H2O/RT*dp_vap*Fick_vap
+                                 + mc_vap*M_AIR/RT*dp_vap*Fick_vap;
+      
+      /* contribution of w_airliq = j_airliq */
+      /* j_airliq = - Fick_air * Grad(rho_airliq) */     
+      val.TransportAir_gas    += (1 - dp_vap)*Fick_air*henry;
+      val.TransportAir_liquid += dp_vap*Fick_air*henry;
     }
     
     /* Mass contents, body force */

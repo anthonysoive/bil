@@ -24,7 +24,7 @@ extern void        (Fields_Delete)  (void*) ;
 
 
 struct Fields_t {             /* fields */
-  unsigned int n_ch ;         /* nb of fields */
+  int n_ch ;         /* nb of fields */
   Field_t* ch ;               /* field */
 } ;
 

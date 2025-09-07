@@ -20,26 +20,26 @@ Node_t*  (Node_New)(const int dim)
   
   /* Allocation of space for the coordinates */
   {
-    double* x = (double*) Mry_New(double[dim]) ;
+    double* x = (double*) Mry_New(double,dim) ;
     
     Node_GetCoordinate(node) = x ;
   }
   
   /* Initialization */
   {
-    Node_GetNodeIndex(node)         = -1 ;
+    Node_GetNodeIndex(node)         = 0 ;
     Node_GetPointerToElement(node)  = NULL ;
     Node_GetNbOfEquations(node)     = 0 ;
     Node_GetNbOfUnknowns(node)      = 0 ;
     Node_GetNameOfEquation(node)    = NULL ;
     Node_GetNameOfUnknown(node)     = NULL ;
     Node_GetSequentialIndexOfUnknown(node) = NULL ;
-    Node_GetObValIndex(node)        = 0 ;
+    Node_GetObValIndex(node)        = NULL ;
     Node_GetMatrixColumnIndex(node) = NULL ;
     Node_GetMatrixRowIndex(node)    = NULL ;
     Node_GetNbOfElements(node)      = 0 ;
     Node_GetBuffers(node)           = NULL ;
-    Node_GetSolutions(node)           = NULL ;
+    Node_GetSolutions(node)         = NULL ;
   }
   
   return(node) ;
@@ -59,7 +59,7 @@ void  (Node_CreateMore)(Node_t* node,Buffers_t* buf)
   /* Allocate memory space for names of equations and unknowns */
   {
     int n_dof = Node_GetNbOfUnknowns(node) ;
-    char** uname = (char**) Mry_New(char*[2*n_dof]) ;
+    char** uname = (char**) Mry_New(char*,2*n_dof) ;
     char** ename = uname + n_dof ;
   
     Node_GetNameOfUnknown(node)  = uname ;
@@ -70,7 +70,7 @@ void  (Node_CreateMore)(Node_t* node,Buffers_t* buf)
   /* Allocate memory space for the sequential indexes of unknowns/equations */
   {
     int n_dof = Node_GetNbOfUnknowns(node) ;
-    int* index = (int*) Mry_New(int[n_dof]) ;
+    int* index = (int*) Mry_New(int,n_dof) ;
   
     Node_GetSequentialIndexOfUnknown(node)  = index ;
   }
@@ -79,7 +79,7 @@ void  (Node_CreateMore)(Node_t* node,Buffers_t* buf)
   /* Allocation of space for the matrix column and matrix row indexes */
   {
     int n_dof = Node_GetNbOfUnknowns(node) ;
-    int* colind = (int*) Mry_New(int[2*n_dof]) ;
+    int* colind = (int*) Mry_New(int,2*n_dof) ;
     int* rowind = colind + n_dof ;
     
     Node_GetMatrixColumnIndex(node) = colind ;
@@ -89,8 +89,8 @@ void  (Node_CreateMore)(Node_t* node,Buffers_t* buf)
 
   /* Allocation of space for the index of objective values */
   {
-    unsigned int n_dof = Node_GetNbOfUnknowns(node) ;
-    unsigned int* index = (unsigned int*) Mry_New(unsigned int[n_dof]) ;
+    int n_dof = Node_GetNbOfUnknowns(node) ;
+    int* index = (int*) Mry_New(int,n_dof) ;
     
     Node_GetObValIndex(node) = index ;
   }
@@ -141,7 +141,7 @@ void (Node_Delete)(void* self)
   }
 
   {
-    unsigned int* index = Node_GetObValIndex(node) ;
+    int* index = Node_GetObValIndex(node) ;
     
     if(index) {
       free(index) ;
@@ -535,9 +535,9 @@ Node_t* Node_OverlappingNodes3(const Node_t* node,int* n_overlappingnodes,Node_t
       int j ;
         
       for(j = i + 1 ; j < nb_new_node ; j++) {
-        int kj = Node_GetNodeIndex(new_node + j) ;
+        size_t kj = Node_GetNodeIndex(new_node + j) ;
         /* ki should be re-calculated at each j in case of swapping */
-        int ki = Node_GetNodeIndex(new_node + i) ;
+        size_t ki = Node_GetNodeIndex(new_node + i) ;
           
         if(kj < ki) {
           Math_Swap(new_node[i],new_node[j],Node_t) ;

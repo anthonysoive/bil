@@ -11,7 +11,7 @@ struct NodeSol_t; //typedef struct NodeSol_t      NodeSol_t ;
 
 
 
-extern NodeSol_t* (NodeSol_Create)(const int) ;
+extern NodeSol_t* (NodeSol_Create)(unsigned short int const) ;
 extern void       (NodeSol_Delete)(void*) ;
 extern void       (NodeSol_Copy)(NodeSol_t*,NodeSol_t*) ;
 
@@ -35,7 +35,7 @@ extern void       (NodeSol_Copy)(NodeSol_t*,NodeSol_t*) ;
 
 
 struct NodeSol_t {            /* Nodal Solutions */
-  unsigned int nu ;     /* Nb of unknowns */
+  unsigned short int nu ;     /* Nb of unknowns */
   double* u ;                 /* Nodal Unknowns */
   //NodeSol_t* prev ;           /* Previous Nodal Solutions */
   //NodeSol_t* next ;           /* Next Nodal Solutions */

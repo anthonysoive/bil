@@ -20,13 +20,11 @@ extern void      (Point_Scan)                 (Point_t*,char*) ;
 
 #define Point_GetCoordinate(PT)                    ((PT)->Coordinate)
 #define Point_GetEnclosingElement(PT)              ((PT)->EnclosingElement)
-#define Point_GetRegionTag(PT)                     ((PT)->RegionTag)
 #define Point_GetRegionName(PT)                    ((PT)->RegionName)
 
 
 struct Point_t {
   double* Coordinate ;
-  int   RegionTag ;
   char* RegionName ;
   Element_t* EnclosingElement ;  /* Element inside which the point lies */
 } ;

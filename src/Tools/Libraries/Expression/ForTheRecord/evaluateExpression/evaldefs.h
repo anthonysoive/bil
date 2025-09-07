@@ -50,7 +50,7 @@ Define data types
 
 /* Define an error record */
 typedef struct {
-  char *message;                 /* identifies error */
+  char const* message;                 /* identifies error */
   int line;                      /* location of error */
   int column;
 } ErrorRecord;
@@ -73,7 +73,7 @@ void    pushArg(double value);
 double  checkZero(double value);
 double *locateVariable(int nameLength);
 double  callFunction(int nameLength, int argCount);
-void    diagnoseError(char *message);
+void    diagnoseError(char const* message);
 int     evaluateExpression(char *expressionString);
 
 /**********************************************************************

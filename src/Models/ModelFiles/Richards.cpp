@@ -6,13 +6,13 @@
 #include "FEM.h"
 
 #ifdef HAVE_AUTODIFF
-#define USE_AUTODIFF
+#define USE_AUTODIFF true
 #endif
 
 #define TITLE   "Richards Equation (3D)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Nb of equations */
 #define NEQ     (1)
@@ -128,11 +128,11 @@ struct Parameters_t {
   double MacroGradient[3];
   double MacroFunctionIndex[3];
 };
+
+static MPM_t mpm;
 }
 
 using namespace BaseName();
-
-static MPM_t mpm;
 
 
 /* Material properties */

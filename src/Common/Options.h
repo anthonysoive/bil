@@ -89,8 +89,8 @@ extern void        (Options_Delete)(void*) ;
 
 #include "Context.h"
 #define Options_GetFillFactor(OPT) \
-        (((String_Is(((char**) Context_GetSolver(Options_GetContext(OPT)))[2],"-ff")) && atof(((char**) Context_GetSolver(Options_GetContext(OPT)))[3])) ? \
-        atof(((char**) Context_GetSolver(Options_GetContext(OPT)))[3]) : Options_DefaultFillFactor(OPT))
+        (((String_Is(((char**) Context_GetSolver(Options_GetContext(OPT)))[2],"-ff")) && strtoul(((char**) Context_GetSolver(Options_GetContext(OPT)))[3],NULL,10)) ? \
+        strtoul(((char**) Context_GetSolver(Options_GetContext(OPT)))[3],NULL,10) : Options_DefaultFillFactor(OPT))
         
 
 #define Options_DefaultFillFactor(OPT) \
@@ -170,5 +170,6 @@ struct Options_t {            /* options */
 
 /* For the macros */
 #include <string.h>
+#include <stdlib.h>
 #include "String_.h"
 #endif

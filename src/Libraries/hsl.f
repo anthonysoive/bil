@@ -1,6 +1,6 @@
-#include "../../BilExtraLibs.h"
+#include "BilConfig.h"
 
-#if defined (BLASLIB) && defined (LAPACKLIB)
+#if defined (HAVE_BLAS) && defined (HAVE_LAPACK)
 
 INCLUDE "./hsl/ForTheRecord/hsl/fd15-1.0.0/src/fd15d.f"
 INCLUDE "./hsl/ForTheRecord/hsl/mc13-1.0.0/src/mc13d.f"

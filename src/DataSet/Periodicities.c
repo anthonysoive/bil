@@ -30,7 +30,7 @@ Periodicities_t* (Periodicities_New)(const int n)
   Periodicities_GetPeriodicity(periodicities) = NULL ;
 
   if(n > 0) {
-    Periodicity_t* periodicity = (Periodicity_t*) Mry_New(Periodicity_t[n]) ;
+    Periodicity_t* periodicity = (Periodicity_t*) Mry_New(Periodicity_t,n) ;
     int i ;
     
     for(i = 0 ; i < n ; i++) {
@@ -56,12 +56,12 @@ Periodicities_t* (Periodicities_Create)(DataFile_t* datafile)
   int   n_per = (c = String_SkipLine(c)) ? atoi(c) : 0 ;
   Periodicities_t* periodicities = Periodicities_New(n_per) ;
   
-  Message_Direct("Enter in %s","Periodicities") ;
-  Message_Direct("\n") ;
-  
   if(n_per <= 0) {
     return(periodicities) ;
   }
+  
+  Message_Direct("Enter in %s","Periodicities") ;
+  Message_Direct("\n") ;
 
 
   /* Scan the datafile */
@@ -125,9 +125,9 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
   
   
   {
-    int    n_no = Mesh_GetNbOfNodes(mesh) ;
+    size_t  n_no = Mesh_GetNbOfNodes(mesh) ;
     /* Nb of connections per node (useful to size graph) */
-    int*   nnz_no = (int*) calloc(n_no,sizeof(int)) ;
+    unsigned short int* nnz_no = (unsigned short int*) calloc(n_no,sizeof(unsigned short int)) ;
   
     if(!nnz_no) {
       arret("Periodicities_ComputeGraph(1): impossible d\'allouer la memoire") ;
@@ -137,30 +137,26 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
     /* An overestimation of nnz_no */
     {
       Element_t* elt = Mesh_GetElement(mesh) ;
-      int n_elts  = Mesh_GetNbOfElements(mesh) ;
+      size_t n_elts  = Mesh_GetNbOfElements(mesh) ;
       int n_per   = Periodicities_GetNbOfPeriodicities(periodicities) ;
-      int i_per ;
     
-      for(i_per = 0 ; i_per < n_per ; i_per++) {
+      for(int i_per = 0 ; i_per < n_per ; i_per++) {
         Periodicity_t* periodicity = Periodicities_GetPeriodicity(periodicities) + i_per ;
         //int masterreg = Periodicity_GetMasterRegion(periodicity) ;
         //int slavereg  = Periodicity_GetSlaveRegion(periodicity) ;
         char* masterreg = Periodicity_GetMasterRegionName(periodicity) ;
         char* slavereg  = Periodicity_GetSlaveRegionName(periodicity) ;
-        int    ie ;
 
-        for(ie = 0 ; ie < n_elts ; ie++) {
+        for(size_t ie = 0 ; ie < n_elts ; ie++) {
           Element_t*  elt_i = elt + ie ;
-          //int eltreg_i = Element_GetRegionTag(elt_i) ;
           char* eltreg_i = Element_GetRegionName(elt_i) ;
           
           if(String_Is(eltreg_i,slavereg) || String_Is(eltreg_i,masterreg)) {
-            int nn  = Element_GetNbOfNodes(elt_i) ;
-            int i ;
+            unsigned short int nn  = Element_GetNbOfNodes(elt_i) ;
     
-            for(i = 0 ; i < nn ; i++) {
+            for(unsigned short int i = 0 ; i < nn ; i++) {
               Node_t* node = Element_GetNode(elt_i,i) ;
-              int k = Node_GetNodeIndex(node) ;
+              size_t k = Node_GetNodeIndex(node) ;
       
               nnz_no[k] += 1 ;
             }
@@ -180,53 +176,47 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
     int dim = Mesh_GetDimension(mesh) ;
     Elements_t* elts = Mesh_GetElements(mesh) ;
     Element_t* elt = Mesh_GetElement(mesh) ;
-    int n_elts  = Mesh_GetNbOfElements(mesh) ;
+    size_t n_elts  = Mesh_GetNbOfElements(mesh) ;
     int n_per   = Periodicities_GetNbOfPeriodicities(periodicities) ;
-    int i_per ;
     double hmin = Elements_GetMinimumSizeOfElements(elts) ;
     double tol = 0.01*fabs(hmin) ;
     
     
-    for(i_per = 0 ; i_per < n_per ; i_per++) {
+    for(int i_per = 0 ; i_per < n_per ; i_per++) {
       Periodicity_t* periodicity = Periodicities_GetPeriodicity(periodicities) + i_per ;
       //int masterreg = Periodicity_GetMasterRegion(periodicity) ;
       //int slavereg  = Periodicity_GetSlaveRegion(periodicity) ;
       char* masterreg = Periodicity_GetMasterRegionName(periodicity) ;
       char* slavereg  = Periodicity_GetSlaveRegionName(periodicity) ;
       double* periodvector = Periodicity_GetPeriodVector(periodicity) ;
-      int    ie ;
 
-      for(ie = 0 ; ie < n_elts ; ie++) {
+      for(size_t ie = 0 ; ie < n_elts ; ie++) {
         Element_t*  elt_i = elt + ie ;
         Material_t* mat_i = Element_GetMaterial(elt_i) ;
-        //int eltreg_i = Element_GetRegionTag(elt_i) ;
         char* eltreg_i = Element_GetRegionName(elt_i) ;
       
         if(!mat_i) continue ;
           
         if(String_Is(eltreg_i,slavereg)) {
           int nn_i  = Element_GetNbOfNodes(elt_i) ;
-          int in_i ;
           
           /* Loop on slave nodes */
-          for(in_i = 0 ; in_i < nn_i ; in_i++) {
+          for(int in_i = 0 ; in_i < nn_i ; in_i++) {
             Node_t* node_i = Element_GetNode(elt_i,in_i) ;
             int n_unk = Node_GetNbOfUnknowns(node_i) ;
             int n_equ = Node_GetNbOfEquations(node_i) ;
             double* x_i = Node_GetCoordinate(node_i) ;
             Node_t* node_slave = node_i ;
             Node_t* node_master = NULL ;
-            int je ;
             
             if(n_unk != n_equ) {
               arret("Periodicities_ComputeGraph(2)") ;
             }
           
             /* Find the associated master node */
-            for(je = 0 ; je < n_elts ; je++) {
+            for(size_t je = 0 ; je < n_elts ; je++) {
               Element_t*  elt_j = elt + je ;
               Material_t* mat_j = Element_GetMaterial(elt_j) ;
-              //int eltreg_j = Element_GetRegionTag(elt_j) ;
               char* eltreg_j = Element_GetRegionName(elt_j) ;
       
               if(!mat_j) continue ;
@@ -235,9 +225,8 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
           
               if(String_Is(eltreg_j,masterreg)) {
                 int nn_j  = Element_GetNbOfNodes(elt_j) ;
-                int in_j ;
           
-                for(in_j = 0 ; in_j < nn_j ; in_j++) {
+                for(int in_j = 0 ; in_j < nn_j ; in_j++) {
                   Node_t* node_j = Element_GetNode(elt_j,in_j) ;
                   
                   /* The vector formed by the 2 nodes 
@@ -245,9 +234,8 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
                   {
                     double* x_j = Node_GetCoordinate(node_j) ;
                     int notfit = 0 ;
-                    int k ;
                   
-                    for(k = 0 ; k < dim ; k++) {
+                    for(int k = 0 ; k < dim ; k++) {
                       double d = x_i[k] - x_j[k] - periodvector[k] ;
                       
                       if(fabs(d) > tol) {
@@ -270,12 +258,12 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
             Ifoundamaster:
             
             {
-              int i = Node_GetNodeIndex(node_slave) ;
-              int j = Node_GetNodeIndex(node_master) ;
+              size_t i = Node_GetNodeIndex(node_slave) ;
+              size_t j = Node_GetNodeIndex(node_master) ;
               int  degri = Graph_GetDegreeOfVertex(graph,i) ;
-              int* listi = Graph_GetNeighborOfVertex(graph,i) ;
+              size_t* listi = Graph_GetNeighborOfVertex(graph,i) ;
               int  degrj = Graph_GetDegreeOfVertex(graph,j) ;
-              int* listj = Graph_GetNeighborOfVertex(graph,j) ;
+              size_t* listj = Graph_GetNeighborOfVertex(graph,j) ;
         
               if(i == j) continue ;
         
@@ -295,6 +283,7 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
               }
         
               /* Not already met. So we increment with j and i */
+              #if 0
               if(listi[degri] < 0) {
                 Graph_GetDegreeOfVertex(graph,i) += 1 ;
                 listi[degri] = j ;
@@ -308,6 +297,8 @@ Graph_t*  (Periodicities_ComputeGraph)(Mesh_t* mesh)
               } else {
                 arret("Periodicities_ComputeGraph(4): not enough space") ;
               }
+              #endif
+              Graph_AddEdge(graph,i,j);
             }
             
           }
@@ -332,20 +323,19 @@ void  (Periodicities_UpdateGraph)(Mesh_t* mesh,Graph_t* graph)
  *  those defined in periodicities.
  **/
 {
-  int    n_no = Mesh_GetNbOfNodes(mesh) ;
+  size_t    n_no = Mesh_GetNbOfNodes(mesh) ;
   Graph_t*  pgraph = Periodicities_ComputeGraph(mesh) ;
-  int in ;
     
-  for(in = 0 ; in < n_no ; in++) {
+  for(size_t in = 0 ; in < n_no ; in++) {
     int  pdegrin = Graph_GetDegreeOfVertex(pgraph,in) ;
-    int* plistin = Graph_GetNeighborOfVertex(pgraph,in) ;
-    int* listin = Graph_GetNeighborOfVertex(graph,in) ;
+    size_t* plistin = Graph_GetNeighborOfVertex(pgraph,in) ;
+    size_t* listin = Graph_GetNeighborOfVertex(graph,in) ;
     int j ;
         
     for(j = 0 ; j < pdegrin ; j++) {
       int jn = plistin[j] ;
       int  degrjn = Graph_GetDegreeOfVertex(graph,jn) ;
-      int* listjn = Graph_GetNeighborOfVertex(graph,jn) ;
+      size_t* listjn = Graph_GetNeighborOfVertex(graph,jn) ;
       int  degrin = Graph_GetDegreeOfVertex(graph,in) ;
         
       if(in == jn) continue ;
@@ -363,6 +353,7 @@ void  (Periodicities_UpdateGraph)(Mesh_t* mesh,Graph_t* graph)
       }
         
       /* Not already met. So we increment with jn and in */
+      #if 0
       if(listin[degrin] < 0) {
         Graph_GetDegreeOfVertex(graph,in) += 1 ;
         listin[degrin] = jn ;
@@ -376,6 +367,8 @@ void  (Periodicities_UpdateGraph)(Mesh_t* mesh,Graph_t* graph)
       } else {
         arret("Periodicities_UpdateGraph(4): not enough space") ;
       }
+      #endif
+      Graph_AddEdge(graph,in,jn);
 
     }
   }
@@ -400,18 +393,16 @@ void  (Periodicities_UpdateMatrixRowColumnIndexes)(Mesh_t* mesh)
   if(!periodicities) return ;
   
   {
-    int    n_no = Mesh_GetNbOfNodes(mesh) ;
+    size_t    n_no = Mesh_GetNbOfNodes(mesh) ;
     Node_t* no  = Mesh_GetNode(mesh) ;
-    Graph_t* graph = Periodicities_ComputeGraph(mesh) ;
-    int in ;
+    Graph_t* graph = Periodicities_ComputeGraph(mesh) ;    
     
-    
-    for(in = 0 ; in < n_no ; in++) {
+    for(size_t in = 0 ; in < n_no ; in++) {
       Node_t* node_i = no + in ;
       int n_unk = Node_GetNbOfUnknowns(node_i) ;
       int n_equ = Node_GetNbOfEquations(node_i) ;
       int  degrin = Graph_GetDegreeOfVertex(graph,in) ;
-      int* listin = Graph_GetNeighborOfVertex(graph,in) ;
+      size_t* listin = Graph_GetNeighborOfVertex(graph,in) ;
             
       if(n_unk != n_equ) {
         arret("Periodicities_UpdateMatrixRowColumnIndexes(1)") ;
@@ -461,21 +452,17 @@ void  (Periodicities_EliminateMatrixRowColumnIndexes)(Mesh_t* mesh)
   
   {
     Element_t* elt = Mesh_GetElement(mesh) ;
-    int n_elts  = Mesh_GetNbOfElements(mesh) ;
-    int n_per   = Periodicities_GetNbOfPeriodicities(periodicities) ;
-    int i_per ;
+    size_t n_elts  = Mesh_GetNbOfElements(mesh) ;
+    int n_per   = Periodicities_GetNbOfPeriodicities(periodicities) ;    
     
-    
-    for(i_per = 0 ; i_per < n_per ; i_per++) {
+    for(int i_per = 0 ; i_per < n_per ; i_per++) {
       Periodicity_t* periodicity = Periodicities_GetPeriodicity(periodicities) + i_per ;
       //int slavereg  = Periodicity_GetSlaveRegion(periodicity) ;
       char* slavereg  = Periodicity_GetSlaveRegionName(periodicity) ;
-      int    ie ;
 
-      for(ie = 0 ; ie < n_elts ; ie++) {
+      for(size_t ie = 0 ; ie < n_elts ; ie++) {
         Element_t*  elt_i = elt + ie ;
         Material_t* mat_i = Element_GetMaterial(elt_i) ;
-        //int eltreg_i = Element_GetRegionTag(elt_i) ;
         char* eltreg_i = Element_GetRegionName(elt_i) ;
       
         if(!mat_i) continue ;

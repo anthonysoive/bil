@@ -50,13 +50,13 @@ struct alignas(T) CustomValues_t<T,IM,EX,CO,OT...>: IM<T>,EX<T>,CO<T>,OT<T>... {
 
 
 #define CustomValues_NbOfImplicitValues(CV) \
-        ((int) (sizeof(CustomValues_TypeOfImplicitValues(CV))/sizeof(CustomValues_TypeOfValue(CV))))
+        ((sizeof(CustomValues_TypeOfImplicitValues(CV))/sizeof(CustomValues_TypeOfValue(CV))))
         
 #define CustomValues_NbOfExplicitValues(CV) \
-        ((int) (sizeof(CustomValues_TypeOfExplicitValues(CV))/sizeof(CustomValues_TypeOfValue(CV))))
+        ((sizeof(CustomValues_TypeOfExplicitValues(CV))/sizeof(CustomValues_TypeOfValue(CV))))
         
 #define CustomValues_NbOfConstantValues(CV) \
-        ((int) (sizeof(CustomValues_TypeOfConstantValues(CV))/sizeof(CustomValues_TypeOfValue(CV))))
+        ((sizeof(CustomValues_TypeOfConstantValues(CV))/sizeof(CustomValues_TypeOfValue(CV))))
 
 
 

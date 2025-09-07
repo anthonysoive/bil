@@ -24,7 +24,7 @@
 #define TITLE   "External sulfate attack of concrete (2023)" 
 #define AUTHORS "Ran-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 
@@ -78,7 +78,7 @@ enum {
 
 
 
-/* Method chosen at compiling time. 
+/* Method chosen at compile time. 
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with a specific model.
  * Uncomment/comment to let only one unknown per equation */

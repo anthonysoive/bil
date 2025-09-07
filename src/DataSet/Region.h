@@ -20,14 +20,10 @@ extern void       (Region_Delete)(void*) ;
 
 
 /* Accessors */
-//#define Region_GetRegionIndex(R)          ((R)->RegionIndex)
-//#define Region_GetRegionTag(R)            ((R)->RegionTag)
 #define Region_GetRegionName(R)           ((R)->RegionName)
 
 
 struct Region_t {
-  //int   RegionIndex ;
-  //int   RegionTag ;
   char* RegionName ;
 } ;
 

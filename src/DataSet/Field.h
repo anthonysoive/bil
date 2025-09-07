@@ -10,7 +10,7 @@ extern "C" {
 struct Field_t          ; //typedef struct Field_t          Field_t ;
 struct FieldAffine_t    ; //typedef struct FieldAffine_t    FieldAffine_t ;
 struct FieldGrid_t      ; //typedef struct FieldGrid_t      FieldGrid_t ;
-struct FieldConstant_t  ; //typedef struct FieldConstant_t  FieldConstant_t ;
+struct FieldRandom_t  ;
 
 
 struct DataFile_t;
@@ -80,18 +80,18 @@ struct FieldAffine_t {        /* champ affine */
 
 struct FieldGrid_t {          /* champ sur une grille */
   char*  name ;               /* File name which grid is stored in */
-  int    n_x ;                /* nb de points sur Ox */
-  int    n_y ;                /* nb de points sur Oy */
-  int    n_z ;                /* nb de points sur Oz */
+  unsigned long int n_x ;                /* nb de points sur Ox */
+  unsigned long int n_y ;                /* nb de points sur Oy */
+  unsigned long int n_z ;                /* nb de points sur Oz */
   double* x ;                 /* coordonnees sur Ox  */
   double* y ;                 /* coordonnees sur Oy  */
   double* z ;                 /* coordonnees sur Oz  */
   double* v ;                 /* valeurs aux points de la grille */
 } ;
 
-struct FieldConstant_t {      /* Constant field */
-  double v ;                  /* Value */
-  double ranlen ;
+struct FieldRandom_t {      /* Random field */
+  double v ;                /* Value */
+  double ranlen ;           /* Random range length */
 } ;
 
 /* Old notations which I try to eliminate little by little */

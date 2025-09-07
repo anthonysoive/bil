@@ -8,6 +8,7 @@
 struct Mesh_t;
 
   
+#include "superlu.h"
 
 //extern SuperLUFormat_t* (SuperLUFormat_Create)(Mesh_t*) ;
 extern SuperLUFormat_t* (SuperLUFormat_Create)(Mesh_t*,const int) ;
@@ -85,19 +86,6 @@ struct SuperLUFormat_t {
 
 
 
-#include "BilExtraLibs.h"
-
-#ifdef SUPERLULIB
-#include "superlu.h"
-#endif
-
-#ifdef SUPERLUMTLIB
-#include "superlu.h"
-#endif
-
-#ifdef SUPERLUDISTLIB
-#include "superlu.h"
-#endif
 
 
 #endif

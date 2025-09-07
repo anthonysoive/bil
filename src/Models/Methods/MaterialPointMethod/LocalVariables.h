@@ -50,8 +50,8 @@ struct LocalVariables_t {
     _u = a.GetPointerToNodalUnknowns();
     _f = a.GetImplicitTerm();
     {
-      V* localvalue = a.GetLocalValue();
-      V* localderivative = a.GetLocalDerivative();
+      V const* localvalue = a.GetLocalValue();
+      V const* localderivative = a.GetLocalDerivative();
       
       for(int i = 0 ; i < LocalVariables_MaxNbOfLocalValues ; i++) {
         _localvalue[i] = localvalue[i];
@@ -67,13 +67,13 @@ struct LocalVariables_t {
   //virtual V& operator()(int const&) {}
   
   /* Assignement operator */
-  inline LocalVariables_t& operator=(LocalVariables_t const& a) {
+  LocalVariables_t& operator=(LocalVariables_t const& a) {
     if(this != &a) {
       _u = a.GetPointerToNodalUnknowns();
       _f = a.GetImplicitTerm();
       {
-        V* localvalue = a.GetLocalValue();
-        V* localderivative = a.GetLocalDerivative();
+        V const* localvalue = a.GetLocalValue();
+        V const* localderivative = a.GetLocalDerivative();
       
         for(int i = 0 ; i < LocalVariables_MaxNbOfLocalValues ; i++) {
           _localvalue[i] = localvalue[i];

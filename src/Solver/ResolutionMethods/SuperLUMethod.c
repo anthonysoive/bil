@@ -1,6 +1,6 @@
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#ifdef SUPERLULIB
+#ifdef HAVE_SUPERLU
 
 #include <stdio.h>
 #include <stdlib.h>

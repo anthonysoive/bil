@@ -17,7 +17,6 @@ struct TextFile_t;
 
 extern CurvesFile_t*   (CurvesFile_Create)(void) ;
 extern void            (CurvesFile_Delete)(void*) ;
-/* extern void            (CurvesFile_MoveToFilePositionStartingInputData)(CurvesFile_t*) ; */
 extern int             (CurvesFile_Initialize)(CurvesFile_t*,const char *) ;
 extern int             (CurvesFile_WriteCurves)(CurvesFile_t*) ;
 
@@ -53,9 +52,6 @@ extern int             (CurvesFile_WriteCurves)(CurvesFile_t*) ;
  */
 #define CurvesFile_GetFileName(CF) \
         TextFile_GetFileName(CurvesFile_GetTextFile(CF))
-        
-#define CurvesFile_GetFileStream(CF) \
-        TextFile_GetFileStream(CurvesFile_GetTextFile(CF))
 
 #define CurvesFile_GetFilePosition(CF) \
         TextFile_GetFilePosition(CurvesFile_GetTextFile(CF))
@@ -94,8 +90,8 @@ struct CurvesFile_t {         /* File of discretized curves */
   const char* pcmdline ;      /* Current position in the command line */
   TextFile_t* textfile ;      /* Text file */
   /* fpos_t* inputpos ; */          /* File stream position which starts the input */
-  unsigned int n_curves ;     /* Nb of curves */
-  unsigned int n_points ;     /* Nb of points */
+  int n_curves ;     /* Nb of curves */
+  int n_points ;     /* Nb of points */
   char   scale ;              /* Scale = n(ormal-scale) or l(og-scale) */
   Curves_t* readcurves ;      /* Already read curves */
   char* line ;                /* Pointer to text lines */

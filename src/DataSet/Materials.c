@@ -28,7 +28,7 @@ Materials_t* (Materials_New)(const int n_mats,Models_t* models)
 
   /* Allocate the materials */
   {
-    Material_t* material   = (Material_t*) Mry_New(Material_t[n_mats]) ;
+    Material_t* material   = (Material_t*) Mry_New(Material_t,n_mats) ;
     int    i ;
     
     for(i = 0 ; i < n_mats ; i++) {
@@ -70,8 +70,6 @@ Materials_t* (Materials_New)(const int n_mats,Models_t* models)
 
 
 
-
-#if 1
 Materials_t* (Materials_Create)(DataFile_t* datafile,Geometry_t* geom,Fields_t* fields,Functions_t* functions,Models_t* models)
 {
   int n_mats = DataFile_CountTokens(datafile,"MATE,Material",",") ;
@@ -82,10 +80,6 @@ Materials_t* (Materials_Create)(DataFile_t* datafile,Geometry_t* geom,Fields_t* 
   Message_Direct("\n") ;
   
 
-  
-  /* Open for Material_ScanProperties1/2 */
-  //DataFile_OpenFile(datafile,"r") ;
-
   /* Scan the datafile */
   {
     int i ;
@@ -95,16 +89,6 @@ Materials_t* (Materials_Create)(DataFile_t* datafile,Geometry_t* geom,Fields_t* 
       char* c = DataFile_FindNthToken(datafile,"MATE,Material",",",i + 1) ;
       
       c = String_SkipLine(c) ;
-      
-      /* This for Material_ScanProperties1/2 */
-      /*
-      {
-        DataFile_SetFilePositionAfterKey(datafile,"MATE,Material",",",i + 1) ;
-        {
-          char* c1 = DataFile_ReadLineFromCurrentFilePosition(datafile) ;
-        }
-      }
-      */
       
       DataFile_SetCurrentPositionInFileContent(datafile,c) ;
   
@@ -122,7 +106,6 @@ Materials_t* (Materials_Create)(DataFile_t* datafile,Geometry_t* geom,Fields_t* 
   
   return(materials) ;
 }
-#endif
 
 
 
@@ -156,105 +139,3 @@ void (Materials_Delete)(void* self)
     }
   }
 }
-
-
-
-#if 0
-Materials_t* (Materials_Create)(DataFile_t* datafile,Geometry_t* geom,Fields_t* fields,Functions_t* functions,Models_t* models)
-{
-  int n_mats = DataFile_CountNbOfKeyWords(datafile,"MATE,Material",",") ;
-  Materials_t* materials = Materials_New(n_mats,models) ;
-  
-  
-  /* Fields and functions */
-  {
-    int i ;
-    
-    for(i = 0 ; i < n_mats ; i++) {
-      Material_t* mat = Materials_GetMaterial(materials) + i ;
-      
-      Material_GetFields(mat) = fields ;
-      Material_GetFunctions(mat) = functions ;
-    }
-  }
-  
-  
-  DataFile_OpenFile(datafile,"r") ;
-  
-  Message_Direct("Enter in %s","Materials") ;
-  Message_Direct("\n") ;
-
-  /* Initialization */
-  {
-    int i ;
-    
-    for(i = 0 ; i < n_mats ; i++) {
-      Material_t* mat = Materials_GetMaterial(materials) + i ;
-    
-      DataFile_SetFilePositionAfterKey(datafile,"MATE,Material",",",i + 1) ;
-  
-      Message_Direct("Enter in %s %d","Material",i+1) ;
-      Message_Direct("\n") ;
-
-      /* Which model ? */
-      {
-        char   codename[Material_MaxLengthOfKeyWord] ;
-        char*  code = codename + 1 ;
-        char*  line = DataFile_ReadLineFromCurrentFilePosition(datafile) ;
-      
-        if(!strncmp(line,"Model",5)) {
-          sscanf(line,"%*[^= ] = %s",codename + 1) ;
-        } else {
-          sscanf(line,"%s",codename + 1) ;
-        }
-      
-        if(isdigit(codename[1])) {
-          codename[0] = 'm' ;
-          code = codename ;
-        }
-      
-        /* Code name of the model */
-        strcpy(Material_GetCodeNameOfModel(mat),code) ;
-      }
-      
-      
-      /* Find or append a model and point to it */
-      {
-        char*  code = Material_GetCodeNameOfModel(mat) ;
-        Models_t* usedmodels = Materials_GetUsedModels(materials) ;
-        Model_t* matmodel = Models_FindOrAppendModel(usedmodels,code,geom,datafile) ;
-        
-        Material_GetModel(mat) = matmodel ;
-        //Material_GetModel(mat) = Models_FindModel(models,code) ;
-      }
-
-      /* for compatibility with old version */
-      if(Material_GetModel(mat)) {
-        mat->eqn = Material_GetNameOfEquation(mat) ;
-        mat->inc = Material_GetNameOfUnknown(mat) ;
-      }
-
-      /* Input material data */
-      /* A model pointing to a null pointer serves to build curves only */
-      Material_GetNbOfProperties(mat) = Material_ReadProperties(mat,datafile) ;
-    
-      /* for compatibility with old version */
-      if(Material_GetModel(mat)) {
-        if(Material_GetNbOfEquations(mat) == 0) {
-          Material_GetNbOfEquations(mat) = mat->neq ;
-        }
-      }
-      mat->nc = Material_GetNbOfCurves(mat) ;
-    
-      if(!Material_GetModel(mat)) {
-        Message_FataError("Materials_Create(1): Model not known") ;
-      }
-
-    }
-  }
-  
-  DataFile_CloseFile(datafile) ;
-  
-  return(materials) ;
-}
-#endif

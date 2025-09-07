@@ -1,13 +1,13 @@
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#ifdef SUPERLULIB
+#ifdef HAVE_SUPERLU
 #include "superluseq.h.in"
 #endif
 
-#ifdef SUPERLUMTLIB
+#ifdef HAVE_SUPERLUMT
 #include "superlumt.h.in"
 #endif
 
-#ifdef SUPERLUDISTLIB
+#ifdef HAVE_SUPERLUDIST
 #include "superludist.h.in"
 #endif

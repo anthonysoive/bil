@@ -11,7 +11,7 @@
 #define TITLE "Transversely isotropic ThermoPoroplasticity with hardening and hydration process(2021)"
 #define AUTHORS "Lecomte-Pierre-Braun-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 //Ce fichier est un mouveau modèle développé par Lecomte et Pierre pour prendre en compte l'hydratation dans le modèle thermo-poro-plast
 //Il s'appuie sur un fichier déja existant par Braun et Dangla

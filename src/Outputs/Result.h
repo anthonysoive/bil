@@ -32,7 +32,7 @@ extern void      (Result_SetValuesToZero)(Result_t*) ;
 
 struct Result_t {             /* Result */
   double* v ;                 /* Values */
-  short int n ;               /* Nb of values (1,3,9) */
+  int n ;               /* Nb of values (1,3,9) */
   char*   text ;              /* Name of the result */
   View_t* view ;              /* View (scalar, vector, tensor) */
 } ;

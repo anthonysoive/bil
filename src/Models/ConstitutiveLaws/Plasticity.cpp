@@ -10,7 +10,7 @@
 #include "DataFile.h"
 #include "Math_.h"
 #include "Plasticity.h"
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "autodiff.h"
 
 
@@ -31,7 +31,7 @@ Plasticity_t*  (Plasticity_Create)(void)
   
   /* Allocation of space for the code name of the model */
   {
-    char* name = (char*) Mry_New(char[Plasticity_MaxLengthOfKeyWord]) ;
+    char* name = (char*) Mry_New(char,Plasticity_MaxLengthOfKeyWord) ;
     
     Plasticity_GetCodeNameOfModel(plasty) = name ;
   }
@@ -39,7 +39,7 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for the yield function gradient */
   {
     int n = (9 + Plasticity_MaxNbOfHardeningVariables)*Plasticity_MaxNbOfCriteria ;
-    double* c = (double*) Mry_New(double[n]) ;
+    double* c = (double*) Mry_New(double,n) ;
     
     Plasticity_GetYieldFunctionGradient(plasty) = c ;
   }
@@ -47,7 +47,7 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for the potential function gradient */
   {
     int n = (9 + Plasticity_MaxNbOfHardeningVariables)*Plasticity_MaxNbOfCriteria ;
-    double* c = (double*) Mry_New(double[n]) ;
+    double* c = (double*) Mry_New(double,n) ;
     
     Plasticity_GetPotentialFunctionGradient(plasty) = c ;
   }
@@ -55,7 +55,7 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for the hardening variable */
   {
     int n = 2*Plasticity_MaxNbOfHardeningVariables ;
-    double* c = (double*) Mry_New(double[n]) ;
+    double* c = (double*) Mry_New(double,n) ;
     
     Plasticity_GetHardeningVariable(plasty) = c ;
     Plasticity_GetTypicalSmallIncrementOfHardeningVariable(plasty) = c + Plasticity_MaxNbOfHardeningVariables ;
@@ -64,21 +64,21 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for the hardening modulus */
   {
     int n = Plasticity_MaxNbOfCriteria ;
-    double* c = (double*) Mry_New(double[n*n]) ;
+    double* c = (double*) Mry_New(double,n*n) ;
     
     Plasticity_GetHardeningModulus(plasty) = c ;
   }
   
   /* Allocation of space for the criterion values */
   {
-    double* c = (double*) Mry_New(double[Plasticity_MaxNbOfCriteria]) ;
+    double* c = (double*) Mry_New(double,Plasticity_MaxNbOfCriteria) ;
     
     Plasticity_GetCriterionValue(plasty) = c ;
   }
   
   /* Allocation of space for the plastic multipliers */
   {
-    double* c = (double*) Mry_New(double[Plasticity_MaxNbOfCriteria]) ;
+    double* c = (double*) Mry_New(double,Plasticity_MaxNbOfCriteria) ;
     
     Plasticity_GetPlasticMultiplier(plasty) = c ;
   }
@@ -86,7 +86,7 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for Fji*Cijkl */
   {
     int n = 9*Plasticity_MaxNbOfCriteria ;
-    double* c = (double*) Mry_New(double[n]) ;
+    double* c = (double*) Mry_New(double,n) ;
     
     Plasticity_GetFjiCijkl(plasty) = c ;
   }
@@ -94,7 +94,7 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for Cijkl*Glk */
   {
     int n = 9*Plasticity_MaxNbOfCriteria ;
-    double* c = (double*) Mry_New(double[n]) ;
+    double* c = (double*) Mry_New(double,n) ;
     
     Plasticity_GetCijklGlk(plasty) = c ;
   }
@@ -102,14 +102,14 @@ Plasticity_t*  (Plasticity_Create)(void)
   /* Allocation of space for Fji*Cijkl*Glk */
   {
     int n = Plasticity_MaxNbOfCriteria ;
-    double* c = (double*) Mry_New(double[n*n]) ;
+    double* c = (double*) Mry_New(double,n*n) ;
     
     Plasticity_GetFjiCijklGlk(plasty) = c ;
   }
   
   /* Allocation of space for the tangent stiffness tensor */
   {
-    double* c = (double*) Mry_New(double[81]) ;
+    double* c = (double*) Mry_New(double,81) ;
     
     Plasticity_GetTangentStiffnessTensor(plasty) = c ;
   }
@@ -125,7 +125,7 @@ Plasticity_t*  (Plasticity_Create)(void)
     
   /* The parameters (also part of the generic data) */
   {
-    double* par = (double*) Mry_New(double[Plasticity_MaxNbOfParameters]) ;
+    double* par = (double*) Mry_New(double,Plasticity_MaxNbOfParameters) ;
     
     Plasticity_GetParameter(plasty) = par ;
       
@@ -290,73 +290,6 @@ void (Plasticity_Initialize)(Plasticity_t* plasty,const char* codename)
 
 
 
-#if 0
-void (Plasticity_ScanProperties)(Plasticity_t* plasty,DataFile_t* datafile,int (*pm)(const char*))
-/** Read the plastic properties in the stream file ficd */
-{
-  FILE* ficd = DataFile_GetFileStream(datafile) ;
-  int    nd = Plasticity_GetNbOfProperties(plasty) ;
-  short int    cont = 1 ;
-  
-  if(!ficd) return ;
-
-  while(cont) {
-    char   mot[Plasticity_MaxLengthOfKeyWord] ;
-    char* line = DataFile_ReadLineFromCurrentFilePosition(datafile) ;
-    
-    if(!line) break ;
-    
-    sscanf(line," %[^= ]",mot) ;
-
-    /* Reading some curves */
-    if(!strncmp(mot,"Courbes",6) || !strncmp(mot,"Curves",5)) {
-      Curves_t* curves = Plasticity_GetCurves(plasty) ;
-      
-      Curves_ReadCurves(curves,line) ;
-      
-      if(Curves_GetNbOfCurves(curves) > Plasticity_MaxNbOfCurves) {
-        arret("Plasticity_ScanProperties (2) : trop de courbes") ;
-      }
-      
-    /* Reading the material properties and storing through pm */
-    } else if(pm) {
-      char   *p = strchr(line,'=') ;
-
-      /* We assume that this is a property as long as "=" is found */
-      if(p) {
-        int i = (*pm)(mot) ;
-        
-        if(i >= 0) {
-        
-          sscanf(p+1,"%lf",Plasticity_GetProperty(plasty) + i) ;
-          nd = (nd > i + 1) ? nd : i + 1 ;
-        
-        } else {
-        
-          Message_RuntimeError("%s is not known",mot) ;
-          
-        }
-      
-      /* ... otherwise we stop reading */
-      } else {
-        
-        /* go out */
-        cont = 0 ;
-      }
-      
-    } else {
-      break ;
-    }
-    
-  }
-
-  Plasticity_GetNbOfProperties(plasty) = nd ;
-  return ;
-}
-#endif
-
-
-
 
 
 void (Plasticity_CopyTangentStiffnessTensor)(Plasticity_t* plasty,double* c)
@@ -490,6 +423,60 @@ void (Plasticity_PrintTangentStiffnessTensor)(Plasticity_t* plasty)
 }
 
 
+#if 0
+#define Plasticity_ComputeTangentStiffnessTensor4(PL,...) \
+        ({ \
+          Plasticity_ComputeTangentStiffnessTensor_t* Plasticity_ct =  Plasticity_GetComputeTangentStiffnessTensor(PL); \
+          (Plasticity_ct) ? Plasticity_ct(PL,__VA_ARGS__) : \
+          Plasticity_GenericTangentStiffnessTensor(PL,__VA_ARGS__); \
+        })
+#endif
+
+
+
+template<>
+double* (Plasticity_ReturnMapping<double>)(Plasticity_t* plasty,double* sig,double* eps_p,double* hardv)
+{
+  Plasticity_ReturnMapping_t* Plasticity_rm = Plasticity_GetReturnMapping(plasty);
+          
+  if(Plasticity_rm) {
+    return(Plasticity_rm(plasty,sig,eps_p,hardv));
+  }
+  
+  return(Plasticity_GenericReturnMapping(plasty,sig,eps_p,hardv));
+}
+
+
+#ifdef HAVE_AUTODIFF
+template<>
+double* (Plasticity_ReturnMapping<real>)(Plasticity_t* plasty,real* sig1,real* eps_p1,real* hardv1)
+{
+  double sig[9];
+  double eps_p[9];
+  double hardv[Plasticity_MaxNbOfHardeningVariables];
+  int nhardv = Plasticity_GetNbOfHardeningVariables(plasty);
+  int nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty);
+  int nthardv = nhardv + nnhardv;
+  
+  if(nthardv > Plasticity_MaxNbOfHardeningVariables) {
+    arret("Plasticity_ReturnMapping<real>") ;
+  }
+  
+  for(int i = 0; i < 9; i++) {
+    sig[i] = sig1[i][0];
+    eps_p[i] = eps_p1[i][0];
+  }
+  
+  for(int i = 0; i < nthardv; i++) {
+    hardv[i] = hardv1[i][0];
+  }
+  
+  return(Plasticity_ReturnMapping<double>(plasty,sig,eps_p,hardv));
+}
+#endif
+
+
+
 #if 1
 template<>
 double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunction_t*>)(Plasticity_YieldFunction_t* yieldfunction,Plasticity_t* plasty,const double* stress,const double* hardv)
@@ -503,11 +490,11 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunction_t*>)(Plas
 {
   double dstress = Plasticity_GetTypicalSmallIncrementOfStress(plasty) ;
   double* dhardv = Plasticity_GetTypicalSmallIncrementOfHardeningVariable(plasty) ;
-  int nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
-  int nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
-  int nthardv = nhardv + nnhardv ;
-  int ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
-  int nflows = 9 + nhardv ;
+  size_t nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
+  size_t nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
+  size_t nthardv = nhardv + nnhardv ;
+  size_t ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
+  size_t nflows = 9 + nhardv ;
   size_t SizeNeeded = nflows*ncrit*(sizeof(double)) ;
   double* dyield = (double*) Plasticity_AllocateInBuffer(plasty,SizeNeeded) ;
   
@@ -531,25 +518,23 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunction_t*>)(Plas
     double* yield0 = yieldfunction(plasty,stress,hardv) ;
     double stress1[9] ;
     double hardv1[Plasticity_MaxNbOfHardeningVariables] ;
-    int i ;
     
-    for(i = 0 ; i < nthardv ; i++) {
+    for(size_t i = 0 ; i < nthardv ; i++) {
       hardv1[i] = hardv[i] ;
     }
     
-    for(i = 0 ; i < 9 ; i++) {
+    for(int i = 0 ; i < 9 ; i++) {
       stress1[i] = stress[i] ;
     }
     
     /* Derivatives with respect to stresses */
-    for(i = 0 ; i < 9 ; i++) {
+    for(int i = 0 ; i < 9 ; i++) {
       stress1[i] += dstress ;
       
       {
         double* yield1 = yieldfunction(plasty,stress1,hardv) ;
-        int k ;
     
-        for(k = 0 ; k < ncrit ; k++) {
+        for(size_t k = 0 ; k < ncrit ; k++) {
           double* dyield_stress = DYIELD_STRESS(k) ;
           
           dyield_stress[i] = (yield1[k] - yield0[k])/dstress ;
@@ -562,7 +547,7 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunction_t*>)(Plas
     }
     
     /* Derivatives with respect to hardening variables */
-    for(i = 0 ; i < nhardv ; i++) {
+    for(size_t i = 0 ; i < nhardv ; i++) {
       
       if(dhardv[i] == 0) {
         arret("Plasticity_DerivativeOfYieldFunction") ;
@@ -572,9 +557,8 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunction_t*>)(Plas
       
       {
         double* yield1 = yieldfunction(plasty,stress,hardv1) ;
-        int k ;
     
-        for(k = 0 ; k < ncrit ; k++) {
+        for(size_t k = 0 ; k < ncrit ; k++) {
           double* dyield_hardv = DYIELD_HARDV(k) ;
           
           dyield_hardv[i] = (yield1[k] - yield0[k])/dhardv[i] ;
@@ -608,11 +592,11 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunctionDual_t*>)(
  *  the derivative w.r.t. the hardening variables.
  */
 {
-  int nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
-  int nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
-  int nthardv = nhardv + nnhardv ;
-  int ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
-  int nflows = 9 + nhardv ;
+  size_t nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
+  size_t nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
+  size_t nthardv = nhardv + nnhardv ;
+  size_t ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
+  size_t nflows = 9 + nhardv ;
   size_t SizeNeeded = nflows*ncrit*(sizeof(double)) ;
   double* dyield = (double*) Plasticity_AllocateInBuffer(plasty,SizeNeeded) ;
   
@@ -635,23 +619,22 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunctionDual_t*>)(
       std::vector<real> yield(ncrit);
       std::vector<real> stress1(9) ;
       std::vector<real> hardv1(nthardv) ;
-      int i ;
     
-      for(i = 0 ; i < nthardv ; i++) {
+      for(size_t i = 0 ; i < nthardv ; i++) {
         hardv1[i] = hardv[i] ;
       }
     
-      for(i = 0; i < 9; i++) {
+      for(size_t i = 0; i < 9; i++) {
         stress1[i] = stress[i] ;
       }
  
       /* We use a lambda function */
       auto yf1 = [](real* (*yf)(Plasticity_t*,const real*,const real*),Plasticity_t* p,const std::vector<real> s,const std::vector<real> h)->std::vector<real>{
         real* y = yf(p,&(s[0]),&(h[0])) ;
-        int n  = Plasticity_GetNbOfCriteria(p) ;
+        size_t n  = Plasticity_GetNbOfCriteria(p) ;
         std::vector<real> y1(n) ;
         
-        for(int i = 0 ; i < n ; i++) {
+        for(size_t i = 0 ; i < n ; i++) {
           y1[i] = y[i] ;
         }
         
@@ -664,28 +647,22 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunctionDual_t*>)(
     }
     
     /* Derivatives with respect to stresses */
-    {
-      int k ;
-    
-      for(k = 0 ; k < ncrit ; k++) {
+    {    
+      for(size_t k = 0 ; k < ncrit ; k++) {
         double* dyield_stress = DYIELD_STRESS(k) ;
-        int i ;
     
-        for(i = 0 ; i < 9 ; i++) {
+        for(size_t i = 0 ; i < 9 ; i++) {
           dyield_stress[i] = yieldg(k,i) ;
         }
       }
     }
     
     /* Derivatives with respect to hardening variables */
-    {
-      int k ;
-    
-      for(k = 0 ; k < ncrit ; k++) {
+    {    
+      for(size_t k = 0 ; k < ncrit ; k++) {
         double* dyield_hardv = DYIELD_HARDV(k) ;
-        int i ;
         
-        for(i = 0 ; i < nhardv ; i++) {
+        for(size_t i = 0 ; i < nhardv ; i++) {
           dyield_hardv[i] = yieldg(k,9+i) ;
         }
       }
@@ -724,6 +701,7 @@ double* (Plasticity_DerivativeOfYieldFunction<Plasticity_YieldFunction_ftor>)(Pl
   } else {
     arret("Plasticity_DerivativeOfYieldFunction:") ;
   }
+  return(NULL);
 }
 #endif
 
@@ -754,12 +732,12 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRules_t*>)(Plasticity_F
 {
   double dstress = Plasticity_GetTypicalSmallIncrementOfStress(plasty) ;
   double* dhardv = Plasticity_GetTypicalSmallIncrementOfHardeningVariable(plasty) ;
-  int nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
-  int nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
-  int nthardv = nhardv + nnhardv ;
-  int ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
-  int nflows = 9 + nhardv ;
-  int nflows2 = nflows*nflows ;
+  size_t nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
+  size_t nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
+  size_t nthardv = nhardv + nnhardv ;
+  size_t ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
+  size_t nflows = 9 + nhardv ;
+  size_t nflows2 = nflows*nflows ;
   size_t SizeNeeded = nflows2*ncrit*(sizeof(double)) ;
   double* dflow = (double*) Plasticity_AllocateInBuffer(plasty,SizeNeeded) ;
   
@@ -785,36 +763,33 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRules_t*>)(Plasticity_F
     double* flow0 = flowrules(plasty,stress,hardv) ;
     double stress1[9] ;
     double hardv1[Plasticity_MaxNbOfHardeningVariables] ;
-    int i ;
     
-    for(i = 0 ; i < nthardv ; i++) {
+    for(size_t i = 0 ; i < nthardv ; i++) {
       hardv1[i] = hardv[i] ;
     }
     
-    for(i = 0 ; i < 9 ; i++) {
+    for(int i = 0 ; i < 9 ; i++) {
       stress1[i] = stress[i] ;
     }
     
     /* Derivatives with respect to stresses */
-    for(i = 0 ; i < 9 ; i++) {
+    for(size_t i = 0 ; i < 9 ; i++) {
       stress1[i] += dstress ;
       
       {
         double* flow1 = flowrules(plasty,stress1,hardv) ;
-        int k ;
         
-        for(k = 0 ; k < ncrit ; k++) {
+        for(size_t k = 0 ; k < ncrit ; k++) {
           double* dflowstrain_stress =  DFLOWSTRAIN_STRESS(k) ;
           double* dflowhardv_stress =  DFLOWHARDV_STRESS(k) ;
           double* flowk0 = flow0 + nflows*k ;
           double* flowk1 = flow1 + nflows*k ;
-          int j ;
     
-          for(j = 0 ; j < 9 ; j++) {
+          for(size_t j = 0 ; j < 9 ; j++) {
             dflowstrain_stress[j*9+i] = (flowk1[j] - flowk0[j])/dstress ;
           }
     
-          for(j = 0 ; j < nhardv ; j++) {
+          for(size_t j = 0 ; j < nhardv ; j++) {
             dflowhardv_stress[j*nflows+i] = (flowk1[9+j] - flowk0[9+j])/dstress ;
           }
         }
@@ -826,7 +801,7 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRules_t*>)(Plasticity_F
     }
     
     /* Derivatives with respect to hardening variables */
-    for(i = 0 ; i < nhardv ; i++) {
+    for(size_t i = 0 ; i < nhardv ; i++) {
       
       if(dhardv[i] == 0) {
         arret("Plasticity_DerivativeOfFlowRules") ;
@@ -836,20 +811,18 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRules_t*>)(Plasticity_F
       
       {
         double* flow1 = flowrules(plasty,stress,hardv1) ;
-        int k ;
         
-        for(k = 0 ; k < ncrit ; k++) {
+        for(size_t k = 0 ; k < ncrit ; k++) {
           double* dflowstrain_hardv = DFLOWSTRAIN_HARDV(k) ;
           double* dflowhardv_hardv = DFLOWHARDV_HARDV(k) ;
           double* flowk0 = flow0 + nflows*k ;
           double* flowk1 = flow1 + nflows*k ;
-          int j ;
     
-          for(j = 0 ; j < 9 ; j++) {
+          for(size_t j = 0 ; j < 9 ; j++) {
             dflowstrain_hardv[i*9+j] = (flowk1[j] - flowk0[j])/dhardv[i] ;
           }
     
-          for(j = 0 ; j < nhardv ; j++) {
+          for(size_t j = 0 ; j < nhardv ; j++) {
             dflowhardv_hardv[j*nflows+i] = (flowk1[9+j] - flowk0[9+j])/dhardv[i] ;
           }
         }
@@ -899,12 +872,12 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRulesDual_t*>)(Plastici
 {
   double dstress = Plasticity_GetTypicalSmallIncrementOfStress(plasty) ;
   double* dhardv = Plasticity_GetTypicalSmallIncrementOfHardeningVariable(plasty) ;
-  int nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
-  int nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
-  int nthardv = nhardv + nnhardv ;
-  int ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
-  int nflows = 9 + nhardv ;
-  int nflows2 = nflows*nflows ;
+  size_t nhardv = Plasticity_GetNbOfHardeningVariables(plasty) ;
+  size_t nnhardv = Plasticity_GetNbOfNonHardeningVariables(plasty) ;
+  size_t nthardv = nhardv + nnhardv ;
+  size_t ncrit  = Plasticity_GetNbOfCriteria(plasty) ;
+  size_t nflows = 9 + nhardv ;
+  size_t nflows2 = nflows*nflows ;
   size_t SizeNeeded = nflows2*ncrit*(sizeof(double)) ;
   double* dflow = (double*) Plasticity_AllocateInBuffer(plasty,SizeNeeded) ;
   
@@ -924,31 +897,30 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRulesDual_t*>)(Plastici
   #define DFLOWHARDV_HARDV(k)     (DFLOW(k) + 9*nflows + 9)
   {
     Eigen::MatrixXd flowg;
-    int ntflows = 9 + nthardv ;
-    int i ;
+    size_t ntflows = 9 + nthardv ;
     
     {
       std::vector<real> flow(9+nthardv);
       std::vector<real> stress1(9) ;
       std::vector<real> hardv1(nthardv) ;
     
-      for(i = 0 ; i < nthardv ; i++) {
+      for(size_t i = 0 ; i < nthardv ; i++) {
         hardv1[i] = hardv[i] ;
       }
     
-      for(i = 0; i < 9; i++) {
+      for(size_t i = 0; i < 9; i++) {
         stress1[i] = stress[i] ;
       }
  
       auto fr1 = [](real* (*fr)(Plasticity_t*,const real*,const real*),Plasticity_t* p,const std::vector<real> s,const std::vector<real> h) {
         real* f = fr(p,&(s[0]),&(h[0])) ;
-        int nhardv = Plasticity_GetNbOfHardeningVariables(p) ;
-        int nflows = 9 + nhardv ;
-        int ncrit  = Plasticity_GetNbOfCriteria(p) ;
-        int n = nflows*ncrit ;
+        size_t nhardv = Plasticity_GetNbOfHardeningVariables(p) ;
+        size_t nflows = 9 + nhardv ;
+        size_t ncrit  = Plasticity_GetNbOfCriteria(p) ;
+        size_t n = nflows*ncrit ;
         std::vector<real> f1(n) ;
         
-        for(int i = 0 ; i < n ; i++) {
+        for(size_t i = 0 ; i < n ; i++) {
           f1[i] = f[i] ;
         }
         
@@ -961,20 +933,17 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRulesDual_t*>)(Plastici
     }
     
     /* Derivatives with respect to stresses */
-    for(i = 0 ; i < 9 ; i++) {
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+    for(size_t i = 0 ; i < 9 ; i++) {
+      {        
+        for(size_t k = 0 ; k < ncrit ; k++) {
           double* dflowstrain_stress = DFLOWSTRAIN_STRESS(k) ;
           double* dflowhardv_stress  = DFLOWHARDV_STRESS(k) ;
-          int j ;
     
-          for(j = 0 ; j < 9 ; j++) {
+          for(size_t j = 0 ; j < 9 ; j++) {
             dflowstrain_stress[j*9+i] = flowg(j+ntflows*k,i) ;
           }
     
-          for(j = 0 ; j < nhardv ; j++) {
+          for(size_t j = 0 ; j < nhardv ; j++) {
             dflowhardv_stress[j*nflows+i] = flowg(j+9+ntflows*k,i) ;
           }
         }
@@ -982,20 +951,17 @@ double* (Plasticity_DerivativeOfFlowRules<Plasticity_FlowRulesDual_t*>)(Plastici
     }
     
     /* Derivatives with respect to hardening variables */
-    for(i = 0 ; i < nhardv ; i++) {
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+    for(size_t i = 0 ; i < nhardv ; i++) {
+      {        
+        for(size_t k = 0 ; k < ncrit ; k++) {
           double* dflowstrain_hardv = DFLOWSTRAIN_HARDV(k) ;
           double* dflowhardv_hardv  = DFLOWHARDV_HARDV(k) ;
-          int j ;
     
-          for(j = 0 ; j < 9 ; j++) {
+          for(size_t j = 0 ; j < 9 ; j++) {
             dflowstrain_hardv[i*9+j] = flowg(j+ntflows*k,9+i) ;
           }
     
-          for(j = 0 ; j < nhardv ; j++) {
+          for(size_t j = 0 ; j < nhardv ; j++) {
             dflowhardv_hardv[j*nflows+i] = flowg(j+9+ntflows*k,9+i) ;
           }
         }
@@ -1112,34 +1078,27 @@ double* (Plasticity_ResidusOfGenericReturnMappingAlgorithm)(Plasticity_t* plasty
       /* Equation of the plastic strain rules */
       {
         double dstress[9] ;
-        int i ;
         
-        for(i = 0 ; i < 9 ; i++) {
+        for(int i = 0 ; i < 9 ; i++) {
           dstress[i] = (stress[i] - stress_t[i]) ;
         }
         
-        for(i = 0 ; i < 9 ; i++) {
-          int j ;
-          
+        for(int i = 0 ; i < 9 ; i++) {          
           RESIDUSTRAIN[i] = 0 ;
           
-          for(j = 0 ; j < 9 ; j++) {
+          for(int j = 0 ; j < 9 ; j++) {
             RESIDUSTRAIN[i] += invc[9*i + j] * dstress[j] ;
           }
         }
       }
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* flowstrain = FLOWSTRAIN(k) ;
           double lambda = Math_Max(zeta[k],0) ;
           
-          if(lambda > 0) {
-            int i ;
-            
-            for(i = 0 ; i < 9 ; i++) {
+          if(lambda > 0) {            
+            for(int i = 0 ; i < 9 ; i++) {
               RESIDUSTRAIN[i] += lambda * flowstrain[i] ;
             }
           }
@@ -1150,26 +1109,20 @@ double* (Plasticity_ResidusOfGenericReturnMappingAlgorithm)(Plasticity_t* plasty
       
       /* Equation of the hardening flow rules */
       {
-        {
-          int i ;
-        
-          for(i = 0 ; i < nhardv ; i++) {
+        {        
+          for(int i = 0 ; i < nhardv ; i++) {
             RESIDUHARDV[i] = hardv[i] - hardv_n[i] ;
           }
         }
       }
       
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* flowhardv = FLOWHARDV(k) ;
           double lambda = Math_Max(zeta[k],0) ;
           
-          if(lambda > 0) {
-            int i ;
-        
-            for(i = 0 ; i < nhardv ; i++) {
+          if(lambda > 0) {        
+            for(int i = 0 ; i < nhardv ; i++) {
               RESIDUHARDV[i] -= lambda * flowhardv[i] ;
             }
           }
@@ -1178,10 +1131,8 @@ double* (Plasticity_ResidusOfGenericReturnMappingAlgorithm)(Plasticity_t* plasty
       
       /* Equation of the yield criteria */
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double yval = Math_Min(zeta[k],0) ;
         
           RESIDUYIELD[k] = yield[k] - yval ;
@@ -1191,9 +1142,8 @@ double* (Plasticity_ResidusOfGenericReturnMappingAlgorithm)(Plasticity_t* plasty
       /* Change the sign */
       {
         int nmat = 6 + nhardv + ncrit ;
-        int i ;
         
-        for(i = 0 ; i < nmat ; i++) {
+        for(int i = 0 ; i < nmat ; i++) {
           residu[i] = - residu[i] ;
         }
       }
@@ -1286,10 +1236,8 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
       double* dflow  = Plasticity_DerivativeOfFlowRules(flowrules,plasty,stress,hardv) ;
       int nmat = 6 + nhardv + ncrit ;
       
-      {
-        int i ;
-        
-        for(i = 0 ; i < nmat*nmat ; i++) {
+      {        
+        for(int i = 0 ; i < nmat*nmat ; i++) {
           matrix[i] = 0 ;
         }
       }
@@ -1298,33 +1246,24 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
         double c1[81] ;
         double* invc = Elasticity_CopyComplianceTensor(elasty,c1) ;
         double* invc66 = Elasticity_ConvertStiffnessMatrixInto6x6Matrix(invc) ;
-        int i ;
         
-        for(i = 0 ; i < 6 ; i++) {
-          int j ;
-          
-          for(j = 0 ; j < 6 ; j++) {
+        for(int i = 0 ; i < 6 ; i++) {          
+          for(int j = 0 ; j < 6 ; j++) {
             MATRIX(i,j) = invc66[6*i+j] ;
           }
         }
       }
       
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* dflowstrain_stress = DFLOWSTRAIN_STRESS(k) ;
           double lambda = Math_Max(zeta[k],0) ;
           
-          if(lambda > 0) {
-            int i ;
-      
+          if(lambda > 0) {      
             Elasticity_ConvertStiffnessMatrixInto6x6Matrix(dflowstrain_stress) ;
         
-            for(i = 0 ; i < 6 ; i++) {
-              int j ;
-          
-              for(j = 0 ; j < 6 ; j++) {
+            for(int i = 0 ; i < 6 ; i++) {          
+              for(int j = 0 ; j < 6 ; j++) {
                 MATRIX(i,j) += lambda * dflowstrain_stress[6*i+j] ;
               }
             }
@@ -1333,23 +1272,18 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
       }
       
       
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* dflowstrain_hardv = DFLOWSTRAIN_HARDV(k) ;
           double lambda = Math_Max(zeta[k],0) ;
         
-          if(lambda > 0) {
-            int i ;
-            
-            for(i = 0 ; i < nhardv ; i++) {
-              int j ;
+          if(lambda > 0) {            
+            for(int i = 0 ; i < nhardv ; i++) {
               double* dflowk = dflowstrain_hardv + 9*i ;
           
               Elasticity_ConvertStressTensorInto6TermStressVector(dflowk) ;
           
-              for(j = 0 ; j < 6 ; j++) {
+              for(int j = 0 ; j < 6 ; j++) {
                 MATRIX(j,6+i) += lambda * dflowk[j] ;
               }
             }
@@ -1358,19 +1292,15 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
       }
       
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* flowstrain = FLOWSTRAIN(k) ;
           double dlambda = (zeta[k] > 0) ? 1 : 0 ;
           
-          if(dlambda > 0) {
-            int i ;
-            
+          if(dlambda > 0) {            
             Elasticity_ConvertStressTensorInto6TermStressVector(flowstrain) ;
         
-            for(i = 0 ; i < 6 ; i++) {
+            for(int i = 0 ; i < 6 ; i++) {
               MATRIX(i,6+nhardv+k) = dlambda * flowstrain[i] ;
             }
           }
@@ -1378,23 +1308,18 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
       }
       
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* dflowhardv_stress = DFLOWHARDV_STRESS(k) ;
           double lambda = Math_Max(zeta[k],0) ;
           
-          if(lambda > 0) {
-            int i ;
-        
-            for(i = 0 ; i < nhardv ; i++) {
-              int j ;
+          if(lambda > 0) {        
+            for(int i = 0 ; i < nhardv ; i++) {
               double* dflowk = dflowhardv_stress + i*nflows ;
           
               Elasticity_ConvertStressTensorInto6TermStressVector(dflowk) ;
           
-              for(j = 0 ; j < 6 ; j++) {
+              for(int j = 0 ; j < 6 ; j++) {
                 MATRIX(6+i,j) = - lambda * dflowk[j] ;
               }
             }
@@ -1402,29 +1327,22 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
         }
       }
 
-      {
-        int i ;
-        
-        for(i = 0 ; i < nhardv ; i++) {
+      {        
+        for(int i = 0 ; i < nhardv ; i++) {
           MATRIX(6+i,6+i) = 1 ;
         }
       }
 
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* dflowhardv_hardv = DFLOWHARDV_HARDV(k) ;
           double lambda = Math_Max(zeta[k],0) ;
           
-          if(lambda > 0) {
-            int i ;
-        
-            for(i = 0 ; i < nhardv ; i++) {
+          if(lambda > 0) {        
+            for(int i = 0 ; i < nhardv ; i++) {
               double* dflowk = dflowhardv_hardv + i*nflows ;
-              int j ;
           
-              for(j = 0 ; j < nhardv ; j++) {
+              for(int j = 0 ; j < nhardv ; j++) {
                 MATRIX(6+i,6+j) -= lambda * dflowk[j] ;
               }
             }
@@ -1433,17 +1351,13 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
       }
       
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* flowhardv = FLOWHARDV(k) ;
           double dlambda = (zeta[k] > 0) ? 1 : 0 ;
           
-          if(dlambda > 0) {
-            int i ;
-        
-            for(i = 0 ; i < nhardv ; i++) {
+          if(dlambda > 0) {        
+            for(int i = 0 ; i < nhardv ; i++) {
               MATRIX(6+i,6+nhardv+k) = - dlambda * flowhardv[i] ;
             }
           }
@@ -1451,40 +1365,32 @@ double* (Plasticity_JacobianMatrixOfGenericReturnMappingAlgorithm)(Plasticity_t*
       }
       
       
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* dyield_stress = DYIELD_STRESS(k) ;
-          int j ;
         
           Elasticity_ConvertStressTensorInto6TermStressVector(dyield_stress) ;
         
-          for(j = 0 ; j < 6 ; j++) {
+          for(int j = 0 ; j < 6 ; j++) {
             MATRIX(6+nhardv+k,j) = dyield_stress[j] ;
           }
         }
       }
       
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double* dyield_hardv = DYIELD_HARDV(k) ;
-          int i ;
         
-          for(i = 0 ; i < nhardv ; i++) {
+          for(int i = 0 ; i < nhardv ; i++) {
             MATRIX(6+nhardv+k,6+i) = dyield_hardv[i] ;
           }
         }
       }
       
         
-      {
-        int k ;
-        
-        for(k = 0 ; k < ncrit ; k++) {
+      {        
+        for(int k = 0 ; k < ncrit ; k++) {
           double dyval = (zeta[k] > 0) ? 0 : 1 ;
         
           MATRIX(6+nhardv+k,6+nhardv+k) = - dyval ;
@@ -1555,18 +1461,16 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
     int niter = 20 ;
     int convergencenotattained = 1 ;
   
-    {
-      int i ;
-    
-      for(i = 0 ; i < 9 ; i++) {
+    {    
+      for(int i = 0 ; i < 9 ; i++) {
         stress_t[i] = stress[i] ;
       }
     
-      for(i = 0 ; i < nthardv ; i++) {
+      for(int i = 0 ; i < nthardv ; i++) {
         hardv_n[i] = hardv[i] ;
       }
     
-      for(i = 0 ; i < ncrit ; i++) {
+      for(int i = 0 ; i < ncrit ; i++) {
         zeta[i] = 0 ;
       }
     }
@@ -1592,9 +1496,7 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
       #endif
 
       #if DEBUGGENERICRETURNMAPPING
-      {
-        int i ;
-        
+      {        
         printf("\n") ;
         printf("jacobian matrix of the residus:\n") ;
         Math_PrintMatrix(matrix,nmat) ;
@@ -1602,7 +1504,7 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
         printf("\n") ;
         printf("residus:\n") ;
         
-        for(i = 0 ; i < nmat ; i++) {
+        for(int i = 0 ; i < nmat ; i++) {
           printf("res%d: %e\n",i,residu[3+i]) ;
         }
       }
@@ -1610,28 +1512,24 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
       
       Math_SolveByGaussElimination(matrix,residu+3,nmat) ;
       
-      {
-        int i ;
-        
-        for(i = 0 ; i < 6 ; i++) {
+      {        
+        for(int i = 0 ; i < 6 ; i++) {
           residu[i] = residu[i+3] ;
         }
         
         Elasticity_Convert6TermStressVectorIntoStressTensor(residu) ;
       }
       
-      {
-        int i ;
-        
-        for(i = 0 ; i < 9 ; i++) {
+      {        
+        for(int i = 0 ; i < 9 ; i++) {
           stress[i] += residu[i] ;
         }
     
-        for(i = 0 ; i < nhardv ; i++) {
+        for(int i = 0 ; i < nhardv ; i++) {
           hardv[i] += residu[9+i] ;
         }
         
-        for(i = 0 ; i < ncrit ; i++) {
+        for(int i = 0 ; i < ncrit ; i++) {
           zeta[i] += residu[9+nhardv+i] ;
         }
       }
@@ -1639,19 +1537,18 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
       /* Convergence checks */
       {
         double tol = 1.e-6 ;
-        int i ;
         
         convergencenotattained = 0 ;
         
         #if 0
-        for(i = 0 ; i < 9 ; i++) {
+        for(int i = 0 ; i < 9 ; i++) {
           if(fabs(residu[i]) > tol*fabs(dstress)) {
             convergencenotattained = 1 ;
             break ;
           }
         }
     
-        for(i = 0 ; i < nhardv ; i++) {
+        for(int i = 0 ; i < nhardv ; i++) {
           if(fabs(residu[9+i]) > tol*fabs(dhardv[i])) {
             convergencenotattained = 1 ;
             break ;
@@ -1659,7 +1556,7 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
         }
         #endif
         
-        for(i = 0 ; i < ncrit ; i++) {
+        for(int i = 0 ; i < ncrit ; i++) {
           if(fabs(residu[9+nhardv+i]) > tol*fabs(zeta[i])) {
             convergencenotattained = 1 ;
           }
@@ -1667,9 +1564,7 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
       }
       
       #if DEBUGGENERICRETURNMAPPING
-      {
-        int i ;
-        
+      {        
         printf("\n") ;
         printf("solution:\n") ;
         
@@ -1677,12 +1572,12 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
         Math_PrintStressTensor(stress) ;
         
         printf("hardening and non-hardening variables:\n") ;
-        for(i = 0 ; i < nthardv ; i++) {
+        for(int i = 0 ; i < nthardv ; i++) {
           printf("hardv[%d] = %e\n",i,hardv[i]) ;
         }
         
         printf("zeta variables:\n") ;
-        for(i = 0 ; i < ncrit ; i++) {
+        for(int i = 0 ; i < ncrit ; i++) {
           printf("zeta = %e\n",zeta[i]) ;
         }
       }
@@ -1699,17 +1594,14 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
     {
       Plasticity_FlowRules_t* flowrules = Plasticity_GetFlowRules(plasty) ;
       double* flow = flowrules(plasty,stress,hardv) ;
-      int k ;
       
       #define FLOW(k)   (flow + nflows*(k))
-      for(k = 0 ; k < ncrit ; k++) {
+      for(int k = 0 ; k < ncrit ; k++) {
         double* flowk = FLOW(k) ;
         double lambda = Math_Max(zeta[k],0) ;
   
-        if(lambda > 0) {
-          int    i ;
-    
-          for(i = 0 ; i < 9 ; i++) {
+        if(lambda > 0) {    
+          for(int i = 0 ; i < 9 ; i++) {
             strain_p[i] += lambda*flowk[i] ;
           }
         }
@@ -1724,9 +1616,8 @@ double* (Plasticity_GenericReturnMapping)(Plasticity_t* plasty,double* stress,do
     {
       Plasticity_YieldFunction_t* yieldfunction = Plasticity_GetYieldFunction(plasty) ;
       double* yield = yieldfunction(plasty,stress_t,hardv_n) ;
-      int k ;
     
-      for(k = 0 ; k < ncrit ; k++) {
+      for(int k = 0 ; k < ncrit ; k++) {
         crit[k] = yield[k] ;
       }
     }

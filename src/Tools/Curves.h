@@ -13,7 +13,7 @@ struct Curve_t;
 
 
 
-extern Curves_t* (Curves_Create)(unsigned int) ;
+extern Curves_t* (Curves_Create)(int) ;
 extern void      (Curves_Delete)(void*) ;
 extern int       (Curves_ReadCurves)(Curves_t*,const char*) ;
 //extern int       (Curves_WriteCurves1)(char*) ;
@@ -84,8 +84,8 @@ extern int       (Curves_CreateInverse)(Curves_t*,Curve_t*,const char) ;
 
 
 struct Curves_t {             /* Curves */
-  unsigned int n_allocatedcurves ;         /* Nb of allocated curves */
-  unsigned int n_cb ;         /* nb of curves */
+  int n_allocatedcurves ;         /* Nb of allocated curves */
+  int n_cb ;         /* nb of curves */
   Curve_t *cb ;               /* curves */
 } ;
 

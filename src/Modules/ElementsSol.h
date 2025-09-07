@@ -21,9 +21,6 @@ extern void             (ElementsSol_AllocateMemoryForConstantTerms)(ElementsSol
 extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 
 
-//#define ElementsSol_GetNbOfImplicitTerms(ESS)    ((ESS)->NbOfImpltTerms)
-//#define ElementsSol_GetNbOfExplicitTerms(ESS)    ((ESS)->NbOfExpltTerms)
-//#define ElementsSol_GetNbOfConstantTerms(ESS)    ((ESS)->NbOfConstTerms)
 #define ElementsSol_GetNbOfElements(ESS)         ((ESS)->NbOfElements)
 #define ElementsSol_GetElementSol(ESS)           ((ESS)->elementsol)
 
@@ -43,10 +40,9 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 /* Delete data */
 #define ElementsSol_DeleteExplicitGenericData(ESS) \
         do { \
-          int NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
+          size_t NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
           ElementSol_t* elementsol = ElementsSol_GetElementSol(ESS) ; \
-          int ElementsSol_i ; \
-          for(ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
+          for(size_t ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
             ElementSol_DeleteExplicitGenericData(elementsol + ElementsSol_i) ; \
           } \
         } while(0)
@@ -54,10 +50,9 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
         
 #define ElementsSol_DeleteConstantGenericData(ESS) \
         do { \
-          int NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
+          size_t NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
           ElementSol_t* elementsol = ElementsSol_GetElementSol(ESS) ; \
-          int ElementsSol_i ; \
-          for(ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
+          for(size_t ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
             ElementSol_DeleteConstantGenericData(elementsol + ElementsSol_i) ; \
           } \
         } while(0)
@@ -67,30 +62,24 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 /* Share data */
 #define ElementsSol_ShareExplicitGenericData(ESS_DEST,ESS_SRC) \
         do { \
-          int NbOfElements = ElementsSol_GetNbOfElements(ESS_SRC) ; \
+          size_t NbOfElements = ElementsSol_GetNbOfElements(ESS_SRC) ; \
           ElementSol_t* elementsol_s = ElementsSol_GetElementSol(ESS_SRC) ; \
           ElementSol_t* elementsol_d = ElementsSol_GetElementSol(ESS_DEST) ; \
-          { \
-            int ElementsSol_i ; \
-            for(ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
-              GenericData_t* gdat = ElementSol_GetExplicitGenericData(elementsol_s + ElementsSol_i) ; \
-              ElementSol_GetExplicitGenericData(elementsol_d + ElementsSol_i) = gdat ; \
-            } \
+          for(size_t ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
+            GenericData_t* gdat = ElementSol_GetExplicitGenericData(elementsol_s + ElementsSol_i) ; \
+            ElementSol_GetExplicitGenericData(elementsol_d + ElementsSol_i) = gdat ; \
           } \
         } while(0)
 
 
 #define ElementsSol_ShareConstantGenericData(ESS_DEST,ESS_SRC) \
         do { \
-          int NbOfElements = ElementsSol_GetNbOfElements(ESS_SRC) ; \
+          size_t NbOfElements = ElementsSol_GetNbOfElements(ESS_SRC) ; \
           ElementSol_t* elementsol_s = ElementsSol_GetElementSol(ESS_SRC) ; \
           ElementSol_t* elementsol_d = ElementsSol_GetElementSol(ESS_DEST) ; \
-          { \
-            int ElementsSol_i ; \
-            for(ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
-              GenericData_t* gdat = ElementSol_GetConstantGenericData(elementsol_s + ElementsSol_i) ; \
-              ElementSol_GetConstantGenericData(elementsol_d + ElementsSol_i) = gdat ; \
-            } \
+          for(size_t ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
+            GenericData_t* gdat = ElementSol_GetConstantGenericData(elementsol_s + ElementsSol_i) ; \
+            ElementSol_GetConstantGenericData(elementsol_d + ElementsSol_i) = gdat ; \
           } \
         } while(0)
 
@@ -99,10 +88,9 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 /* Set pointers to null */
 #define ElementsSol_DiscardExplicitGenericData(ESS) \
         do { \
-          int NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
+          size_t NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
           ElementSol_t* elementsol = ElementsSol_GetElementSol(ESS) ; \
-          int ElementsSol_i ; \
-          for(ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
+          for(size_t ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
             ElementSol_GetExplicitGenericData(elementsol + ElementsSol_i) = NULL ; \
           } \
         } while(0)
@@ -110,10 +98,9 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 
 #define ElementsSol_DiscardConstantGenericData(ESS) \
         do { \
-          int NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
+          size_t NbOfElements = ElementsSol_GetNbOfElements(ESS) ; \
           ElementSol_t* elementsol = ElementsSol_GetElementSol(ESS) ; \
-          int ElementsSol_i ; \
-          for(ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
+          for(size_t ElementsSol_i = 0 ; ElementsSol_i < NbOfElements ; ElementsSol_i++) { \
             ElementSol_GetConstantGenericData(elementsol + ElementsSol_i) = NULL ; \
           } \
         } while(0)
@@ -124,10 +111,7 @@ extern void             (ElementsSol_Copy)(ElementsSol_t*,ElementsSol_t*) ;
 
 
 struct ElementsSol_t {
-  unsigned int NbOfElements ;
-  //unsigned int NbOfImpltTerms ;         /* nb of implicit terms */
-  //unsigned int NbOfExpltTerms ;         /* nb of explicit terms */
-  //unsigned int NbOfConstTerms ;         /* Nb of constant terms */
+  size_t NbOfElements ;
   ElementSol_t* elementsol ;
 } ;
 

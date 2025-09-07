@@ -5,9 +5,15 @@
 #cmakedefine HAVE_PTHREAD
 #cmakedefine HAVE_MPI
 #cmakedefine HAVE_AUTODIFF
+#cmakedefine HAVE_FLTK
+#cmakedefine HAVE_PETSC
+#cmakedefine HAVE_BLAS
+#cmakedefine HAVE_LAPACK
+#cmakedefine HAVE_EIGEN
+#cmakedefine HAVE_SUPERLU
 
-//#define BIL_CONFIG_OPTIONS "${BIL_CONFIG_OPTIONS}"
+/*#define BIL_CONFIG_OPTIONS "${BIL_CONFIG_OPTIONS}"*/
 
-//${BIL_CONFIG_PRAGMAS}
+/*${BIL_CONFIG_PRAGMAS}*/
 
 #endif

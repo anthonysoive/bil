@@ -8,7 +8,7 @@
 #include "Element.h"
 #include "Node.h"
 #include "Message.h"
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "Mry.h"
 #include "NCFormat.h"
 
@@ -22,9 +22,9 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
 /** Create a matrix in NCFormat */
 {
   NCFormat_t* ncformat = (NCFormat_t*) Mry_New(NCFormat_t) ;
-  int n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
+  size_t n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
   /* Working memory */
-  int*   colptr0 = (int*) Mry_New(int[n_col + 1]) ;
+  size_t*   colptr0 = (size_t*) Mry_New(size_t,n_col + 1) ;
   
   if(imatrix >= Mesh_GetNbOfMatrices(mesh)) {
     arret("NCFormat_Create") ;
@@ -34,18 +34,16 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
   /* We compute in colptr0 an over-estimated nb of terms 
    * in each column of the matrix */
   {
-    int n_el = Mesh_GetNbOfElements(mesh) ;
+    size_t n_el = Mesh_GetNbOfElements(mesh) ;
     Element_t* el = Mesh_GetElement(mesh) ;
-    int ie ;
-    int i ;
     
-    for(i = 0 ; i < n_col + 1 ; i++) colptr0[i] = 0 ;
+    for(size_t i = 0 ; i < n_col + 1 ; i++) colptr0[i] = 0 ;
 
     /* Max nb of terms per column */
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       int neq = Element_GetNbOfEquations(el + ie) ;
     
-      for(i = 0 ; i < Element_GetNbOfNodes(el + ie) ; i++) {
+      for(int i = 0 ; i < Element_GetNbOfNodes(el + ie) ; i++) {
         Node_t* node_i = Element_GetNode(el + ie,i) ;
         int ieq ;
       
@@ -70,21 +68,21 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
     /* This is the cumulative nb of terms i.e. this is where to start
      * the column in stored non-zero terms of the matrix. So an
      * over-estimated nb of terms for the matrix is colptr0[n_col] */
-    for(i = 0 ; i < n_col ; i++) colptr0[i+1] += colptr0[i] ;
+    for(size_t i = 0 ; i < n_col ; i++) colptr0[i+1] += colptr0[i] ;
   }
 
 
   /* Allocation of space for colptr */
   {
-    int* colptr = (int*) Mry_New(int[n_col+1]) ;
+    size_t* colptr = (size_t*) Mry_New(size_t,n_col+1) ;
     
     NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) = colptr ;
   }
     
   /* Allocation of space for rowind */
   {
-    int nnz_max = colptr0[n_col] ;
-    int* rowind = (int*) Mry_New(int[nnz_max]) ;
+    size_t nnz_max = colptr0[n_col] ;
+    size_t* rowind = (size_t*) Mry_New(size_t,nnz_max) ;
     
     NCFormat_GetRowIndexOfNonZeroValue(ncformat) = rowind ;
   }
@@ -92,19 +90,17 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
 
   /* Initialize colptr and rowind */
   {
-    int n_el = Mesh_GetNbOfElements(mesh) ;
+    size_t n_el = Mesh_GetNbOfElements(mesh) ;
     Element_t* el = Mesh_GetElement(mesh) ;
-    int* colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) ;
-    int* rowind = NCFormat_GetRowIndexOfNonZeroValue(ncformat) ;
-    int ie ;
-    int i ;
+    size_t* colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) ;
+    size_t* rowind = NCFormat_GetRowIndexOfNonZeroValue(ncformat) ;
     
-    for(i = 0 ; i < n_col + 1 ; i++) colptr[i] = 0 ;
+    for(size_t i = 0 ; i < n_col + 1 ; i++) colptr[i] = 0 ;
 
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       int neq = Element_GetNbOfEquations(el + ie) ;
     
-      for(i = 0 ; i < Element_GetNbOfNodes(el + ie) ; i++) {
+      for(int i = 0 ; i < Element_GetNbOfNodes(el + ie) ; i++) {
         Node_t* node_i = Element_GetNode(el + ie,i) ;
         int ieq ;
       
@@ -128,7 +124,7 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
               int jjeq = j*neq + jeq ;
               int jj = Element_GetUnknownPosition(el + ie)[jjeq] ;
               int jcol ;
-              int k ;
+              size_t k ;
             
               if(jj < 0) continue ;
             
@@ -160,17 +156,14 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
 
   /* compression of rowind */
   {
-    int* colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) ;
-    int* rowind = NCFormat_GetRowIndexOfNonZeroValue(ncformat) ;
-    int i ;
-    int j ;
+    size_t* colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) ;
+    size_t* rowind = NCFormat_GetRowIndexOfNonZeroValue(ncformat) ;
+    size_t j = 0 ;
     
     colptr[0] = 0 ;
     
-    for(j = 0 , i = 0 ; i < n_col ; i++) {
-      int k ;
-      
-      for(k = 0 ; k < colptr[i + 1] ; k++) {
+    for(size_t i = 0 ; i < n_col ; i++) {      
+      for(size_t k = 0 ; k < colptr[i + 1] ; k++) {
         rowind[j++] = rowind[colptr0[i] + k] ;
       }
       
@@ -186,7 +179,7 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
 
 
   {
-    int* colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) ;
+    size_t* colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(ncformat) ;
   
     NCFormat_GetNbOfNonZeroValues(ncformat) = colptr[n_col] ;
   }
@@ -194,9 +187,9 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
 
   /* reallocate the memory space */
   {
-    int* rowind = NCFormat_GetRowIndexOfNonZeroValue(ncformat) ;
-    int nnz = NCFormat_GetNbOfNonZeroValues(ncformat) ;
-    int* rowind1 = (int*) Mry_Realloc(rowind,nnz*sizeof(int)) ;
+    size_t* rowind = NCFormat_GetRowIndexOfNonZeroValue(ncformat) ;
+    size_t nnz = NCFormat_GetNbOfNonZeroValues(ncformat) ;
+    size_t* rowind1 = (size_t*) Mry_Realloc(rowind,nnz*sizeof(size_t)) ;
     
     if(rowind1 != rowind) {
       NCFormat_GetRowIndexOfNonZeroValue(ncformat) = rowind1 ;
@@ -207,8 +200,8 @@ NCFormat_t* (NCFormat_Create)(Mesh_t* mesh,const int imatrix)
 
   /* Allocation of space for the matrix */
   {
-    int nnz = NCFormat_GetNbOfNonZeroValues(ncformat) ;
-    double* nzval = (double*) Mry_New(double[nnz]) ;
+    size_t nnz = NCFormat_GetNbOfNonZeroValues(ncformat) ;
+    double* nzval = (double*) Mry_New(double,nnz) ;
     
     NCFormat_GetNonZeroValue(ncformat) = nzval ;
   }
@@ -231,16 +224,16 @@ void (NCFormat_Delete)(void* self)
 
 
 
-int (NCFormat_AssembleElementMatrix)(NCFormat_t* a,double* ke,int* col,int* row,int ndof,int* rowptr,int n_row)
+size_t (NCFormat_AssembleElementMatrix)(NCFormat_t* a,double* ke,int* col,int* row,int ndof,int* rowptr,int n_row)
 /** Assemble the local matrix ke into the global matrix a 
  *  Return the nb of entries */
 {
 #define KE(i,j) (ke[(i)*ndof+(j)])
   double* nzval  = (double*) NCFormat_GetNonZeroValue(a) ;
-  int*    colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(a) ;
-  int*    rowind = NCFormat_GetRowIndexOfNonZeroValue(a) ;
+  size_t*    colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(a) ;
+  size_t*    rowind = NCFormat_GetRowIndexOfNonZeroValue(a) ;
   int    je ;
-  int len = 0 ;
+  size_t len = 0 ;
 
   if(rowptr) {
     int i ;
@@ -282,10 +275,8 @@ int (NCFormat_AssembleElementMatrix)(NCFormat_t* a,double* ke,int* col,int* row,
       }
     }
 
-    if(rowptr) {
-      int i ;
-      
-      for(i = colptr[jcol] ; i < colptr[jcol+1] ; i++) {
+    if(rowptr) {      
+      for(size_t i = colptr[jcol] ; i < colptr[jcol+1] ; i++) {
         rowptr[rowind[i]] = -1 ;
       }
     }
@@ -299,30 +290,28 @@ int (NCFormat_AssembleElementMatrix)(NCFormat_t* a,double* ke,int* col,int* row,
 
 
 
-void (NCFormat_PrintMatrix)(NCFormat_t* a,unsigned int n_col,const char* keyword)
+void (NCFormat_PrintMatrix)(NCFormat_t* a,size_t n_col,const char* keyword)
 {
   double* nzval  = (double*) NCFormat_GetNonZeroValue(a) ;
-  int*    colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(a) ;
-  int*    rowind = NCFormat_GetRowIndexOfNonZeroValue(a) ;
-  int    nnz = NCFormat_GetNbOfNonZeroValues(a) ;
-  int    jcol ;
+  size_t*   colptr = NCFormat_GetFirstNonZeroValueIndexOfColumn(a) ;
+  size_t*   rowind = NCFormat_GetRowIndexOfNonZeroValue(a) ;
+  size_t    nnz = NCFormat_GetNbOfNonZeroValues(a) ;
 
   fprintf(stdout,"\n") ;
   fprintf(stdout,"Matrix in compressed column format:\n") ;
-  fprintf(stdout,"n_col = %u nnz = %d\n",n_col,nnz) ;
+  fprintf(stdout,"n_col = %lu nnz = %lu\n",n_col,nnz) ;
 
   fprintf(stdout,"\n") ;
   fprintf(stdout,"\"col\" col: (lig)val ...\n") ;
   
-  for(jcol = 0 ; jcol < (int) n_col ; jcol++) {
-    int i ;
+  for(size_t jcol = 0 ; jcol < n_col ; jcol++) {
     
-    fprintf(stdout,"col %d:",jcol) ;
+    fprintf(stdout,"col %lu:",jcol) ;
     
-    for(i = colptr[jcol] ; i < colptr[jcol+1] ; i++) {
-      int irow = rowind[i] ;
+    for(size_t i = colptr[jcol] ; i < colptr[jcol+1] ; i++) {
+      size_t irow = rowind[i] ;
       
-      fprintf(stdout," (%d)% e",irow,nzval[i]) ;
+      fprintf(stdout," (%lu)% e",irow,nzval[i]) ;
     }
     
     fprintf(stdout,"\n") ;

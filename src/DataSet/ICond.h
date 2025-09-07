@@ -22,7 +22,6 @@ extern void     (ICond_Scan)   (ICond_t*,DataFile_t*) ;
 #define ICond_MaxLengthOfFileName       (60)
 
 
-#define ICond_GetRegionTag(IC)               ((IC)->RegionTag)
 #define ICond_GetRegionName(IC)              ((IC)->RegionName)
 #define ICond_GetNameOfUnknown(IC)           ((IC)->NameOfUnknown)
 #define ICond_GetFunction(IC)                ((IC)->Function)
@@ -44,7 +43,6 @@ struct ICond_t {              /* Initial condition */
   Functions_t* Functions ;
   Fields_t* Fields ;
   char*  EntryInDataFile ;       /* Entry point in the string of data */
-  int    RegionTag ;
   char*  RegionName ;
   char*  NameOfUnknown ;
   int    FunctionIndex ;

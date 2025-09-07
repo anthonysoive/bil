@@ -1,7 +1,7 @@
 Program
 =======
 
-Bil is a modeling platform based on finite volume/element methods. Bil is distributed under the terms of the GNU General Public License (GnuGPL). Bil can be downloaded from the URL: <https://github.com/ifsttar/bil>.
+Bil is a modeling platform based on finite volume/element methods. Bil is distributed under the terms of the GNU General Public License (GnuGPL). Bil can be downloaded from the URL: <https://github.com/Universite-Gustave-Eiffel/bil>.
 
 
 Building requirements
@@ -9,12 +9,9 @@ Building requirements
 
 Building Bil from source requires:
 
-  - Make (<http://www.gnu.org/software/make>)  
-  - C and C++ compilers (<http://gcc.gnu.org>)  
-  - Fortran compiler (<http://gcc.gnu.org/fortran>)
-  
-Building Bil on system other than Linux-based OS requires in addition
-
+  - Make (<http://www.gnu.org/software/make>)
+  - C and C++ compilers (<http://gcc.gnu.org>)
+  - Fortran compiler (<http://gcc.gnu.org/fortran>)<!-- Building Bil on system other than Linux-based OS requires in addition -->
   - CMake (<http://www.cmake.org>)
 
 Building the documentation from source requires:
@@ -30,26 +27,28 @@ List of folders
 ===============
 
         ./base      reference solution and data bases
-        ./bin       binaries  
-        ./cmake     macros and functions for cmake  
-        ./doc       documentations  
-        ./examples  examples of input data files  
-        ./src       sources  
-        ./lib       libraries  
-        ./scripts   some utility scripts  
+        ./bin       binaries
+        ./cmake     macros and functions for cmake
+        ./doc       documentations
+        ./examples  examples of input data files
+        ./include   header files
+        ./lib       libraries
+        ./scripts   some utility scripts
+        ./src       sources
 
 
 Building and Installation
 =========================
 
+<!--
 There are two methods to build Bil from the command line:
 
   - from make (native method suited for linux-based OS)
   - from cmake (suited for any OS like Windows or MacOS)
   
 
-1. Build Bil from make (native method)
---------------------------------------
+1. Build Bil from make (deprecated method)
+------------------------------------------
 To build Bil and/or the documentation, use the following commands from the Bil's source directory:
 
         make      (build the binary file bil and the documentation)  
@@ -81,6 +80,8 @@ will delete all the local files previously created.
   
 2. Build Bil from cmake (command line)
 --------------------------------------
+
+-->
 
 Create a build directory, for example as a subdirectory of Bil's source directory:
 
@@ -171,11 +172,15 @@ Some functionalities (like solvers ma38, superlu, petscksp) require the use of t
 
   
 
-These librairies are not included in this package. You need to explicitly specify their location in the file "EXTRALIBS". You can also choose to disable the use of these libraries and the associated functionalities by deleting or commenting the locations. The file "EXTRALIBS" is also where you can add other libraries for your own development. Just add the location of the library using a macro name for this library, e.g. NEWNAME, and use the macro NEWNAMELIB in your implementation to test if the library is really installed.
+These librairies are not included in this package. You need to explicitly enable them by turning to "ON" the variables found in the file "OPTIONS" or, alternatively, by specifying their locations in the file "EXTRALIBS". The file "EXTRALIBS" is also where you can add other libraries for your own development. Just add the location of the library using a macro name for this library, e.g. NEWLIB, and use the macro HAVE_NEWLIB in your implementation to test if the library is really installed:
+
+    #if defined(HAVE_NEWLIB)
+    ...
+    #endif
 
 
-External software
-=================
+Internal libraries
+==================
 
 This package contains some fortran routines provided by HSL: "HSL, a collection of Fortran codes for large-scale scientific computation". See http://www.hsl.rl.ac.uk/.
 

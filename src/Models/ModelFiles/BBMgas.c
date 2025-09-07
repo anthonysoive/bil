@@ -11,7 +11,7 @@
 #define TITLE "Barcelona Basic Model for unsaturated soils with gas (2023)"
 #define AUTHORS "Eizaguirre-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */
@@ -28,7 +28,7 @@
 #define U_air    E_air
 #define U_mec    E_mec
 
-/* Method chosen at compiling time.
+/* Method chosen at compile time.
  * Each equation is associated with a specific unknown.
  * Each unknown can deal with a specific model.
  * Uncomment/comment to let only one unknown per equation */
@@ -160,9 +160,9 @@ static double  saturationdegree(double,double,Curve_t*) ;
 /* Mass density */
 #define MassDensityOfWaterVapor(pv)    (M_H2O*(pv)/RT)
 /* Vapor-Liquid Equilibrium */
-#define RelativeHumidity(pc)           (exp(-V_H2O/RT*(pc)))
+#define RelativeHumidity(pc)           (((pc)>0)?exp(-V_H2O/RT*(pc)):1)
 #define VaporPressure(pc)              (p_v0*RelativeHumidity(pc))
-#define dRelativeHumidity(pc)          (-V_H2O/RT*RelativeHumidity(pc))
+#define dRelativeHumidity(pc)          (((pc)>0)?-V_H2O/RT*exp(-V_H2O/RT*(pc)):0)
 #define dVaporPressure(pc)             (p_v0*dRelativeHumidity(pc))
 
 
@@ -1443,7 +1443,9 @@ void  ComputeSecondaryVariables(Element_t* el,double t,double dt,double* x_n,dou
       /* Elastic trial stresses at t */
       {
         double trde      = deps[0] + deps[4] + deps[8] ;
-        double dlns      = log((pc + p_atm)/(pc_n + p_atm)) ;
+        double pcm       = Math_Max(pc,0);
+        double pcm_n     = Math_Max(pc_n,0);
+        double dlns      = log((pcm + p_atm)/(pcm_n + p_atm)) ;
         double signet_n  = (sig_n[0] + sig_n[4] + sig_n[8])/3. + p_gn ;
         double kappa     = Kappa(pc_n) ;
         double bulk      = - signet_n*(1 + e0)/kappa ;

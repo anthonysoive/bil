@@ -122,21 +122,19 @@ void  (IterProcess_Delete)(void* self)
 
 int (IterProcess_SetCurrentError)(IterProcess_t* iterprocess,Nodes_t* nodes,Solver_t* solver)
 {
-  unsigned int imatrix = Solver_GetMatrixIndex(solver) ;
+  int imatrix = Solver_GetMatrixIndex(solver) ;
   double*   x     = Solver_GetSolution(solver) ;
-  int       nrows = Solver_GetNbOfRows(solver) ;
+  size_t    nrows = Solver_GetNbOfRows(solver) ;
   ObVal_t*  obval = IterProcess_GetObVal(iterprocess) ;
   Node_t*   node  = Nodes_GetNode(nodes) ;
-  unsigned int nb_nodes = Nodes_GetNbOfNodes(nodes) ;
+  size_t nb_nodes = Nodes_GetNbOfNodes(nodes) ;
   double err = 0. ;
   int    obvalindex = 0 ;
-  int    nodeindex  = -1 ;
+  Node_t* nodecrit = NULL;
   
   
-  if(nrows > 0) {
-    unsigned int i ;
-          
-    for(i = 0 ; i < nb_nodes ; i++) {
+  if(nrows > 0) {          
+    for(size_t i = 0 ; i < nb_nodes ; i++) {
       Node_t* nodi = node + i ;
       int nin = Node_GetNbOfUnknowns(nodi) ;
       int j ;
@@ -160,13 +158,13 @@ int (IterProcess_SetCurrentError)(IterProcess_t* iterprocess,Nodes_t* nodes,Solv
           if(re >= err) {
             err = re ;
             obvalindex = Node_GetObValIndex(nodi)[j] ;
-            nodeindex = i ;
+            nodecrit = nodi ;
           }
         }
       }
     }
   
-    if(nrows > 0 && nodeindex < 0) {
+    if(nrows > 0 && nodecrit == NULL) {
       /* Raise an interrupt signal instead of exit */
       Message_Warning("IterProcess_SetCurrentError: can't compute error!") ;
       return(1) ;
@@ -176,7 +174,12 @@ int (IterProcess_SetCurrentError)(IterProcess_t* iterprocess,Nodes_t* nodes,Solv
           
   IterProcess_SetError(iterprocess,err) ;
   IterProcess_SetObValIndexOfCurrentError(iterprocess,obvalindex) ;
-  IterProcess_SetNodeIndexOfCurrentError(iterprocess,nodeindex) ;
+  IterProcess_SetNodeOfCurrentError(iterprocess,nodecrit) ;
+  {
+    size_t nodeindex  = Node_GetNodeIndex(nodecrit) ;
+    
+    IterProcess_SetNodeIndexOfCurrentError(iterprocess,nodeindex) ;
+  }
   
   return(0) ;
 }
@@ -188,10 +191,12 @@ void (IterProcess_PrintCurrentError)(IterProcess_t* iterprocess)
   char*  name = IterProcess_GetNameOfTheCurrentError(iterprocess) ;
   double err  = IterProcess_GetError(iterprocess) ;
   int    iter = IterProcess_GetIterationIndex(iterprocess) ;
-  int    inode = IterProcess_GetNodeIndexOfCurrentError(iterprocess) ;
+  Node_t* node = IterProcess_GetNodeOfCurrentError(iterprocess) ;
 
-  if(inode >= 0) {
-    Message_Direct("  (%s[%d])Error = %4.2e (%d iters)\n",name,inode,err,iter) ;
+  if(node) {
+    size_t inode = Node_GetNodeIndex(node) ;
+    
+    Message_Direct("  (%s[%lu])Error = %4.2e (%d iters)\n",name,inode,err,iter) ;
     //Message_Direct("  (%s)Error = %4.2e (%d iters)\n",name,err,iter) ;
   } else {
     Message_Direct("  (none[-])Error = %4.2e (%d iters)\n",err,iter) ;

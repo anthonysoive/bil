@@ -316,6 +316,13 @@ zip:
 
 githelp:
 	@( cat .githelp )
+
+
+#=======================================================================
+# Target rules for using gdb to debug openmpi applications
+
+mpihelp:
+	@( cat .mpihelp )
 	
 
 #=======================================================================

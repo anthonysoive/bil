@@ -17,8 +17,7 @@ struct GenericData_t;
 struct ResolutionMethod_t;
 
 
-//extern Solver_t*  (Solver_Create)(Mesh_t*,Options_t*,const int) ;
-extern Solver_t*  (Solver_Create)(Mesh_t*,Options_t*,const int,const int) ;
+extern Solver_t*  (Solver_Create)(Mesh_t*,Options_t*,unsigned short int const,unsigned short int const) ;
 extern void       (Solver_Delete)(void*) ;
 extern void       (Solver_Print)(Solver_t*,char*) ;
 
@@ -81,7 +80,7 @@ typedef int  Solver_Solve_t(Solver_t*) ;
 struct Solver_t {             /* System solver */
   Solver_Solve_t* solve ;
   ResolutionMethod_t* mth ;   /* Method */
-  unsigned int    n ;         /* Nb of rows/columns */
+  size_t    n ;         /* Nb of rows/columns */
   Matrix_t* a ;               /* Matrix */
   Residu_t* residu ;          /* Residu */
   GenericData_t* genericwork ; /* Working space */

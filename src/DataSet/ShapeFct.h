@@ -12,9 +12,9 @@ struct ShapeFct_t; //typedef struct ShapeFct_t       ShapeFct_t ;
 
 
 
-extern ShapeFct_t* (ShapeFct_Create)              (int,int) ;
+extern ShapeFct_t* (ShapeFct_Create)              (unsigned short int,unsigned short int) ;
 extern void        (ShapeFct_Delete)              (void*) ;
-extern void        (ShapeFct_ComputeValuesAtPoint)(int,int,double*,double*,double*) ;
+extern void        (ShapeFct_ComputeValuesAtPoint)(unsigned short int,unsigned short int,double*,double*,double*) ;
 
 
 
@@ -33,8 +33,8 @@ extern void        (ShapeFct_ComputeValuesAtPoint)(int,int,double*,double*,doubl
 
 
 struct ShapeFct_t {           /* Shape function */
-  int dim ;                   /* Sub-dimension (0,1,2,3) */
-  int nn ;                    /* Number of nodes */
+  unsigned short int dim ;                   /* Sub-dimension (0,1,2,3) */
+  unsigned short int nn ;                    /* Number of nodes */
   double* a ;                 /* Reference coordinates */
   double* h ;                 /* Values of shape functions */
   double* dh ;                /* Values of function gradients */

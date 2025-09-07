@@ -12,8 +12,8 @@ struct Mesh_t;
 //extern NCFormat_t* (NCFormat_Create)(Mesh_t*) ;
 extern NCFormat_t* (NCFormat_Create)(Mesh_t*,const int) ;
 extern void        (NCFormat_Delete)(void*) ;
-extern int         (NCFormat_AssembleElementMatrix)(NCFormat_t*,double*,int*,int*,int,int*,int) ;
-extern void        (NCFormat_PrintMatrix)(NCFormat_t*,unsigned int,const char*) ;
+extern size_t      (NCFormat_AssembleElementMatrix)(NCFormat_t*,double*,int*,int*,int,int*,int) ;
+extern void        (NCFormat_PrintMatrix)(NCFormat_t*,size_t,const char*) ;
 
 
 
@@ -37,10 +37,10 @@ extern void        (NCFormat_PrintMatrix)(NCFormat_t*,unsigned int,const char*) 
  * Compressed column storage format (known as Harwell-Boeing sparse matrix format)
  * If a_ij = nzval[k] then rowind[k] = i and colptr[j] <= k < colptr[j + 1] */
 struct NCFormat_t {
-  int    nnz ;                /* nb of non zero values */
+  size_t    nnz ;             /* nb of non zero values */
   double* nzval ;             /* Non zero values */
-  int* rowind ;               /* Row indices of the non zeros */
-  int* colptr ;               /* Index of element in nzval which starts a column */
+  size_t* rowind ;            /* Row indices of the non zeros */
+  size_t* colptr ;            /* Index of element in nzval which starts a column */
 } ;
 
 

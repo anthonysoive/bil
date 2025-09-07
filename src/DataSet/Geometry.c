@@ -52,7 +52,7 @@ Geometry_t*  (Geometry_Create)(DataFile_t* datafile)
   Message_Direct("\n") ;
   
   {
-    short int dim = 3 ;
+    unsigned short int dim = 3 ;
     char* filecontent = DataFile_GetFileContent(datafile) ;
     char* c  = String_FindToken(filecontent,"DIME,GEOM,Geometry",",") ;
     char* line = String_SkipLine(c) ;
@@ -60,7 +60,7 @@ Geometry_t*  (Geometry_Create)(DataFile_t* datafile)
     if(line) line = String_FindAnyChar(line,"0123") ;
   
     if(line) {
-      dim  = atoi(line) ;
+      dim  = (unsigned short int) strtoul(line,NULL,10) ;
     }
   
     Geometry_GetDimension(geom) = dim ;

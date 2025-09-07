@@ -11,7 +11,7 @@
 #define TITLE "Thermoporoplasticity with hardening (2023)"
 #define AUTHORS "Braun-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations of the model */

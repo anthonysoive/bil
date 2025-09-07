@@ -14,7 +14,7 @@
 //void*  Graph_Initialize(void* self,va_list) ;
 
 
-Graph_t*  (Graph_Create)(int nvert,int* vert_nedges)
+Graph_t*  (Graph_Create)(size_t nvert,unsigned short int* vert_nedges)
 {
   Graph_t* graph = (Graph_t*) Mry_New(Graph_t) ;
 

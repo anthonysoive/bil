@@ -59,7 +59,7 @@
 
 ErrorRecord errorRecord;           /* define an error record */
 
-void diagnoseError(char *msg) {
+void diagnoseError(char const* msg) {
   if (evalKernel_pcb.exit_flag == AG_RUNNING_CODE)   /* parser still running */
     evalKernel_pcb.exit_flag = AG_SEMANTIC_ERROR_CODE;      /* stop parse */
   errorRecord.message = msg;
@@ -246,7 +246,7 @@ WRAPPER_FUNCTION_1_ARG(tanh)
 
 /* define the function table -- must be in sorted order! */
 struct {
-  char *name;
+  char const* name;
   double (*function)(int, double[]);
 } functionTable[N_FUNCTIONS] = {
   TABLE_ENTRY(acos),

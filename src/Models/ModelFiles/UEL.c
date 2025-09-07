@@ -10,7 +10,7 @@
 #define TITLE   "Arbitrary Abaqus UEL model"
 #define AUTHORS "S.P.D."
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /*
  * The numbers below are arbitrary and serve only as example

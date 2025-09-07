@@ -166,7 +166,7 @@ struct Material_t {           /* material */
   int modelindex ;            /**< Model index */
   
   /* for compatibility with former version (should be eliminated) */
-  unsigned int neq ;          /**< nombre d'equations du modele */
+  unsigned short int neq ;    /**< nombre d'equations du modele */
   char**   eqn ;              /**< nom des equations */
   char**   inc ;              /**< nom des inconnues */
   int      nc ;               /**< nb of curves */

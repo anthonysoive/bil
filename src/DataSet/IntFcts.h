@@ -18,8 +18,8 @@ struct IntFct_t;
  * ------------*/
 extern IntFcts_t*  (IntFcts_Create)(void) ;
 extern void        (IntFcts_Delete)(void*) ;
-extern int         (IntFcts_FindIntFct)(IntFcts_t*,int,int,const char*) ;
-extern int         (IntFcts_AddIntFct)(IntFcts_t*,int,int,const char*) ;
+extern int         (IntFcts_FindIntFct)(IntFcts_t*,unsigned short int,unsigned short int,const char*) ;
+extern int         (IntFcts_AddIntFct)(IntFcts_t*,unsigned short int,unsigned short int,const char*) ;
 
 
 #define IntFcts_MaxNbOfIntFcts             (4)
@@ -29,7 +29,7 @@ extern int         (IntFcts_AddIntFct)(IntFcts_t*,int,int,const char*) ;
 
 
 struct IntFcts_t {            /* interpolations */
-  unsigned int n_fi ;         /* nb of interpolation function */
+  int n_fi ;         /* nb of interpolation function */
   IntFct_t* fi ;              /* interpolation function */
 } ;
 

@@ -32,7 +32,7 @@ void Log10DissociationConstantOfCementHydrationProduct_Print(double T)
     printf("\n") ;\
   } while(0)
 
-#define PREACT1(R) \
+#define REACSUBTITLE(R) \
   do {\
     int c1 = 72 ;\
     int c2 = c1+11 ;\
@@ -81,33 +81,42 @@ void Log10DissociationConstantOfCementHydrationProduct_Print(double T)
     double logk_Kuzel    = LogKd(KuzelSalt__4Ca_2AlO4H4_Cl_halfSO4_4OH_6H2O) ;
   
     REACTITLE("Cement hydrates dissociation reactions at T = %g",T) ;
-    PREACT1("Hydroxides:") ;
+    REACSUBTITLE("Hydroxides:") ;
     PREACT("CH(s)              =  Ca[2+] + 2OH[-]",logk_ch) ;
     PREACT("S(am)              =  SiO2[0]",logk_sam) ;
     PREACT("SH(s) + H2O        =  H4SiO4[0]",logk_sh) ;
     PREACT("AH3(s)             = 2Al[3+] + 6OH[-]",logk_ah3) ;
     PREACT("AH3(s) + 2OH[-]    = 2Al(OH)4[-]",logk_ah3_bis) ;
     
-    PREACT1("Sulfates:");
+    REACSUBTITLE(" ");
+    REACSUBTITLE("Sulfates:");
     PREACT("CSH2(s)            =  Ca[2+] + SO4[2-] + 2H2O",logk_csh2) ;
     
-    PREACT1("AFm phases:");
-    PREACT("AFm(s) + 12H[+]    = 4Ca[2+] + 2Al[3+] + SO4[2-] + 18H2O",logk_afm) ;
-    PREACT("AFm(s)             = 4Ca[2+] + 2Al(OH)4[-] + SO4[2-] + 4OH[-] + 6H2O",logk_afm_bis) ;
-    PREACT("C2AH8(s)           = 2Ca[2+] + 2Al(OH)4[-] + 2OH[-] + 3H2O",logk_c2ah8) ;
-    PREACT("CAH10(s)           =  Ca[2+] + 2Al(OH)4[-] + 6H2O",logk_cah10) ;
+    REACSUBTITLE(" ");
+    REACSUBTITLE("AFm phases (C3(A,F).CaX.Hn with X = SO4,CO3,(OH)2,Cl2,...):");
+    REACSUBTITLE("X = SO4 -> Monosulfoaluminate:");
+    REACSUBTITLE("X = CO3 -> Monocarboaluminate:");
+    REACSUBTITLE("X = (OH)2 -> Hydroxy-AFm:");
+    REACSUBTITLE("X = Cl2 -> Fridel's salt:");
+    PREACT("SO4-AFm(s) + 12H[+] = 4Ca[2+] + 2Al[3+] + SO4[2-] + 18H2O",logk_afm) ;
+    PREACT("SO4-AFm(s)          = 4Ca[2+] + 2Al(OH)4[-] + SO4[2-] + 4OH[-] + 6H2O",logk_afm_bis) ;
+    PREACT("Friedel's salt(s)   = 4Ca[2+] + 2Al(OH)4[-] + 2Cl[-] + 4OH[-] + 4H2O",logk_Friedel) ;
+    PREACT("Kuzel's salt(s)     = Friedel's salt(l) - Cl[-] + 0.5SO4[2-] + 2H2O", logk_Kuzel) ; //4Ca[2+] + 2Al(OH)4[-] + Cl[-] + 0.5SO4[2-] + 4OH[-] + 6H2O",logk_Kuzel) ;
     
-    PREACT1("AFt phases:");
+    REACSUBTITLE(" ");
+    REACSUBTITLE("AFt phases (C3(A,F).3(CaX).Hn with X = SO4,CO3,(OH)2,Cl2,...):");
+    REACSUBTITLE("X = SO4 -> Trisulfoaluminate:");
     PREACT("Al-Ettringite(s) + 12H[+] = 6Ca[2+] + 2Al[3+] + 3SO4[2-] + 38H2O",logk_aftett) ;
     PREACT("Al-Ettringite(s)   = 6Ca[2+] + 2Al(OH)4[-] + 3SO4[2-] + 4OH[-] + 26H2O",logk_aftett_b) ;
         
-    PREACT1("Hydrogarnet:");
+    REACSUBTITLE(" ");
+    //REACSUBTITLE("Hydrogarnets:");
+    REACSUBTITLE("Calcium aluminate hydrates:");
     PREACT("C3AH6(s) + 12H[+]  = 3Ca[2+] + 2Al[3+] + 12H2O",logk_c3ah6) ;
     PREACT("C3AH6(s)           = 3Ca[2+] + 2Al(OH)4[-] + 4OH[-]",logk_c3ah6_bis) ;
-    
-    PREACT("Friedel's salt(s)  = 4Ca[2+] + 2Al(OH)4[-] + 2Cl[-] + 4OH[-] + 4H2O",logk_Friedel) ;
-    PREACT("Kuzel's salt(s)    = Friedel's salt(l) - Cl[-] + 0.5SO4[2-] + 2H2O", logk_Kuzel) ; //4Ca[2+] + 2Al(OH)4[-] + Cl[-] + 0.5SO4[2-] + 4OH[-] + 6H2O",logk_Kuzel) ;
-    
+    PREACT("C2AH8(s)           = 2Ca[2+] + 2Al(OH)4[-] + 2OH[-] + 3H2O",logk_c2ah8) ;
+    PREACT("CAH10(s)           =  Ca[2+] + 2Al(OH)4[-] + 6H2O",logk_cah10) ;
+        
     #undef LogKd
   }
   
@@ -119,4 +128,6 @@ void Log10DissociationConstantOfCementHydrationProduct_Print(double T)
   
 #undef PREACT
 #undef REACTITLE
+#undef REACSUBTITLE
+
 }

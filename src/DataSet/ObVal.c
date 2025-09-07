@@ -18,7 +18,7 @@ ObVal_t*  (ObVal_New)(void)
   
   /* Allocation of space for the name of unknown */
   {
-    char* name = (char*) Mry_New(char[ObVal_MaxLengthOfKeyWord]) ;
+    char* name = (char*) Mry_New(char,ObVal_MaxLengthOfKeyWord) ;
   
     ObVal_GetNameOfUnknown(obval) = name ;
   }

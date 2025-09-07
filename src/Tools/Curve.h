@@ -12,7 +12,7 @@ struct Curve_t        ; typedef struct Curve_t        Curve_t ;
 
 
 
-extern Curve_t* (Curve_Create)(unsigned int) ;
+extern Curve_t* (Curve_Create)(int) ;
 extern void     (Curve_Delete)(void*) ;
 extern Curve_t* (Curve_CreateDerivative)(Curve_t const*) ;
 extern Curve_t* (Curve_CreateIntegral)(Curve_t const*) ;

@@ -8,7 +8,7 @@
 #define TITLE   "Two-phase flow (Liquid-Gas)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

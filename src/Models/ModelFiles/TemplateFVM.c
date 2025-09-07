@@ -10,7 +10,7 @@
 #define TITLE "Short title of my model"
 #define AUTHORS "Authors"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /*
  * The numbers below are arbitrary and serve only as example

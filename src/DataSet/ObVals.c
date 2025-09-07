@@ -30,7 +30,7 @@ ObVals_t*  (ObVals_New)(const int n_obvals)
   
   /* Allocation of space for the objective values */
   if(n_obvals > 0) {
-    ObVal_t* obval = (ObVal_t*) Mry_New(ObVal_t[n_obvals]) ;
+    ObVal_t* obval = (ObVal_t*) Mry_New(ObVal_t,n_obvals) ;
     int i ;
     
     for(i = 0 ; i < n_obvals ; i++) {

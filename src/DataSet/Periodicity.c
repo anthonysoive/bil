@@ -14,7 +14,7 @@ Periodicity_t* (Periodicity_New)(void)
   Periodicity_t* periodicity = (Periodicity_t*) Mry_New(Periodicity_t) ;
 
   {
-    double* vector = (double*) Mry_New(double[3]) ;
+    double* vector = (double*) Mry_New(double,3) ;
     
     Periodicity_GetPeriodVector(periodicity) = vector ;
   }
@@ -22,7 +22,7 @@ Periodicity_t* (Periodicity_New)(void)
   
   /* Allocation of space for the region name */
   {
-    char* name = (char*) Mry_New(char[2*Periodicity_MaxLengthOfRegionName]) ;
+    char* name = (char*) Mry_New(char,2*Periodicity_MaxLengthOfRegionName) ;
     
     Periodicity_GetMasterRegionName(periodicity) = name ;
     Periodicity_GetSlaveRegionName(periodicity) = name + Periodicity_MaxLengthOfRegionName ;

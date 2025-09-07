@@ -9,7 +9,7 @@
 #define TITLE "Unsaturated soils"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Nb of equations */
 #define NEQ   (1+dim)

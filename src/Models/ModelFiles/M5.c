@@ -9,7 +9,7 @@
 #define TITLE   "Drying-Wetting (1D isothermal case)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Nb of equations */
 #define NEQ      (2)

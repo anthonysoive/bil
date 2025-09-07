@@ -21,12 +21,12 @@ struct SKLFormat_t; //typedef struct SKLFormat_t   SKLFormat_t ;
 
 /* Skyline format */
 struct SKLFormat_t {          /* Skyline storage format */
-  unsigned int    nnz ;       /* Nb of non zero values */
+  size_t    nnz ;       /* Nb of non zero values */
   double* nzval ;             /* Non zero values */
   double* l ;                 /* Strictly lower triangular matrix values */
   double* u ;                 /* Upper triangular matrix values including diagonal */
-  unsigned int* colptr ;      /* Index of element in u which starts a column */
-  unsigned int* rowptr ;      /* Index of element in l which starts a row */
+  size_t* colptr ;      /* Index of element in u which starts a column */
+  size_t* rowptr ;      /* Index of element in l which starts a row */
 } ;
 
 #endif

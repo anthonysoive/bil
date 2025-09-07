@@ -13,7 +13,7 @@ Result_t* (Result_Create)(void)
   
   /* Allocate memory for the values */
   {
-    double* v = (double*) Mry_New(double[9]) ;
+    double* v = (double*) Mry_New(double,9) ;
     
     Result_GetValue(result) = v ; ;
   }

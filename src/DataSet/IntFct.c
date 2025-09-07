@@ -7,13 +7,13 @@
 #include "ShapeFct.h"
 #include "IntFct.h"
 
-static void      (IntFct_ComputeAtGaussPoints)(IntFct_t*,int,int) ;
-static void      (IntFct_ComputeAtNodes)(IntFct_t*,int,int) ;
+static void      (IntFct_ComputeAtGaussPoints)(IntFct_t*,unsigned short int,unsigned short int) ;
+static void      (IntFct_ComputeAtNodes)(IntFct_t*,unsigned short int,unsigned short int) ;
 static void      (gaussp)(int,double*,double*) ;
 static void      (hammer)(int,double*,double*) ;
 static void      (gauss_tetraedre)(int,double*,double*) ;
-static void      (IntFct_ComputeIsoShapeFct)(int,int,double*,double*,double*) ;
-static void      (IntFct_ComputeAtMidSurfacePoints)(IntFct_t*,int,int) ;
+static void      (IntFct_ComputeIsoShapeFct)(unsigned short int,unsigned short int,double*,double*,double*) ;
+static void      (IntFct_ComputeAtMidSurfacePoints)(IntFct_t*,unsigned short int,unsigned short int) ;
 static void      (midpoints)(double*,double) ;
 static IntFct_t* (IntFct_New)(void);
 
@@ -24,7 +24,7 @@ IntFct_t* (IntFct_New)(void)
   IntFct_t* intfct = (IntFct_t*) Mry_New(IntFct_t) ;
   
   {
-    char* p = (char*) Mry_New(char[IntFct_MaxLengthOfKeyWord]) ;
+    char* p = (char*) Mry_New(char,IntFct_MaxLengthOfKeyWord) ;
     
     IntFct_GetType(intfct) = p ;
   }
@@ -34,7 +34,7 @@ IntFct_t* (IntFct_New)(void)
     int nn  = IntFct_MaxNbOfFunctions ;
     int np  = IntFct_MaxNbOfIntPoints ;
     int k   = np*(1 + nn*(1 + dim) + dim) ;
-    double* weight = (double*) Mry_New(double[k]) ;
+    double* weight = (double*) Mry_New(double,k) ;
     
     IntFct_GetWeight(intfct)           = weight ;
     IntFct_GetFunction(intfct)         = weight + np ;
@@ -53,7 +53,7 @@ IntFct_t* (IntFct_New)(void)
 
 /* Extern functions */
 
-IntFct_t* (IntFct_Create)(int nn,int dim,const char* type)
+IntFct_t* (IntFct_Create)(unsigned short int nn,unsigned short int dim,const char* type)
 {
   IntFct_t* intfct = (IntFct_t*) IntFct_New() ;
 
@@ -127,7 +127,7 @@ double (IntFct_InterpolateAtPoint)(IntFct_t* intfct,double* var,int shift,int p)
 
 
 
-void (IntFct_ComputeIsoShapeFct)(int dim,int nn,double* x,double* h,double* dh)
+void (IntFct_ComputeIsoShapeFct)(unsigned short int dim,unsigned short int nn,double* x,double* h,double* dh)
 /* Compute Iso-shape functions (h) and their gradients (dh) at point x */
 {
   ShapeFct_ComputeValuesAtPoint(dim,nn,x,h,dh) ;
@@ -147,8 +147,8 @@ int (IntFct_ComputeFunctionIndexAtPointOfReferenceFrame)(IntFct_t* intfct,double
   }
   
   {
-    int     dim = IntFct_GetDimension(intfct) ;
-    int     nn  = IntFct_GetNbOfFunctions(intfct) ;
+    unsigned short int dim = IntFct_GetDimension(intfct) ;
+    unsigned short int nn  = IntFct_GetNbOfFunctions(intfct) ;
     double* h   = IntFct_GetFunctionAtPoint(intfct,p) ;
     double* dh  = IntFct_GetFunctionGradientAtPoint(intfct,p) ;
     
@@ -163,14 +163,14 @@ int (IntFct_ComputeFunctionIndexAtPointOfReferenceFrame)(IntFct_t* intfct,double
 /* Intern functions */
 
 
-void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
+void   IntFct_ComputeAtGaussPoints(IntFct_t* f,unsigned short int nn,unsigned short int dim)
 /** Interpolation functions at Gauss points */
 {
   /* 0D */
   if(dim == 0) {
     /* 1 noeud */
     if(nn == 1) {
-      int np = 1 ;
+      unsigned short int np = 1 ;
       double* w = IntFct_GetWeight(f) ;
       double* h = IntFct_GetFunctionAtPoint(f,0) ;
       
@@ -185,7 +185,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
   } else if(dim == 1) {
     /* segment a 2 ou 3 noeuds */
     if(nn == 2 || nn == 3) {
-      int np = 2 ;
+      unsigned short int np = 2 ;
       double a[IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -215,7 +215,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
   } else if(dim == 2) {
     /* triangle a 3 ou 6 noeuds */
     if(nn == 3 || nn == 6) {
-      int p,np = 3 ;
+      unsigned short int np = 3 ;
       double a[2*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -227,7 +227,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       
       hammer(np,a,w) ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -241,7 +241,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       return ;
     /* quadrilatere a 4 ou 8 noeuds */
     } else if(nn == 4 || nn == 8) {
-      int i,j,np = 4 ;
+      unsigned short int np = 4 ;
       double a[IntFct_MaxNbOfIntPoints] ;
       double w[IntFct_MaxNbOfIntPoints] ;
       
@@ -252,7 +252,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       
       gaussp(2,a,w) ;
       
-      for(i = 0 ; i < 2 ; i++) for(j = 0 ; j < 2 ; j++) {
+      for(int i = 0 ; i < 2 ; i++) for(int j = 0 ; j < 2 ; j++) {
         int p = 2*i + j ;
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
@@ -271,7 +271,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
   } else if(dim == 3) {
     /* special element for one node mesh */
     if(nn == 1) {
-      int np = 1 ;
+      unsigned short int np = 1 ;
       double* w = IntFct_GetWeight(f) ;
       double* h = IntFct_GetFunctionAtPoint(f,0) ;
       double* dh = IntFct_GetFunctionGradientAtPoint(f,0) ;
@@ -290,7 +290,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       return ;
     /* tetraedre a 4 ou 10 noeuds */
     } else if(nn == 4 || nn == 10) {
-      int p,np = 4 ;
+      unsigned short int np = 4 ;
       double a[3*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -302,7 +302,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       
       gauss_tetraedre(np,a,w) ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -317,7 +317,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       return ;
     /* hexaedre a 8 ou 27 noeuds */
     } else if(nn == 8 || nn == 27) {
-      int i,j,k,np = 8 ;
+      unsigned short int np = 8 ;
       double a[IntFct_MaxNbOfIntPoints] ;
       double w[IntFct_MaxNbOfIntPoints] ;
       
@@ -325,7 +325,7 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
       if(np > IntFct_MaxNbOfIntPoints) arret("IntFct_ComputeAtGaussPoints (5)") ;
       gaussp(2,a,w) ;
       
-      for(i = 0 ; i < 2 ; i++) for(j = 0 ; j < 2 ; j++) for(k = 0 ; k < 2 ; k++) {
+      for(int i = 0 ; i < 2 ; i++) for(int j = 0 ; j < 2 ; j++) for(int k = 0 ; k < 2 ; k++) {
         int p = 4*i + 2*j + k ;
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
@@ -349,10 +349,10 @@ void   IntFct_ComputeAtGaussPoints(IntFct_t* f,int nn,int dim)
 
 
 
-void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
+void   IntFct_ComputeAtNodes(IntFct_t* f,unsigned short int nn,unsigned short int dim)
 /* Fonctions d'interpolation aux noeuds */
 {
-  int    np = nn ;
+  unsigned short int np = nn ;
 
   IntFct_GetNbOfPoints(f) = np  ;
   if(np > IntFct_MaxNbOfIntPoints) arret("IntFct_ComputeAtNodes (1)") ;
@@ -372,7 +372,6 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
   } else if(dim == 1) {
     /* segment a 2 */
     if(nn == 2) {
-      int p ;
       double a[IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -382,7 +381,7 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       w[0] = 1. ;
       w[1] = 1. ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -399,7 +398,6 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
   } else if(dim == 2) {
     /* triangle a 3 */
     if(nn == 3) {
-      int p ;
       double a[2*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -411,7 +409,7 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       w[1] = w[0] ;
       w[2] = w[0] ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -425,7 +423,6 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       return ;
     /* quadrilatere a 4 */
     } else if(nn == 4) {
-      int p ;
       double a[2*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -439,7 +436,7 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       w[2] = w[0] ;
       w[3] = w[0] ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -457,7 +454,6 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
   } else if(dim == 3) {
     /* tetraedre a 4 */
     if(nn == 4) {
-      int p ;
       double a[3*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -471,7 +467,7 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       w[2] = w[0] ;
       w[3] = w[0] ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -486,7 +482,6 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       return ;
     /* hexaedre a 8 */
     } else if(nn == 8) {
-      int p ;
       double a[3*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       double* w = IntFct_GetWeight(f) ;
@@ -508,7 +503,7 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
       w[6] = w[0] ;
       w[7] = w[0] ;
       
-      for(p = 0 ; p < np ; p++) {
+      for(int p = 0 ; p < np ; p++) {
         double* h  = IntFct_GetFunctionAtPoint(f,p) ;
         double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
         double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;
@@ -530,13 +525,13 @@ void   IntFct_ComputeAtNodes(IntFct_t* f,int nn,int dim)
 
 
 
-void   IntFct_ComputeAtMidSurfacePoints(IntFct_t* f,int nn,int dim)
+void   IntFct_ComputeAtMidSurfacePoints(IntFct_t* f,unsigned short int nn,unsigned short int dim)
 /** Interpolation functions at mid points of surface */
 {
   /* 0D/1D/2D/3D */
-  if(dim >= 0 || dim <= 3) {
+  if(dim <= 3) {
     if(nn == dim + 1) {
-      int np = (dim > 1) ? dim + 1 : 1 ;
+      unsigned short int np = (dim > 1) ? dim + 1 : 1 ;
       double a[3*IntFct_MaxNbOfIntPoints] ;
       //double* a = IntFct_GetPointCoordinates(f) ;
       //double* w = IntFct_GetWeight(f) ;
@@ -548,10 +543,8 @@ void   IntFct_ComputeAtMidSurfacePoints(IntFct_t* f,int nn,int dim)
       
       midpoints(a,dim) ;
       
-      {
-        int p ;
-        
-        for(p = 0 ; p < np ; p++) {
+      {        
+        for(int p = 0 ; p < np ; p++) {
           double* h  = IntFct_GetFunctionAtPoint(f,p) ;
           double* dh = IntFct_GetFunctionGradientAtPoint(f,p) ;
           double* x  = IntFct_GetCoordinatesAtPoint(f,p) ;

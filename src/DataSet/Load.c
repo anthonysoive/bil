@@ -22,7 +22,7 @@ Load_t* Load_New(void)
   
   /* Allocation of space for the name of type */
   {
-    char* type =  (char*) Mry_New(char[Load_MaxLengthOfKeyWord]) ;
+    char* type =  (char*) Mry_New(char,Load_MaxLengthOfKeyWord) ;
   
     Load_GetType(load) = type ;
   }
@@ -30,7 +30,7 @@ Load_t* Load_New(void)
   
   /* Allocation of space for the name of equation */
   {
-    char* name = (char*) Mry_New(char[Load_MaxLengthOfKeyWord]) ;
+    char* name = (char*) Mry_New(char,Load_MaxLengthOfKeyWord) ;
   
     Load_GetNameOfEquation(load) = name ;
   }
@@ -38,7 +38,7 @@ Load_t* Load_New(void)
   
   /* Allocation of space for the region name */
   {
-    char* name = (char*) Mry_New(char[Load_MaxLengthOfRegionName]) ;
+    char* name = (char*) Mry_New(char,Load_MaxLengthOfRegionName) ;
     
     Load_GetRegionName(load) = name ;
   }
@@ -92,7 +92,6 @@ void Load_Scan(Load_t* load,DataFile_t* datafile)
     //int n = String_FindAndScanExp(line,"Reg",","," = %d",&i) ;
     
     if(n) {
-      Load_GetRegionTag(load) = atoi(name) ;
       strncpy(Load_GetRegionName(load),name,Load_MaxLengthOfRegionName)  ;
     } else {
       arret("Load_Scan: no region") ;

@@ -35,8 +35,7 @@ extern void      (Mry_Free)(void*) ;
         ({ \
           T* Mry_v = (T*) Mry_New(T,N) ; \
           do { \
-            int Mry_i ; \
-            for(Mry_i = 0 ; Mry_i < N ; Mry_i++) { \
+            for(std::remove_const_t<decltype(N)> Mry_i = 0 ; Mry_i < N ; Mry_i++) { \
               T* Mry_v0 = CREATE ; \
               Mry_v[Mry_i] = Mry_v0[0] ; \
               free(Mry_v0) ; \
@@ -49,8 +48,7 @@ extern void      (Mry_Free)(void*) ;
 #define Mry_Delete(OBJ,N,DELETE) \
         do { \
           if(OBJ) { \
-            int Mry_i ; \
-            for(Mry_i = 0 ; Mry_i < N ; Mry_i++) { \
+            for(std::remove_const_t<decltype(N)> Mry_i = 0 ; Mry_i < N ; Mry_i++) { \
               DELETE(OBJ + Mry_i) ; \
             } \
           } \
@@ -64,5 +62,6 @@ extern void      (Mry_Free)(void*) ;
 
 /* For the macros */
 #include "Utils.h"
+#include <type_traits>
 //#include <stdarg.h>
 #endif

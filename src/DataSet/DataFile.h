@@ -12,13 +12,13 @@ struct TextFile_t;
 
 
 
+#include <stdio.h>
 extern DataFile_t*  (DataFile_Create)(char*) ;
 extern void         (DataFile_Delete)(void*) ;
-//extern char*        (DataFile_SetFilePositionAfterKey)(DataFile_t*,const char*,const char*,short int) ;
 //extern char*        (DataFile_ReadLineFromCurrentFilePosition)(DataFile_t*) ;
 extern char*        (DataFile_ReadLineFromCurrentFilePositionInString)(DataFile_t*) ;
 //extern void*        (DataFile_ReadArray)(DataFile_t*,const char*,void*,int,size_t) ;
-extern int*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,int) ;
+extern size_t*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,size_t) ;
 
 
 
@@ -106,9 +106,6 @@ extern int*         (DataFile_ReadInversePermutationOfNodes)(DataFile_t*,int) ;
 #define DataFile_GetFilePosition(DF) \
         TextFile_GetFilePosition(DataFile_GetTextFile(DF))
 
-#define DataFile_GetCurrentPositionInString(DF) \
-        TextFile_GetCurrentPositionInString(DataFile_GetTextFile(DF))
-
 #define DataFile_GetCurrentPositionInFileContent(DF) \
         TextFile_GetCurrentPositionInFileContent(DataFile_GetTextFile(DF))
 
@@ -164,7 +161,7 @@ struct DataFile_t {
   TextFile_t* textfile ;      /* Text file */
   char* line ;                /* memory space for a line */
   int   initialization ;
-  int   linelength ;          /* Length of the longest line */
+  size_t   linelength ;          /* Length of the longest line */
   void* parent ;
 } ;
 

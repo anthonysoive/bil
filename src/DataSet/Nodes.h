@@ -12,7 +12,8 @@ struct Element_t;
 struct Buffers_t;
 
 
-extern Nodes_t*  (Nodes_New)                         (const int,const int,const int) ;
+#include <stdio.h>
+extern Nodes_t*  (Nodes_New)                         (const size_t,const int,const size_t) ;
 extern void      (Nodes_Delete)                      (void*) ;
 extern void      (Nodes_CreateMore)                  (Nodes_t*) ;
 extern int       (Nodes_ComputeNbOfUnknownFields)    (Nodes_t*) ;
@@ -40,12 +41,11 @@ extern void      (Nodes_InitializeMatrixRowColumnIndexes)(Nodes_t*) ;
 
 #define Nodes_InitializePointerToElements(NODS) \
         do { \
-          int nno = Nodes_GetNbOfNodes(NODS) ; \
+          size_t nno = Nodes_GetNbOfNodes(NODS) ; \
           Node_t* node = Nodes_GetNode(NODS) ; \
           Element_t** pel = Node_GetPointerToElement(node) ; \
           int nc = 0 ; \
-          int jn ; \
-          for(jn = 0 ; jn < nno ; jn++) { \
+          for(size_t jn = 0 ; jn < nno ; jn++) { \
             Node_t* node_j = node + jn ; \
             Node_GetPointerToElement(node_j) = pel + nc ; \
             nc += Node_GetNbOfElements(node_j) ; \
@@ -62,12 +62,12 @@ struct Nodes_t {
   Element_tt* PointerToElement ;
   ObVals_t* ObjectiveValues ;
   Buffers_t*  Buffers ;
-  int NbOfMatrices ;
-  unsigned int* NbOfMatrixRows ;
-  unsigned int* NbOfMatrixColumns ;
-  unsigned int  NbOfNodes ;
-  unsigned int  NbOfConnectivities ;
-  unsigned int  NbOfDOF ;
+  unsigned short int NbOfMatrices ;
+  size_t* NbOfMatrixRows ;
+  size_t* NbOfMatrixColumns ;
+  size_t  NbOfNodes ;
+  size_t  NbOfConnectivities ;
+  size_t  NbOfDOF ;
 } ;
 
 

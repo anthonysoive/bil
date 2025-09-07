@@ -617,7 +617,7 @@ void (Help_Fields)(void)
 ->\t \"Value =\",v,\"Gradient =\",g[],\"Point =\",z[]\n") ;
 
   Message_Direct("\
-  \t v                  = value of prameter at point A\n\
+  \t v                  = value of parameter at point A\n\
   \t g[i] (i = 1...dim) = parameter gradient vector at point A\n\
   \t z[i] (i = 1...dim) = coordinates of point A\n") ;
 
@@ -658,6 +658,18 @@ void (Help_Fields)(void)
   \t                    (N = n_x*n_y*n_z), by giving\n\
   \t                    first those of the x-axis, then\n\
   \t                    y-axis and z-axis\n") ;
+
+  Message_Direct("\n") ;
+
+  Message_Direct("\
+  If \"Type = random\": random value within a range length\n") ;
+
+  Message_Direct("\
+->\t \"Value =\",v,\"Range =\",r\n") ;
+
+  Message_Direct("\
+  \t v    = value of the constant field\n\
+  \t r    = random range length\n") ;
 }
 
 

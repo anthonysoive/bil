@@ -9,7 +9,7 @@
 #define TITLE   "Nano Double Porosity model"
 #define AUTHORS "Nikoosokhan"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Macros */
 #define NEQ     (1+dim)

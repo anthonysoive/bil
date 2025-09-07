@@ -45,7 +45,7 @@ Dates_t*  (Dates_Create)(DataFile_t* datafile)
 
 
   {
-    double* t = (double*) Mry_New(double[n_dates]) ;
+    double* t = (double*) Mry_New(double,n_dates) ;
     
     c = String_SkipLine(c) ;
     

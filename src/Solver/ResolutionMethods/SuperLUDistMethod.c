@@ -1,6 +1,6 @@
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#ifdef SUPERLUDISTLIB
+#ifdef HAVE_SUPERLUDIST
 
 #include <stdio.h>
 #include <stdlib.h>

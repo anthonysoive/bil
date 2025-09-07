@@ -25,7 +25,7 @@
 
 
 static FVM_t*  (FVM_Create)(void) ;
-static int     (FVM_FindHalfSpace)(FVM_t*,int,int,double*) ;
+static unsigned short int (FVM_FindHalfSpace)(FVM_t*,unsigned short int const,unsigned short int const,double*) ;
 
 
 #define _INLINE_
@@ -149,18 +149,17 @@ _INLINE_ double* (FVM_ComputeSurfaceLoadResidu)(FVM_t* fvm,Load_t* load,double t
   char    *load_eqn = Load_GetNameOfEquation(load) ;
   char    *load_type = Load_GetType(load) ;
   Function_t* function = Load_GetFunction(load) ;
-  int    nn  = Element_GetNbOfNodes(el) ;
-  int    neq = Element_GetNbOfEquations(el) ;
-  int    ndof = nn*neq ;
+  unsigned short int    nn  = Element_GetNbOfNodes(el) ;
+  unsigned short int    neq = Element_GetNbOfEquations(el) ;
+  size_t    ndof = nn*neq ;
   int    ieq = Element_FindEquationPositionIndex(el,load_eqn) ;
   double* volume = FVM_ComputeCellVolumes(fvm) ;
   size_t SizeNeeded = ndof*(sizeof(double)) ;
   double* r = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
   double zero = 0. ;
-  int    i ;
 
   /* initialization */
-  for(i = 0 ; i < ndof ; i++) r[i] = zero ;
+  for(size_t i = 0 ; i < ndof ; i++) r[i] = zero ;
 
   if(field == NULL) return(r) ;
 
@@ -203,12 +202,12 @@ _INLINE_ double* (FVM_ComputeSurfaceLoadResidu)(FVM_t* fvm,Load_t* load,double t
     if(dim >= 2) {
       double rb[Element_MaxNbOfNodes] ;
       
-      for(i = 0 ; i < nn ; i++) {
+      for(int i = 0 ; i < nn ; i++) {
         double* y = Node_GetCoordinate(no[i]) ;
         rb[i] = ft*Field_ComputeValueAtPoint(field,y,dim)*volume[i] ;
       }
       
-      for(i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
+      for(int i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
       
       return(r) ;
     }
@@ -238,13 +237,13 @@ _INLINE_ double* (FVM_ComputeSurfaceLoadResidu)(FVM_t* fvm,Load_t* load,double t
     if(dim >= 2) {
       double rb[Element_MaxNbOfNodes] ;
       
-      for(i = 0 ; i < nn ; i++) {
+      for(int i = 0 ; i < nn ; i++) {
         double v = u[i][ieq] ;
         double* y = Node_GetCoordinate(no[i]) ;
         rb[i] = ft*Field_ComputeValueAtPoint(field,y,dim)*volume[i]*v ;
       }
       
-      for(i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
+      for(int i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
       
       return(r) ;
     }
@@ -274,12 +273,12 @@ _INLINE_ double* (FVM_ComputeSurfaceLoadResidu)(FVM_t* fvm,Load_t* load,double t
     if(dim >= 2) {
       double rb[Element_MaxNbOfNodes] ;
       
-      for(i = 0 ; i < nn ; i++) {
+      for(int i = 0 ; i < nn ; i++) {
         double* y = Node_GetCoordinate(no[i]) ;
         rb[i] = ft*Field_ComputeValueAtPoint(field,y,dim) ;
       }
       
-      for(i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
+      for(int i = 0 ; i < nn ; i++) r[i*neq+ieq] = rb[i] ;
       
       return(r) ;
     }
@@ -297,13 +296,12 @@ _INLINE_ double* (FVM_ComputeBodyForceResidu)(FVM_t* fvm,double const* f,int con
 /** Return the body force residu (r) */
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int nn  = Element_GetNbOfNodes(el) ;
+  unsigned short int nn  = Element_GetNbOfNodes(el) ;
   double* volume = FVM_ComputeCellVolumes(fvm) ;
   size_t SizeNeeded = nn*(sizeof(double)) ;
   double* r = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     /* f is the "force" density at node i */
     r[i] = volume[i]*f[i*dec] ;
   }
@@ -317,18 +315,16 @@ _INLINE_ double*  (FVM_ComputeFluxResidu)(FVM_t* fvm,double const* w,int const d
 /** Return the flux residu (r) */
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int nn  = Element_GetNbOfNodes(el) ;
+  unsigned short int nn  = Element_GetNbOfNodes(el) ;
   double* surf = FVM_ComputeCellSurfaceAreas(fvm) ;
   size_t SizeNeeded = nn*(sizeof(double)) ;
   double* r = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
-  int    i ;
   
   /* initialization */
-  for(i = 0 ; i < nn ; i++)  r[i] = 0. ;
+  for(int i = 0 ; i < nn ; i++)  r[i] = 0. ;
 
-  for(i = 0 ; i < nn ; i++) {
-    int j ;
-    for(j = 0 ; j < nn ; j++) {
+  for(int i = 0 ; i < nn ; i++) {
+    for(int j = 0 ; j < nn ; j++) {
       /* wij is the outflow from cell i to cell j
        * Note that wii is not used */
       if(j != i) {
@@ -350,11 +346,10 @@ _INLINE_ double* (FVM_ComputeMassAndFluxResidu)(FVM_t* fvm,double const* c,int c
   Element_t* el = FVM_GetElement(fvm) ;
   int nn  = Element_GetNbOfNodes(el) ;
   double* volume = FVM_ComputeCellVolumes(fvm) ;
-  int    i ;
   
   double* r = FVM_ComputeFluxResidu(fvm,c,dec) ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     /* f is the "force" density at node i */
     double f = c[i*dec + i] ;
     r[i] += volume[i]*f ;
@@ -416,24 +411,22 @@ _INLINE_ double* (FVM_ComputeMassMatrix)(FVM_t* fvm,double* c,int neq)
 {
 #define K(i,j)     (k[(i)*nn*neq + (j)])
   Element_t* el = FVM_GetElement(fvm) ;
-  int nn  = Element_GetNbOfNodes(el) ;
-  int ndof = nn*neq ;
+  unsigned short int nn  = Element_GetNbOfNodes(el) ;
+  size_t ndof = nn*neq ;
   double* volume = FVM_ComputeCellVolumes(fvm) ;
   size_t SizeNeeded = ndof*ndof*(sizeof(double)) ;
   double* k = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
-  int    i ;
   
   /* initialization */
-  for(i = 0 ; i < ndof*ndof ; i++) k[i] = 0. ;
+  for(size_t i = 0 ; i < ndof*ndof ; i++) k[i] = 0. ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     /* cii is the derivative of the mass content at node i
      * with respect to unknown at node i: cii = M_i,i */
     double* cii = c + i*neq*neq ;
-    int e ;
-    for(e = 0 ; e < neq ; e++) {   /* Equations */
-      int u ;
-      for(u = 0 ; u < neq ; u++) { /* Unknowns */
+    
+    for(int e = 0 ; e < neq ; e++) {   /* Equations */
+      for(int u = 0 ; u < neq ; u++) { /* Unknowns */
         K(e + i*neq,u + i*neq) = volume[i]*cii[e*neq + u] ;
       }
     }
@@ -550,7 +543,7 @@ _INLINE_ double* (FVM_ComputeCellVolumes)(FVM_t* fvm)
   Element_t* el = FVM_GetElement(fvm) ;
   auto dim = Element_GetDimension(el) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
+  unsigned short int nn = Element_GetNbOfNodes(el) ;
   double* volume = FVM_GetCellVolumes(fvm) ;
   
   if(volume) {
@@ -582,19 +575,21 @@ _INLINE_ double* (FVM_ComputeCellVolumes)(FVM_t* fvm)
       double x1 = Element_GetNodeCoordinate(el,1)[0] ;
       double x0 = Element_GetNodeCoordinate(el,0)[0] ;
       double dx = x1 - x0 ;
-      int i ;
-      for(i = 0 ; i < 2 ; i++) {
+
+      for(int i = 0 ; i < 2 ; i++) {
         volume[i] = fabs(dx)*0.5 ; 
       }
+      
       if(Symmetry_IsCylindrical(sym) || Symmetry_IsSpherical(sym)) {
         double xm = (x1 + x0)*0.5 ;
-        for(i = 0 ; i < 2 ; i++) {
+        for(int i = 0 ; i < 2 ; i++) {
           double x  = Element_GetNodeCoordinate(el,i)[0] ;
           double dm = x + xm ;
           volume[i] *= M_PI*dm ; 
           if(Symmetry_IsSpherical(sym)) volume[i] *= dm ;
         }
       }
+      
       return(volume) ;
     } else {
       arret("FVM_ComputeCellVolumes (1)") ;
@@ -643,8 +638,8 @@ _INLINE_ double* (FVM_ComputeCellVolumes)(FVM_t* fvm)
           double m2 = (2*(a2 + b2 + c2) - r*r) ;
           
           if(3*a2 > m2 || 3*b2 > m2 || 3*c2 > m2) {
-            int iel = Element_GetElementIndex(el) ;
-            arret("FVM_ComputeCellVolumes: circumcenter not inside the triangle %d !",iel) ;
+            size_t iel = Element_GetElementIndex(el) ;
+            arret("FVM_ComputeCellVolumes: circumcenter not inside the triangle %lu !",iel) ;
           }
         }
       }
@@ -677,9 +672,8 @@ _INLINE_ double* (FVM_ComputeCellSurfaceAreas)(FVM_t* fvm)
   Element_t* el = FVM_GetElement(fvm) ;
   auto dim = Element_GetDimension(el) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
+  unsigned short int nn = Element_GetNbOfNodes(el) ;
   double* area = FVM_GetCellSurfaceAreas(fvm) ;
-  int i ;
   
   if(area) {
     /* Previously computed */
@@ -691,7 +685,7 @@ _INLINE_ double* (FVM_ComputeCellSurfaceAreas)(FVM_t* fvm)
   }
   
   /* The diagonal terms are not used */
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     area[nn*i + i] = 0. ;
   }
   
@@ -735,7 +729,7 @@ _INLINE_ double* (FVM_ComputeCellSurfaceAreas)(FVM_t* fvm)
       double* x2 = Element_GetNodeCoordinate(el,2) ;
       double a = 0,b = 0,c = 0 ;
       
-      for(i = 0 ; i < dim ; i++) {
+      for(int i = 0 ; i < dim ; i++) {
         c += (x1[i] - x0[i])*(x1[i] - x0[i]) ;
         b += (x2[i] - x0[i])*(x2[i] - x0[i]) ;
         a += (x2[i] - x1[i])*(x2[i] - x1[i]) ;
@@ -805,24 +799,25 @@ _INLINE_ double* (FVM_ComputeCellVolumesAndSurfaceAreas)(FVM_t* fvm)
 }
 
 
-_INLINE_ short int   (FVM_FindLocalCellIndex)(FVM_t* fvm,double* s)
+_INLINE_ unsigned short int   (FVM_FindLocalCellIndex)(FVM_t* fvm,double* s)
 {
   Element_t* el = FVM_GetElement(fvm) ;
-  int nn = Element_GetNbOfNodes(el) ;
+  unsigned short int nn = Element_GetNbOfNodes(el) ;
   
   if(nn == 0) {
     return(0) ;
   } else {
-    int i,j = 0 ;
+    unsigned short int j = 0 ;
     
-    for(i = 1 ; i < nn ; i++) {
+    for(unsigned short int i = 1 ; i < nn ; i++) {
       j = FVM_FindHalfSpace(fvm,i,j,s) ;
     }
+    
     return(j) ;
   }
   
   arret("FVM_FindLocalCellIndex") ;
-  return(-1) ;
+  return(0) ;
 }
 
 
@@ -832,9 +827,8 @@ _INLINE_ double* (FVM_ComputeIntercellDistances)(FVM_t* fvm)
 {
   Element_t* el = FVM_GetElement(fvm) ;
   auto dim = Element_GetDimensionOfSpace(el) ;
-  int nn  = Element_GetNbOfNodes(el) ;
+  unsigned short int nn  = Element_GetNbOfNodes(el) ;
   double* dist = FVM_GetIntercellDistances(fvm) ;
-  int    i ;
   
   if(dist) {
     /* Previously computed */
@@ -846,12 +840,12 @@ _INLINE_ double* (FVM_ComputeIntercellDistances)(FVM_t* fvm)
   }
   
   /* initialization */
-  for(i = 0 ; i < nn*nn ; i++)  dist[i] = 0. ;
+  for(int i = 0 ; i < nn*nn ; i++)  dist[i] = 0. ;
 
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     double* xi = Element_GetNodeCoordinate(el,i) ;
-    int j ;
-    for(j = i + 1 ; j < nn ; j++) {
+    
+    for(int j = i + 1 ; j < nn ; j++) {
       double* xj = Element_GetNodeCoordinate(el,j) ;
       double dij = 0 ;
       int n ;
@@ -879,14 +873,12 @@ _INLINE_ double* (FVM_ComputeTheNodalFluxVector)(FVM_t* fvm,double* w)
   Element_t* el = FVM_GetElement(fvm) ;
   auto dim = Element_GetDimension(el) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
+  unsigned short int nn = Element_GetNbOfNodes(el) ;
   size_t SizeNeeded = 3*nn*sizeof(double) ;
   double* wn = (double*) FVM_AllocateInBuffer(fvm,SizeNeeded) ;
   
-  {
-    int i ;
-    
-    for(i = 0 ; i < 3*nn ; i++) wn[i] = 0. ;
+  {    
+    for(int i = 0 ; i < 3*nn ; i++) wn[i] = 0. ;
   }
   
   
@@ -900,11 +892,9 @@ _INLINE_ double* (FVM_ComputeTheNodalFluxVector)(FVM_t* fvm,double* w)
     if(nn == 2) {
       double* x0 = Element_GetNodeCoordinate(el,0) ;
       double* x1 = Element_GetNodeCoordinate(el,1) ;
-      
       double a = 0 ;
-      int i ;
       
-      for(i = 0 ; i < dim ; i++) {
+      for(int i = 0 ; i < dim ; i++) {
         a += (x1[i] - x0[i])*(x1[i] - x0[i]) ;
       }
       a = sqrt(a) ;
@@ -922,11 +912,9 @@ _INLINE_ double* (FVM_ComputeTheNodalFluxVector)(FVM_t* fvm,double* w)
       double* x0 = Element_GetNodeCoordinate(el,0) ;
       double* x1 = Element_GetNodeCoordinate(el,1) ;
       double* x2 = Element_GetNodeCoordinate(el,2) ;
-      
       double a = 0,b = 0,c = 0 ;
-      int i ;
       
-      for(i = 0 ; i < dim ; i++) {
+      for(int i = 0 ; i < dim ; i++) {
         c += (x1[i] - x0[i])*(x1[i] - x0[i]) ;
         b += (x2[i] - x0[i])*(x2[i] - x0[i]) ;
         a += (x2[i] - x1[i])*(x2[i] - x1[i]) ;
@@ -943,19 +931,18 @@ _INLINE_ double* (FVM_ComputeTheNodalFluxVector)(FVM_t* fvm,double* w)
         double cosB = 0.5*(c2 + a2 - b2)/(c*a) ;
         double cosC = 0.5*(a2 + b2 - c2)/(a*b) ;
         double** x = Element_ComputePointerToNodalCoordinates(el) ;
-        int k ;
 
-        for(k = 0 ; k < dim ; k++) {
+        for(int k = 0 ; k < dim ; k++) {
           wn[k]  = (W(0,1) - W(0,2)*cosA)*(x[1][k] - x[0][k])/(c) \
                  + (W(0,2) - W(0,1)*cosA)*(x[2][k] - x[0][k])/(b) ;
           wn[k] /= (1 - cosA*cosA) ;
         }
-        for(k = 0 ; k < dim ; k++) {
+        for(int k = 0 ; k < dim ; k++) {
           wn[3 + k]  = (W(1,0) - W(1,2)*cosB)*(x[0][k] - x[1][k])/(c) \
                      + (W(1,2) - W(1,0)*cosB)*(x[2][k] - x[1][k])/(a) ;
           wn[3 + k] /= (1 - cosB*cosB) ;
         }
-        for(k = 0 ; k < dim ; k++) {
+        for(int k = 0 ; k < dim ; k++) {
           wn[6 + k]  = (W(2,0) - W(2,1)*cosC)*(x[0][k] - x[2][k])/(b) \
                      + (W(2,1) - W(2,0)*cosC)*(x[1][k] - x[2][k])/(a) ;
           wn[6 + k] /= (1 - cosC*cosC) ;
@@ -990,16 +977,14 @@ _INLINE_ double   (FVM_AverageCurrentImplicitTerm)(Mesh_t* mesh,const char* mode
  *  "index+i*shift" in the implicit terms of the model "modelname".
  */
 {
-  unsigned int nel = Mesh_GetNbOfElements(mesh) ;
+  size_t nel = Mesh_GetNbOfElements(mesh) ;
   Element_t* el0 = Mesh_GetElement(mesh) ;
   double sum = 0 ;
   double vol = 0 ;
   
     /* Integration */
-  {
-    unsigned int ie ;
-    
-    for(ie = 0 ; ie < nel ; ie++) {
+  {    
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_t* el = el0 + ie ;
       Model_t* model = Element_GetModel(el) ;
       char* codename = Model_GetCodeNameOfModel(model) ;
@@ -1008,18 +993,17 @@ _INLINE_ double   (FVM_AverageCurrentImplicitTerm)(Mesh_t* mesh,const char* mode
       
       if(String_Is(codename,modelname)) {
         double* vim = Element_GetCurrentImplicitTerm(el) ;
-        int ni = Element_GetNbOfImplicitTerms(el) ;
+        size_t ni = Element_GetNbOfImplicitTerms(el) ;
         int nn = Element_GetNbOfNodes(el) ;
         FVM_t*    fvm    = FVM_GetInstance(el) ;
         double* volume = FVM_ComputeCellVolumes(fvm) ;
         double* vi = vim + index ;
-        int i ; ;
         
         if(index + (nn-1)*shift >= ni) {
           arret("FVM_AverageCurrentImplicitTerm:") ;
         }
           
-        for(i = 0 ; i < nn ; i++) {
+        for(int i = 0 ; i < nn ; i++) {
           vol +=  volume[i] ;
           sum +=  vi[i*shift] ;
         }
@@ -1041,16 +1025,14 @@ _INLINE_ double   (FVM_AveragePreviousImplicitTerm)(Mesh_t* mesh,const char* mod
  *  "index+i*shift" in the implicit terms of the model "modelname".
  */
 {
-  unsigned int nel = Mesh_GetNbOfElements(mesh) ;
+  size_t nel = Mesh_GetNbOfElements(mesh) ;
   Element_t* el0 = Mesh_GetElement(mesh) ;
   double sum = 0 ;
   double vol = 0 ;
   
     /* Integration */
-  {
-    unsigned int ie ;
-    
-    for(ie = 0 ; ie < nel ; ie++) {
+  {    
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_t* el = el0 + ie ;
       Model_t* model = Element_GetModel(el) ;
       char* codename = Model_GetCodeNameOfModel(model) ;
@@ -1059,18 +1041,17 @@ _INLINE_ double   (FVM_AveragePreviousImplicitTerm)(Mesh_t* mesh,const char* mod
       
       if(String_Is(codename,modelname)) {
         double* vim = Element_GetPreviousImplicitTerm(el) ;
-        int ni = Element_GetNbOfImplicitTerms(el) ;
+        size_t ni = Element_GetNbOfImplicitTerms(el) ;
         int nn = Element_GetNbOfNodes(el) ;
         FVM_t*    fvm    = FVM_GetInstance(el) ;
         double* volume = FVM_ComputeCellVolumes(fvm) ;
         double* vi = vim + index ;
-        int i ; ;
         
         if(index + (nn-1)*shift >= ni) {
           arret("FVM_AveragePreviousImplicitTerm:") ;
         }
           
-        for(i = 0 ; i < nn ; i++) {
+        for(int i = 0 ; i < nn ; i++) {
           vol +=  volume[i] ;
           sum +=  vi[i*shift] ;
         }
@@ -1176,7 +1157,7 @@ _INLINE_ double* (FVM_ComputeGradient)(FVM_t* fvm,double* u,IntFct_t* intfct,int
  * Intern Functions
  */
 
-_INLINE_ int (FVM_FindHalfSpace)(FVM_t* fvm,int i1,int i2,double* s)
+_INLINE_ unsigned short int (FVM_FindHalfSpace)(FVM_t* fvm,unsigned short int const i1,unsigned short int const i2,double* s)
 {
   Element_t* el = FVM_GetElement(fvm) ;
   auto dim = Element_GetDimensionOfSpace(el) ;
@@ -1184,9 +1165,8 @@ _INLINE_ int (FVM_FindHalfSpace)(FVM_t* fvm,int i1,int i2,double* s)
   double* x2 = Element_ComputePointerToNodalCoordinates(el)[i2] ;
   double cos1 = 0 ;
   double cos2 = 0 ;
-  int i ;
   
-  for(i = 0 ; i < dim ; i++) {
+  for(int i = 0 ; i < dim ; i++) {
     cos1 += (x2[i] - x1[i])*(s[i] - x1[i]) ;
     cos2 += (x1[i] - x2[i])*(s[i] - x2[i]) ;
   }

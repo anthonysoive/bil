@@ -144,6 +144,8 @@ extern Node_t*  (Node_OverlappingNodes3)(const Node_t*,int*,Node_t*) ;
 #define Node_IndexForBCond             (-1)
 #define Node_IndexForPeriodicity       (-2)
 #define Node_IndexForOverlappingNode   (-3)
+#define Node_IndexForUnselectedMatrix  (-10)
+
 
 /* 1. node of boundary conditions */
 #define Node_EliminateMatrixColumnIndexForBCond(NOD,name) \
@@ -225,8 +227,11 @@ extern Node_t*  (Node_OverlappingNodes3)(const Node_t*,int*,Node_t*) ;
 
 
 /* Matrix row/column indexes of selected matrix */
+#define Node_GetMatrixColumnIndexOf(NOD,i) \
+        ((i >= 0) ? Node_GetMatrixColumnIndex(NOD)[i] : Node_IndexForUnselectedMatrix)
 
-#define Node_IndexForUnselectedMatrix   (-10)
+#define Node_GetMatrixRowIndexOf(NOD,i) \
+        ((i >= 0) ? Node_GetMatrixRowIndex(NOD)[i] : Node_IndexForUnselectedMatrix)
 
 #define Node_GetSelectedMatrixColumnIndexOf(NOD,i,ind) \
         ((i >= 0) && (Node_GetSequentialIndexOfUnknown(NOD)[i] == ind)) ? Node_GetMatrixColumnIndex(NOD)[i] : Node_IndexForUnselectedMatrix
@@ -239,21 +244,22 @@ extern Node_t*  (Node_OverlappingNodes3)(const Node_t*,int*,Node_t*) ;
 
 typedef Element_t*        Element_tt ;
 
+#include <stdio.h>
 struct Node_t {
   Element_tt* PointerToElement ;
   Buffers_t* Buffers ;
-  Solutions_t* Solutions ;             /* Pointer to the global solutions */
+  Solutions_t* Solutions ;            /* Pointer to the global solutions */
   double* Coordinate ;
-  char**   NameOfUnknown ;
-  char**   NameOfEquation ;
-  int*     SequentialIndexOfUnknown ;  /* Sequential indexes of unknowns/equations */
-  unsigned int* ObValIndex ;     /* indices des inconnues dans obj */
-  int*    MatrixColumnIndex ;          /* column index (unknowns) */
-  int*    MatrixRowIndex ;             /* row index (equations) */
-  unsigned int NodeIndex ;             /* node index */
-  unsigned int NbOfElements ;
-  unsigned int NbOfEquations ;   /* nombre d'equations au noeud */
-  unsigned int NbOfUnknowns ;    /* nombre d'inconnues au noeud */
+  char**  NameOfUnknown ;
+  char**  NameOfEquation ;
+  int*    SequentialIndexOfUnknown ;  /* Sequential indexes of unknowns/equations */
+  int*    ObValIndex ;                /* indices des inconnues dans obj */
+  int*    MatrixColumnIndex ;         /* column index (unknowns) */
+  int*    MatrixRowIndex ;            /* row index (equations) */
+  size_t  NodeIndex ;                 /* node index */
+  unsigned short int NbOfElements ;
+  unsigned short int NbOfEquations ;  /* nombre d'equations au noeud */
+  unsigned short int NbOfUnknowns ;   /* nombre d'inconnues au noeud */
 } ;
 
 

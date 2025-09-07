@@ -23,28 +23,28 @@ Damage_t*  (Damage_Create)(void)
   
   /* Allocation of space for the code name of the model */
   {
-    char* name = (char*) Mry_New(char[Damage_MaxLengthOfKeyWord]) ;
+    char* name = (char*) Mry_New(char,Damage_MaxLengthOfKeyWord) ;
     
     Damage_GetCodeNameOfModel(damage) = name ;
   }
   
   /* Allocation of space for the yield function gradient */
   {
-    double* c = (double*) Mry_New(double[9]) ;
+    double* c = (double*) Mry_New(double,9) ;
     
     Damage_GetYieldFunctionGradient(damage) = c ;
   }
   
   /* Allocation of space for the potential function gradient */
   {
-    double* c = (double*) Mry_New(double[9]) ;
+    double* c = (double*) Mry_New(double,9) ;
     
     Damage_GetPotentialFunctionGradient(damage) = c ;
   }
   
   /* Allocation of space for the hardening variable */
   {
-    double* c = (double*) Mry_New(double[Damage_MaxNbOfHardeningVariables]) ;
+    double* c = (double*) Mry_New(double,Damage_MaxNbOfHardeningVariables) ;
     
     Damage_GetHardeningVariable(damage) = c ;
   }
@@ -58,28 +58,28 @@ Damage_t*  (Damage_Create)(void)
   
   /* Allocation of space for Fji*Cijkl */
   {
-    double* c = (double*) Mry_New(double[9]) ;
+    double* c = (double*) Mry_New(double,9) ;
     
     Damage_GetFjiCijkl(damage) = c ;
   }
   
   /* Allocation of space for Cijkl*Glk */
   {
-    double* c = (double*) Mry_New(double[9]) ;
+    double* c = (double*) Mry_New(double,9) ;
     
     Damage_GetCijklGlk(damage) = c ;
   }
   
   /* Allocation of space for the tangent stiffness tensor */
   {
-    double* c = (double*) Mry_New(double[81]) ;
+    double* c = (double*) Mry_New(double,81) ;
     
     Damage_GetTangentStiffnessTensor(damage) = c ;
   }
   
   /* Allocation of space for the damaged stiffness tensor */
   {
-    double* c = (double*) Mry_New(double[81]) ;
+    double* c = (double*) Mry_New(double,81) ;
     
     Damage_GetDamagedStiffnessTensor(damage) = c ;
   }
@@ -89,7 +89,7 @@ Damage_t*  (Damage_Create)(void)
   
   /* Allocation of space for the parameters */
   {
-    double* c = (double*) Mry_New(double[Damage_MaxNbOfParameters]) ;
+    double* c = (double*) Mry_New(double,Damage_MaxNbOfParameters) ;
     
     Damage_GetParameter(damage) = c ;
   }

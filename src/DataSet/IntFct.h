@@ -11,7 +11,7 @@ extern "C" {
 struct IntFct_t; //typedef struct IntFct_t       IntFct_t ;
 
 
-extern IntFct_t*  (IntFct_Create)(int,int,const char*) ;
+extern IntFct_t*  (IntFct_Create)(unsigned short int,unsigned short int,const char*) ;
 extern void       (IntFct_Delete)(void*) ;
 //extern void       (IntFct_ComputeIsoShapeFctInActualSpace)(int,int,double**,double*,int,double*,double*) ;
 extern int        (IntFct_ComputeFunctionIndexAtPointOfReferenceFrame)(IntFct_t*,double*) ;
@@ -67,13 +67,13 @@ extern double     (IntFct_InterpolateAtPoint)(IntFct_t*,double*,int,int) ;
 
 struct IntFct_t {             /* Interpolation function */
   char*   type ;              /* Type of the function */
-  int nn ;                    /* Number of functions/nodes */
-  int np ;                    /* Number of integration points */
+  unsigned short int nn ;     /* Number of functions/nodes */
+  unsigned short int np ;     /* Number of integration points */
   double* a ;                 /* Reference coordinates of integration points */
   double* w ;                 /* Weights */
   double* h ;                 /* Values of interpolation functions */
   double* dh ;                /* Values of function gradients */
-  int dim ;                   /* sous-dimension (0,1,2,3) */
+  unsigned short int dim ;    /* sous-dimension (0,1,2,3) */
   //IntFct_ComputeValuesAtPoint_t* computevaluesatpoint ;
 } ;
 

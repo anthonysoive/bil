@@ -3,7 +3,7 @@
 #include <string.h>
 #include "Message.h"
 #include "Mry.h"
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "Mesh.h"
 #include "Element.h"
 #include "Options.h"
@@ -13,7 +13,7 @@
 #include "DistributedMS.h"
 
 
-#if defined (PETSCLIB)
+#if defined (HAVE_PETSC)
   #include <petsc.h>
 #endif
 
@@ -21,10 +21,10 @@
 
 /* Extern functions */
 
-Residu_t*   (Residu_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const int imatrix)
+Residu_t*   (Residu_Create)(Mesh_t* mesh,Options_t* options,unsigned short int const n_res,unsigned int const imatrix)
 {
   Residu_t* residu = (Residu_t*) Mry_New(Residu_t) ;
-  int n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
+  size_t n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
 
   Residu_GetLengthOfRHS(residu) = n_col ;
   Residu_GetNbOfRHS(residu) = n_res ;
@@ -39,7 +39,7 @@ Residu_t*   (Residu_Create)(Mesh_t* mesh,Options_t* options,const int n_res,cons
 
   /* Allocation of space for the right hand sides */
   {
-    double* rhs = (double*) Mry_New(double[n_res*n_col]) ;
+    double* rhs = (double*) Mry_New(double,n_res*n_col) ;
     
     Residu_GetRHS(residu) = rhs ;
   }
@@ -47,7 +47,7 @@ Residu_t*   (Residu_Create)(Mesh_t* mesh,Options_t* options,const int n_res,cons
   
   /* Allocation of space for the solutions */
   {
-    double* sol = (double*) Mry_New(double[n_res*n_col]) ;
+    double* sol = (double*) Mry_New(double,n_res*n_col) ;
     
     Residu_GetSolution(residu) = sol ;
   }
@@ -60,7 +60,7 @@ Residu_t*   (Residu_Create)(Mesh_t* mesh,Options_t* options,const int n_res,cons
     Residu_GetStoragOfRHS(residu) = rhs ;
     Residu_GetStoragOfSolution(residu) = sol ;
     
-  #if defined (PETSCLIB)
+  #if defined (HAVE_PETSC)
   } else if(Residu_StorageFormatIs(residu,PetscVec)) {
     /* Initialization */
     {
@@ -125,7 +125,7 @@ void (Residu_Delete)(void* self)
 {
   Residu_t* residu = (Residu_t*) self ;
   
-  #if defined (PETSCLIB)
+  #if defined (HAVE_PETSC)
   {
     if(Residu_StorageFormatIs(residu,PetscVec)) {
       
@@ -206,7 +206,7 @@ int (Residu_AssembleElementResidu)(Residu_t* residu,Element_t* el,double* re)
       }
     }
     
-  #ifdef PETSCLIB
+  #ifdef HAVE_PETSC
   /* format used in Petsc */
   } else if(Residu_StorageFormatIs(residu,PetscVec)) {
     Vec* B = Residu_GetStoragOfRHS(residu) ;
@@ -265,21 +265,20 @@ void Residu_PrintResidu(Residu_t* residu,const char* keyword)
   
   if(Residu_StorageFormatIs(residu,Array)) {
     double*  rhs = (double*) Residu_GetRHS(residu) ;
-    int n_col = Residu_GetLengthOfRHS(residu) ;
-    int i ;
+    size_t n_col = Residu_GetLengthOfRHS(residu) ;
     int rank = DistributedMS_RankOfCallingProcess ;
   
     if(rank > 0) return ;
     
     fprintf(stdout,"\n") ;
     fprintf(stdout,"residu:\n") ;
-    fprintf(stdout,"n = %d\n",n_col) ;
+    fprintf(stdout,"n = %lu\n",n_col) ;
             
-    for(i = 0 ; i < n_col ; i++) {
-      fprintf(stdout,"res %d: % e\n",i,rhs[i]) ;
+    for(size_t i = 0 ; i < n_col ; i++) {
+      fprintf(stdout,"res %lu: % e\n",i,rhs[i]) ;
     }
     
-  #ifdef PETSCLIB
+  #ifdef HAVE_PETSC
   /* format used in Petsc */
   } else if(Residu_StorageFormatIs(residu,PetscVec)) {
     Vec* b = Residu_GetStoragOfRHS(residu) ;
@@ -300,15 +299,16 @@ void (Residu_SetValuesToZero)(Residu_t* residu)
 /** zeros each element of the residu */
 {
   if(Residu_StorageFormatIs(residu,Array)) {
-    unsigned int n = Residu_GetNbOfRHS(residu)*Residu_GetLengthOfRHS(residu) ;
+    size_t lrhs = Residu_GetLengthOfRHS(residu) ;
+    size_t nrhs = Residu_GetNbOfRHS(residu) ;
+    size_t n = nrhs*lrhs ;
     double* rhs = (double*) Residu_GetRHS(residu) ;
-    unsigned int k ;
           
-    for(k = 0 ; k < n ; k++) {
+    for(size_t k = 0 ; k < n ; k++) {
       rhs[k] = 0. ;
     }
     
-  #ifdef PETSCLIB
+  #ifdef HAVE_PETSC
   } else if(Residu_StorageFormatIs(residu,PetscVec)) {
     Vec* b = Residu_GetStoragOfRHS(residu) ;
     

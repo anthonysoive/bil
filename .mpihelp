@@ -1,0 +1,9 @@
+Ref: https://docs.open-mpi.org/en/v5.0.x/app-debug/serial-debug.html
+
+Running mpi under N processes:
+  mpirun -n N bil ....
+
+
+Debugging mpi by launching separate instances of gdb:
+  mpirun -n N xterm -e gdb
+  

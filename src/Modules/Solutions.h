@@ -87,7 +87,7 @@ extern void           (Solutions_InitializeMeshPointers)(Solutions_t*,Mesh_t*) ;
 
 
 struct Solutions_t {              /* Solutions */
-  unsigned int n_sol ;            /* Nb of solutions */
+  int n_sol ;            /* Nb of solutions */
   char mergeindex ;
   Solution_t* head ;              /* Solution head */
   Solution_t* solution ;          /* Solution */

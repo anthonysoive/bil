@@ -74,19 +74,19 @@ struct FEM_t {
       int neq = Model_MaxNbOfEquations ;
       int ndof = nn*neq ;
       
-      _output = (double*) Mry_New(double[ndof*ndof]) ;
+      _output = (double*) Mry_New(double,ndof*ndof) ;
     }
   
     /* Space allocation for input */
     {
       int np = IntFct_MaxNbOfIntPoints ;
       
-      _input = (double*) Mry_New(double[np*FEM_MaxShift]) ;
+      _input = (double*) Mry_New(double,np*FEM_MaxShift) ;
     }
   
     /* Space allocation for pintfct */
     {
-      _pintfct = (IntFct_t**) Mry_New(IntFct_t*[IntFcts_MaxNbOfIntFcts]) ;
+      _pintfct = (IntFct_t**) Mry_New(IntFct_t*,IntFcts_MaxNbOfIntFcts) ;
     }
   
     /* Space allocation for buffer */

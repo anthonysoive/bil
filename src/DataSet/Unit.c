@@ -18,7 +18,7 @@ Unit_t* (Unit_New)(void)
     
   /* Allocation of space for the name of unit */
   {
-    char* name = (char*) Mry_New(char[Unit_MaxLengthOfKeyWord]) ;
+    char* name = (char*) Mry_New(char,Unit_MaxLengthOfKeyWord) ;
   
     Unit_GetName(unit) = name ;
   }

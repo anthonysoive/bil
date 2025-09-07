@@ -397,7 +397,7 @@ inline double* (CementSolutionChemistry_GetValence)(void);
 inline double* (CementSolutionChemistry_CreateValence)(void) ;
 inline void    (CementSolutionChemistry_InitializeValence)(double*) ;
 template<typename T>
-inline T poly4(T,T,T,T,T,T,T) ;
+inline T       (CementSolutionChemistry_SolvePoly4)(T,T,T,T,T,T,T) ;
 template<typename T>
 inline void   (CementSolutionChemistry_AllocateMemory)(CementSolutionChemistry_t<T>*) ;
 template<typename T>

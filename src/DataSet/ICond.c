@@ -21,7 +21,7 @@ ICond_t* (ICond_New)(void)
     
   /* Allocation of space for the name of unknowns */
   {
-    char* name = (char*) Mry_New(char[ICond_MaxLengthOfKeyWord]) ;
+    char* name = (char*) Mry_New(char,ICond_MaxLengthOfKeyWord) ;
   
     ICond_GetNameOfUnknown(icond) = name ;
   }
@@ -29,7 +29,7 @@ ICond_t* (ICond_New)(void)
     
   /* Allocation of space for the name of files of nodal values */
   {
-    char* filename = (char*) Mry_New(char[ICond_MaxLengthOfFileName]) ;
+    char* filename = (char*) Mry_New(char,ICond_MaxLengthOfFileName) ;
   
     ICond_GetFileNameOfNodalValues(icond) = filename ;
     ICond_GetFileNameOfNodalValues(icond)[0] = '\0' ;
@@ -38,7 +38,7 @@ ICond_t* (ICond_New)(void)
   
   /* Allocation of space for the region name */
   {
-    char* name = (char*) Mry_New(char[ICond_MaxLengthOfRegionName]) ;
+    char* name = (char*) Mry_New(char,ICond_MaxLengthOfRegionName) ;
     
     ICond_GetRegionName(icond) = name ;
   }
@@ -91,7 +91,6 @@ void (ICond_Scan)(ICond_t* icond,DataFile_t* datafile)
     //int n = String_FindAndScanExp(line,"Reg",","," = %d",&i) ;
     
     if(n) {
-      ICond_GetRegionTag(icond) = atoi(name) ;
       strncpy(ICond_GetRegionName(icond),name,ICond_MaxLengthOfRegionName)  ;
     } else {
       arret("ICond_Scan: no region") ;

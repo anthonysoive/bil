@@ -7,9 +7,9 @@
 #include "FEM.h"
 
 #define TITLE   "Chemo-hydro-mechanics of bituminized waste products"
-#define AUTHORS "G.MELOT, Yujiong CHEN"
+#define AUTHORS "G.MELOT, Y.CHEN"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Nb of equations */
 #define NEQ     (2 + dim)
@@ -31,7 +31,7 @@
 #define U_Salt    E_Salt
 
 
-/* Method chosen at compiling time.
+/* Method chosen at compile time.
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with specific modelings.
  * Uncomment/comment to let only one unknown per equation */

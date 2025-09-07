@@ -21,7 +21,7 @@ extern void     (Units_Delete)  (void*) ;
 
 
 struct Units_t {              /* units */
-  unsigned int n_units ;      /* nb of units */
+  int n_units ;      /* nb of units */
   Unit_t*  unit ;             /* Unit */
 } ;
 

@@ -55,8 +55,8 @@ extern Model_t*  (Models_FindOrAppendModel)(Models_t*,const char*,Geometry_t*,Da
 
 
 struct Models_t {             /* Models */
-  unsigned int maxn_model ;   /* Maximun nb of models */
-  unsigned int n_model ;      /* Nb of models */
+  int maxn_model ;   /* Maximun nb of models */
+  int n_model ;      /* Nb of models */
   Model_t* model ;            /* Point to the first model */
 } ;
 

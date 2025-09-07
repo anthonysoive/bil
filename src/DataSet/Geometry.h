@@ -66,7 +66,7 @@ extern Geometry_t*  (Geometry_New)   (void) ;
 #include "CoorSys.h"
 
 struct Geometry_t {
-  int dim ;    /* Dimension (1,2,3) */
+  unsigned short int dim ;    /* Dimension (1,2,3) */
   Symmetry_t symmetry ;       /* Symmetry */
   CoorSys_t coorsys ;         /* Coordinate system */
   Periodicities_t* periodicities ;

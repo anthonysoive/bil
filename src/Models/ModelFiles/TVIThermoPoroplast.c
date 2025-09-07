@@ -11,7 +11,7 @@
 #define TITLE "Transversely isotropic ThermoPoroplasticity with hardening (2020)"
 #define AUTHORS "Braun-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

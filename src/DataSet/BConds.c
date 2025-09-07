@@ -29,7 +29,7 @@ BConds_t* (BConds_New)(const int n_bconds)
   /* Allocation of space for the boundary conditions */
   #if 0
   if(n_bconds > 0) {
-    BCond_t* bcond  = (BCond_t*) Mry_New(BCond_t[n_bconds]) ;
+    BCond_t* bcond  = (BCond_t*) Mry_New(BCond_t,n_bconds) ;
     int i ;
 
     for(i = 0 ; i < n_bconds ; i++) {
@@ -136,28 +136,23 @@ void (BConds_Delete)(void* self)
 void  (BConds_SetDefaultNameOfEquations)(BConds_t* bconds,Mesh_t* mesh)
 /** Set the name of equations to be eliminated to their default names */
 {
-  int n_elts = Mesh_GetNbOfElements(mesh) ;
+  size_t n_elts = Mesh_GetNbOfElements(mesh) ;
   Element_t* elt = Mesh_GetElement(mesh) ;
   BCond_t* bcond = BConds_GetBCond(bconds) ;
   int n_bconds = BConds_GetNbOfBConds(bconds) ;
-  int    ibc ;
   
   
-  for(ibc = 0 ; ibc < n_bconds ; ibc++) {
+  for(int ibc = 0 ; ibc < n_bconds ; ibc++) {
     BCond_t* bcond_i = bcond + ibc ;
-    //int    reg_cl = BCond_GetRegionTag(bcond_i) ;
     char*    reg_cl = BCond_GetRegionName(bcond_i) ;
     char*  inc_cl = BCond_GetNameOfUnknown(bcond_i) ;
     char*  eqn_cl = BCond_GetNameOfEquation(bcond_i) ;
     
     /* Set the name of equation to be eliminated */
     if(!strcmp(eqn_cl," ")) {
-      int  ie ;
-
-      for(ie = 0 ; ie < n_elts ; ie++) {
+      for(size_t ie = 0 ; ie < n_elts ; ie++) {
         Element_t* elt_i = elt + ie ;
         Material_t* mat = Element_GetMaterial(elt_i) ;
-        //int reg_el = Element_GetRegionTag(elt_i) ;
         char* reg_el = Element_GetRegionName(elt_i) ;
       
         if(String_Is(reg_el,reg_cl) && mat != NULL) {
@@ -189,11 +184,10 @@ void  BConds_EliminateMatrixRowColumnIndexes(BConds_t* bconds,Mesh_t* mesh)
 /** Set to a negative value the matrix row/column 
  *  indexes which are prescribed by the BC */
 {
-  int n_elts = Mesh_GetNbOfElements(mesh) ;
+  size_t n_elts = Mesh_GetNbOfElements(mesh) ;
   Element_t* elt = Mesh_GetElement(mesh) ;
   BCond_t* bcond = BConds_GetBCond(bconds) ;
   int n_bconds = BConds_GetNbOfBConds(bconds) ;
-  int    ibc ;
   
   
   BConds_SetDefaultNameOfEquations(bconds,mesh) ;
@@ -201,19 +195,16 @@ void  BConds_EliminateMatrixRowColumnIndexes(BConds_t* bconds,Mesh_t* mesh)
   
   /* Set to arbitrary negative value the matrix row/column indexes
    * so as to eliminate rows and columns due to boundary conditions */
-  for(ibc = 0 ; ibc < n_bconds ; ibc++) {
+  for(int ibc = 0 ; ibc < n_bconds ; ibc++) {
     BCond_t* bcond_i = bcond + ibc ;
-    //int    reg_cl = BCond_GetRegionTag(bcond_i) ;
     char*    reg_cl = BCond_GetRegionName(bcond_i) ;
     char*  inc_cl = BCond_GetNameOfUnknown(bcond_i) ;
     char*  eqn_cl = BCond_GetNameOfEquation(bcond_i) ;
     int    regionwasfound = 0 ;
-    int    ie ;
 
-    for(ie = 0 ; ie < n_elts ; ie++) {
+    for(size_t ie = 0 ; ie < n_elts ; ie++) {
       Element_t* elt_i = elt + ie ;
       Material_t* mat = Element_GetMaterial(elt_i) ;
-      //int reg_el = Element_GetRegionTag(elt_i) ;
       char* reg_el = Element_GetRegionName(elt_i) ;
       
       if(String_Is(reg_el,reg_cl) && mat != NULL) {
@@ -282,25 +273,21 @@ void  BConds_EliminateMatrixRowColumnIndexes(BConds_t* bconds,Mesh_t* mesh)
 void   BConds_AssignBoundaryConditions(BConds_t* bconds,Mesh_t* mesh,double t)
 /** Assign the boundary conditions */
 {
-  unsigned int dim = Mesh_GetDimension(mesh) ;
-  unsigned int n_el = Mesh_GetNbOfElements(mesh) ;
+  int dim = Mesh_GetDimension(mesh) ;
+  size_t n_el = Mesh_GetNbOfElements(mesh) ;
   Element_t* el = Mesh_GetElement(mesh) ;
-  unsigned int n_bconds = BConds_GetNbOfBConds(bconds) ;
+  int n_bconds = BConds_GetNbOfBConds(bconds) ;
   BCond_t* bcond = BConds_GetBCond(bconds) ;
-  unsigned int  ibc ;
 
 
-  for(ibc = 0 ; ibc < n_bconds ; ibc++) {
+  for(int ibc = 0 ; ibc < n_bconds ; ibc++) {
     BCond_t* bcond_i = bcond + ibc ;
-    //int    reg_cl = BCond_GetRegionTag(bcond_i) ;
     char*    reg_cl = BCond_GetRegionName(bcond_i) ;
     char*  inc_cl = BCond_GetNameOfUnknown(bcond_i) ;
-    unsigned int    ie ;
 
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       Element_t* el_i = el + ie ;
       Material_t* mat = Element_GetMaterial(el_i) ;
-      //int reg_el = Element_GetRegionTag(el_i) ;
       char* reg_el = Element_GetRegionName(el_i) ;
       
       if(String_Is(reg_el,reg_cl) && mat != NULL) {
@@ -324,67 +311,3 @@ void   BConds_AssignBoundaryConditions(BConds_t* bconds,Mesh_t* mesh,double t)
     }
   }
 }
-
-
-
-#if 0
-void   BConds_AssignBoundaryConditions(BConds_t* bconds,Mesh_t* mesh,double t)
-/** Assign the boundary conditions */
-{
-  unsigned int dim = Mesh_GetDimension(mesh) ;
-  unsigned int n_el = Mesh_GetNbOfElements(mesh) ;
-  Element_t* el = Mesh_GetElement(mesh) ;
-  unsigned int n_bconds = BConds_GetNbOfBConds(bconds) ;
-  BCond_t* bcond = BConds_GetBCond(bconds) ;
-  unsigned int    ibc ;
-
-
-  for(ibc = 0 ; ibc < n_bconds ; ibc++) {
-    BCond_t* bcond_i = bcond + ibc ;
-    Function_t* fn = BCond_GetFunction(bcond_i) ;
-    double ft = (fn) ? Function_ComputeValue(fn,t) : 1. ;
-    //int    reg_cl = BCond_GetRegionTag(bcond_i) ;
-    char*    reg_cl = BCond_GetRegionName(bcond_i) ;
-    char*  inc_cl = BCond_GetNameOfUnknown(bcond_i) ;
-    Field_t* ch_cl = BCond_GetField(bcond_i) ;
-    unsigned int    ie ;
-
-    for(ie = 0 ; ie < n_el ; ie++) {
-      Element_t* el_i = el + ie ;
-      Material_t* mat = Element_GetMaterial(el_i) ;
-      //int reg_el = Element_GetRegionTag(el_i) ;
-      char* reg_el = Element_GetRegionName(el_i) ;
-      
-      if(String_Is(reg_el,reg_cl) && mat != NULL) {
-        int  nn = Element_GetNbOfNodes(el_i) ;
-        int    neq = Material_GetNbOfEquations(mat) ;
-        int    i,j ;
-
-        /* Index of prescribed unknown */
-        j = Element_FindUnknownPositionIndex(el_i,inc_cl) ;
-        if(j < 0) arret("BConds_AssignBoundaryConditions(1)") ;
-  
-        /* We assign the prescribed value to the unknown */
-        for(i = 0 ; i < nn ; i++) {
-          int jj = Element_GetUnknownPosition(el_i)[i*neq + j] ;
-          
-          if(jj >= 0) {
-            double* u = Element_GetCurrentNodalUnknown(el_i,i) ;
-            
-            if(ch_cl) {
-              double* x = Element_GetNodeCoordinate(el_i,i) ;
-              
-              u[jj] = ft*Field_ComputeValueAtPoint(ch_cl,x,dim) ;
-              
-            } else {
-              
-              u[jj] = 0. ;
-              
-            }
-          }
-        }
-      }
-    }
-  }
-}
-#endif

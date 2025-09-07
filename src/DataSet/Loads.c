@@ -26,7 +26,7 @@ Loads_t* (Loads_New)(const int n_loads)
 
 
   if(n_loads > 0) {
-    Load_t* load  = (Load_t*) Mry_New(Load_t[n_loads]) ;
+    Load_t* load  = (Load_t*) Mry_New(Load_t,n_loads) ;
     int i ;
 
     for(i = 0 ; i < n_loads ; i++) {

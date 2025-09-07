@@ -11,6 +11,9 @@ static  char*  String_tokens[String_MaxNbOfKeyWords] ;
 static  char   String_save[String_MaxLengthOfKeyWords] ;
 static  char   String_line[String_MaxLengthOfLine] ;
 
+static char**      (String_BreakIntoTokens)      (const char*,const char*) ;
+static int         (String_NbOfTokens)           (char const* const*) ;
+
 
 #if 0
 char* (String_Create)(const char* filename)
@@ -64,12 +67,33 @@ void (String_Delete)(void* self)
 #endif
 
 
-
-
-char* String_FindToken3(const char* str,const char* cle,const char* del)
+char* (String_FindToken)(char* str,const char* cle)
 {
-  char**    tok  = String_BreakIntoTokens(cle,del) ;
-  short int ntok = String_NbOfTokens(tok) ;
+  char* c = NULL;
+  
+  if(str) {
+    c = std::strstr(str,cle);
+  }
+        
+  return(c);
+}
+
+char const* (String_FindToken)(char const* str,const char* cle)
+{
+  char const* c = NULL;
+  
+  if(str) {
+    c = std::strstr(str,cle);
+  }
+        
+  return(c);
+}
+
+
+char* (String_FindToken)(char* str,const char* cle,const char* del)
+{
+  char** tok  = String_BreakIntoTokens(cle,del) ;
+  int ntok = String_NbOfTokens(tok) ;
   char* c = String_FindToken(str,tok[0]) ;
 
   if(ntok > 1) {
@@ -87,13 +111,57 @@ char* String_FindToken3(const char* str,const char* cle,const char* del)
   return(c) ;
 }
 
+char const* (String_FindToken)(char const* str,const char* cle,const char* del)
+{
+  char** tok  = String_BreakIntoTokens(cle,del) ;
+  int ntok = String_NbOfTokens(tok) ;
+  char const* c = String_FindToken(str,tok[0]) ;
+
+  if(ntok > 1) {
+    int itok ;
+    
+    for(itok = 1 ; itok < ntok ; itok++) {
+      char const* c0 = String_FindToken(str,tok[itok]) ;
+
+      if(!c) c = c0 ;
+
+      if(c0 && (c0 < c)) c = c0 ;
+    }
+  }
+  
+  return(c) ;
+}
 
 
 
-char* String_FindAndSkipToken3(const char* str,const char* cle,const char* del)
+char* (String_FindAndSkipToken)(char* str,const char* cle)
+{
+  char* c = String_FindToken(str,cle);
+  
+  if(c) {
+    c += std::strlen(cle);
+  }
+        
+  return(c);
+}
+
+char const* (String_FindAndSkipToken)(char const* str,const char* cle)
+{
+  char const* c = String_FindToken(str,cle);
+  
+  if(c) {
+    c += std::strlen(cle);
+  }
+        
+  return(c);
+}
+
+
+
+char* (String_FindAndSkipToken)(char* str,const char* cle,const char* del)
 {
   char**    tok  = String_BreakIntoTokens(cle,del) ;
-  short int ntok = String_NbOfTokens(tok) ;
+  int ntok = String_NbOfTokens(tok) ;
   char* c  = String_FindToken(str,tok[0]) ;
   char* c1 = String_FindAndSkipToken(c,tok[0]) ;
 
@@ -125,10 +193,45 @@ char* String_FindAndSkipToken3(const char* str,const char* cle,const char* del)
   return(c1) ;
 }
 
+char const* (String_FindAndSkipToken)(char const* str,const char* cle,const char* del)
+{
+  char**    tok  = String_BreakIntoTokens(cle,del) ;
+  int ntok = String_NbOfTokens(tok) ;
+  char const* c  = String_FindToken(str,tok[0]) ;
+  char const* c1 = String_FindAndSkipToken(c,tok[0]) ;
+
+  if(ntok > 1) {
+    int itok ;
+    
+    for(itok = 1 ; itok < ntok ; itok++) {
+      char const* c0 = String_FindToken(str,tok[itok]) ;
+
+      if(!c) {
+        c = c0 ;
+        c1 = String_FindAndSkipToken(c,tok[itok]) ;
+      }
+
+      if(c0 && (c0 < c)) {
+        c = c0 ;
+        c1 = String_FindAndSkipToken(c,tok[itok]) ;
+      }
+
+      /* In case of same location select the longest token */
+      if(c0 && (c0 == c)) {
+        char const* c2 = String_FindAndSkipToken(c,tok[itok]) ;
+        
+        if(c2 > c1) c1 = c2 ;
+      }
+    }
+  }
+  
+  return(c1) ;
+}
 
 
 
-char* String_FindNthToken3(const char* str,const char* tok,const int n)
+
+char* (String_FindNthToken)(char* str,const char* tok,const int n)
 {
   char* c = String_FindToken(str,tok) ;
   int i = 1 ;
@@ -144,10 +247,10 @@ char* String_FindNthToken3(const char* str,const char* tok,const int n)
 
 
 #if 1
-char* String_FindNthToken4(const char* str,const char* cle,const char* del,const int n)
+char* (String_FindNthToken)(char* str,const char* cle,const char* del,const int n)
 {
   char**    tok  = String_BreakIntoTokens(cle,del) ;
-  short int ntok = String_NbOfTokens(tok) ;
+  int ntok = String_NbOfTokens(tok) ;
   char*  line = NULL ;
   
   {
@@ -163,7 +266,7 @@ char* String_FindNthToken4(const char* str,const char* cle,const char* del,const
 
 
 #if 0
-char* String_FindNthToken4(const char* str,const char* cle,const char* del,const int n)
+char* (String_FindNthToken)(char* str,const char* cle,const char* del,const int n)
 {
   char* c = String_FindToken(str,cle,del) ;
   int i = 1 ;
@@ -180,9 +283,9 @@ char* String_FindNthToken4(const char* str,const char* cle,const char* del,const
 
 
 
-int String_CountTokens2(const char* str,const char* tok)
+int (String_CountTokens)(char* str,const char* tok)
 {
-  const char* c = str ;
+  char* c = str ;
   int i = 0 ;
 
   while((c = String_FindAndSkipToken(c,tok))) i++ ;
@@ -193,10 +296,10 @@ int String_CountTokens2(const char* str,const char* tok)
 
 
 
-int String_CountTokens3(const char* str,const char* cle,const char* del)
+int (String_CountTokens)(char* str,const char* cle,const char* del)
 {
-  char**    tok  = String_BreakIntoTokens(cle,del) ;
-  short int ntok = String_NbOfTokens(tok) ;
+  char** tok  = String_BreakIntoTokens(cle,del) ;
+  int ntok = String_NbOfTokens(tok) ;
   int     n = 0 ;
   
   /* Compute the nb of times we find the tokens in string */
@@ -214,9 +317,9 @@ int String_CountTokens3(const char* str,const char* cle,const char* del)
 
 
 
-int String_CountTokensAloneInOneLine2(const char* str,const char* tok)
+int (String_CountTokensAloneInOneLine)(char* str,const char* tok)
 {
-  const char* c = str ;
+  char* c = str ;
   int i = 0 ;
 
   while((c = String_FindAndSkipToken(c,tok)) && (String_SkipBlankChars(c)[0] == '\n')) i++ ;
@@ -227,10 +330,10 @@ int String_CountTokensAloneInOneLine2(const char* str,const char* tok)
 
 
 
-int String_CountTokensAloneInOneLine3(const char* str,const char* cle,const char* del)
+int (String_CountTokensAloneInOneLine)(char* str,const char* cle,const char* del)
 {
   char**    tok  = String_BreakIntoTokens(cle,del) ;
-  short int ntok = String_NbOfTokens(tok) ;
+  int ntok = String_NbOfTokens(tok) ;
   int     n = 0 ;
   
   /* Compute the nb of times we find the tokens in string */
@@ -249,7 +352,7 @@ int String_CountTokensAloneInOneLine3(const char* str,const char* cle,const char
 
 
 
-char** String_BreakIntoTokens(const char* str,const char* del)
+char** (String_BreakIntoTokens)(const char* str,const char* del)
 {
   /*
   if(strlen(str) > String_MaxLengthOfKeyWords - 1) {
@@ -282,7 +385,7 @@ char** String_BreakIntoTokens(const char* str,const char* del)
 
 
 
-int String_NbOfTokens(char** tok)
+int (String_NbOfTokens)(char const* const* tok)
 {    
   int ntok = 0 ;
   
@@ -295,11 +398,27 @@ int String_NbOfTokens(char** tok)
 
 
 
-char* String_CopyLine(const char* str)
+#if 0
+int String_ScanNew(char* str,char const* fmt,...)
 {
-  int   len = (str) ? strlen(str) : 0 ;
-  char* eol = String_FindEndOfLine(str) ;
-  int   n   = (eol) ? eol - str : len ;
+  int n;
+  va_list args;
+
+  va_start(args,fmt);
+  n = vsscanf(str,fmt,args);
+  va_end(args);
+
+  return(n);
+}
+#endif
+
+
+
+char* (String_CopyLine)(const char* str)
+{
+  size_t   len = (str) ? strlen(str) : 0 ;
+  char const* eol = String_FindEndOfLine(str) ;
+  size_t   n   = (eol) ? (size_t) (eol - str) : len ;
   
   /*
   if(n > String_MaxLengthOfLine - 1) {
@@ -316,8 +435,8 @@ char* String_CopyLine(const char* str)
 
 
 
-
-const char* String_SkipRemainingComments(const char* str)
+#if 0
+const char* (String_SkipRemainingComments)(const char* str)
 {
   const char* c = str ;
   
@@ -331,7 +450,7 @@ const char* String_SkipRemainingComments(const char* str)
 
 
 
-int String_NbOfUncommentedLines(const char* str,const char* cmt)
+int (String_NbOfUncommentedLines)(const char* str,const char* cmt)
 {
   int n = 0 ;
   
@@ -347,6 +466,7 @@ int String_NbOfUncommentedLines(const char* str,const char* cmt)
   
   return(n) ;
 }
+#endif
 
 
 
@@ -373,7 +493,7 @@ int    (String_FindPositionIndex)(const char* str,const char* const* ss,const in
 }
 
 
-char*   (String_RemoveComments)(char* src,char* dest)
+char*   (String_RemoveComments)(char const* src,char* dest)
 /**  Remove the comments from src and copy it to dest.
  *   The pointer dest should point to an allocated space 
  *   large enough to accomodate the uncommented src. 
@@ -381,9 +501,9 @@ char*   (String_RemoveComments)(char* src,char* dest)
  *   in that case the string src will be modified.
  *   Return the pointer dest. */
 {
-  char* cin = src ;
+  char const* cin = src ;
   char* cou = dest ;
-  
+
   if(src) {
     while(cin[0]) {
     
@@ -392,8 +512,8 @@ char*   (String_RemoveComments)(char* src,char* dest)
         cin = String_FindEndOfLine(cin) ;
       
       } else if(String_BeginsWithMultiLineComment(cin)) {
-        char* c = String_SkipMultiLineComment(cin) ;
-        
+        char const* c = String_SkipMultiLineComment(cin) ;
+
         /*
         if(c) {
           cin = c ;
@@ -494,7 +614,7 @@ int main(int argc, char** argv)
 
 
 
-/* From COS */
+/* From COS (for the record) */
 #if 0
 
 static int rmlit = 0;

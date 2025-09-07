@@ -27,7 +27,7 @@ TextFile_t*   (TextFile_Create)(const char* filename)
 
   /* Memory space for the file name */
   {
-    char* name = (char*) Mry_New(char[TextFile_MaxLengthOfFileName]) ;
+    char* name = (char*) Mry_New(char,TextFile_MaxLengthOfFileName) ;
     
     if(filename) {
       if(strlen(filename) > TextFile_MaxLengthOfFileName) {
@@ -50,9 +50,11 @@ TextFile_t*   (TextFile_Create)(const char* filename)
   
   /* The pointer to the file content, intialized to NULL by default. */
   {
-    TextFile_GetFileContent(textfile) = NULL ;
-    TextFile_GetPreviousPositionInString(textfile) = 0 ;
-    TextFile_GetCurrentPositionInString(textfile) = 0 ;
+    TextFile_SetFileContent(textfile,NULL) ;
+    //TextFile_GetPreviousPositionInString(textfile) = 0 ;
+    //TextFile_GetCurrentPositionInString(textfile) = 0 ;
+    //TextFile_GetPreviousPositionInFileContent(textfile) = NULL ;
+    //TextFile_GetCurrentPositionInFileContent(textfile) = NULL ;
   }
   
   return(textfile) ;
@@ -92,7 +94,7 @@ void (TextFile_Delete)(void* self)
       free(c) ;
     }
     
-    TextFile_GetFileContent(textfile) = NULL ;
+    TextFile_SetFileContent(textfile,NULL) ;
   }
 }
 
@@ -146,8 +148,6 @@ void (TextFile_CloseFile)(TextFile_t* textfile)
   fclose(str) ;
   
   TextFile_GetFileStream(textfile) = NULL ;
-  TextFile_GetPreviousPositionInString(textfile) = 0 ;
-  TextFile_GetCurrentPositionInString(textfile) = 0 ;
 }
 
 
@@ -172,8 +172,8 @@ void (TextFile_StoreFilePosition)(TextFile_t* textfile)
     arret("TextFile_StoreFilePosition") ;
   }
   
-  TextFile_GetPreviousPositionInString(textfile) = TextFile_GetCurrentPositionInString(textfile) ;
-  
+  //TextFile_GetPreviousPositionInString(textfile) = TextFile_GetCurrentPositionInString(textfile) ;
+  TextFile_GetPreviousPositionInFileContent(textfile) = TextFile_GetCurrentPositionInFileContent(textfile) ;
 }
 
 
@@ -189,12 +189,13 @@ void (TextFile_MoveToStoredFilePosition)(TextFile_t* textfile)
     arret("TextFile_MoveToStoredFilePosition") ;
   }
   
-  TextFile_GetCurrentPositionInString(textfile) = TextFile_GetPreviousPositionInString(textfile) ;
+  //TextFile_GetCurrentPositionInString(textfile) = TextFile_GetPreviousPositionInString(textfile) ;
+  TextFile_GetCurrentPositionInFileContent(textfile) = TextFile_GetPreviousPositionInFileContent(textfile) ;
 }
 
 
 
-char* (TextFile_ReadLineFromCurrentFilePositionInString)(TextFile_t* textfile,char* line,int n)
+char* (TextFile_ReadLineFromCurrentFilePositionInString)(TextFile_t* textfile,char* line,size_t n)
 /** Reads a line from the textfile at the current position of its string
  *  and stores it into the string pointed to by line. It stops when 
  *  either (n-1) characters are read, the newline character is read,
@@ -213,23 +214,27 @@ char* (TextFile_ReadLineFromCurrentFilePositionInString)(TextFile_t* textfile,ch
   /* Reads a non empty line from the current position of the string */
   do {
     char* cur = TextFile_GetCurrentPositionInFileContent(textfile) ;
+    //char* cur = beg + TextFile_GetCurrentPositionInString(textfile) ;
     char* eol = String_FindEndOfLine(cur) ;
     char* nex = (eol) ? eol + 1 : end ;
+    ptrdiff_t ndif = nex - cur;
     
-    if(nex == cur) {
+    if(ndif <= 0) {
       return(NULL) ;
     }
     
     {
-      int n0 = nex - cur ;
-      int n1 = Math_Min(n0,n) ;
-      char* cur1 = cur + n1 ;
+      size_t n0 = (ndif > 0) ? (size_t) ndif : 0;
+      size_t n1 = Math_Min(n0,n) ;
+      //char* cur1 = cur + n1 ;
       
       strncpy(line,cur,n1) ;
       c = line ;
       line[n1] = '\0' ;
     
-      TextFile_GetCurrentPositionInString(textfile) = cur1 - beg ;
+      //TextFile_GetCurrentPositionInString(textfile) = cur1 - beg ;
+      //TextFile_GetCurrentPositionInString(textfile) += n1 ;
+      TextFile_GetCurrentPositionInFileContent(textfile) += n1 ;
     }
     
     /* Eliminate the first blank characters */
@@ -284,17 +289,16 @@ char* (TextFile_ReadLineFromCurrentFilePosition)(TextFile_t* textfile,char* line
 
 
 
-long int TextFile_CountNbOfEatenCharacters(TextFile_t* textfile)
+size_t TextFile_CountNbOfEatenCharacters(TextFile_t* textfile)
 {
-  long int count = 0 ;
+  size_t count = 0 ;
   
   if(TextFile_Exists(textfile)) {
     fpos_t* pos  = TextFile_GetFilePosition(textfile) ;
     fpos_t* cpos = NULL ;
     FILE* str = TextFile_OpenFile(textfile,"r") ;
-    char c ;
   
-    while((cpos != pos) && ((c = fgetc(str)) != EOF)) {
+    while((cpos != pos) && (fgetc(str) != EOF)) {
     
       /* Store the current file position of the stream in pos */
       if(fgetpos(str,cpos)) {
@@ -313,18 +317,17 @@ long int TextFile_CountNbOfEatenCharacters(TextFile_t* textfile)
 
 
 
-long int TextFile_CountNbOfCharacters(TextFile_t* textfile)
+size_t TextFile_CountNbOfCharacters(TextFile_t* textfile)
 /** Return the number of character of the file including end of file */
 {
-  long int count = 0 ;
+  size_t count = 0 ;
   
   if(TextFile_Exists(textfile)) {
     FILE* str = TextFile_OpenFile(textfile,"r") ;
-    char c ;
     
     count = 1 ;
   
-    while((c = fgetc(str)) != EOF) {
+    while(fgetc(str) != EOF) {
     
       count++ ;
     
@@ -337,17 +340,18 @@ long int TextFile_CountNbOfCharacters(TextFile_t* textfile)
 }
 
 
-int TextFile_CountTheMaxNbOfCharactersPerLine(TextFile_t* textfile)
+size_t TextFile_CountTheMaxNbOfCharactersPerLine(TextFile_t* textfile)
 /** Return the max number of character per line including end of line */
 {
-  int linelength = 0 ;
+  size_t linelength = 0 ;
   
   if(TextFile_Exists(textfile)) {
     FILE* str = TextFile_OpenFile(textfile,"r") ;
-    int ll = 0 ;
-    char c ;
+    size_t ll = 0 ;
+    int i;
   
-    while((c = fgetc(str)) != EOF) {
+    while((i = fgetc(str)) != EOF) {
+      char c = (char) i; ;
     
       if(c != '\n') {
         ll++ ;
@@ -368,37 +372,6 @@ int TextFile_CountTheMaxNbOfCharactersPerLine(TextFile_t* textfile)
 
 
 
-#if 0 // Suppress because it is not used and warning about tmpnam
-char* (TextFile_FileCopy)(TextFile_t* textfile)
-/** Copy the file in a temporary file
- *  Return its name. */
-{
-  char*   targetfile = tmpnam(NULL) ; /* temporary filename */
-  FILE*   target  = fopen(targetfile,"w") ;
-  //char    targetfile[] = "tmpXXXXXX" ;
-  //int     descriptor   = mkstemp(targetfile) ;
-  //FILE*   target  = (descriptor != -1) ? fopen(targetfile,"w") : NULL ;
-  
-  if(!target) {
-    arret("TextFile_FileCopy(2)") ;
-  }
-  
-  {
-    char c ;
-    FILE*   source  = TextFile_OpenFile(textfile,"r") ;
-    
-    while( (c = fgetc(source)) != EOF ) fputc(c,target) ;
-  }
-    
-  TextFile_CloseFile(textfile) ;
-  fclose(target) ;
-  
-  return(targetfile) ;
-}
-#endif
-
-
-
 FILE* (TextFile_FileStreamCopy)(TextFile_t* textfile)
 /** Copy the file in a temporary binary file
  *  Return the stream of the temporary file */
@@ -407,9 +380,13 @@ FILE* (TextFile_FileStreamCopy)(TextFile_t* textfile)
   FILE*   source = TextFile_OpenFile(textfile,"r") ;
   
   {
-    char c ;
+    int i ;
     
-    while( (c = fgetc(source)) != EOF ) fputc(c,target) ;
+    while( (i = fgetc(source)) != EOF ) {
+      char c = (char) i;
+      
+      fputc(c,target) ;
+    }
   }
     
   TextFile_CloseFile(textfile) ;
@@ -432,17 +409,17 @@ char* (TextFile_StoreFileContent)(TextFile_t* textfile)
     
     free(content) ;
     
-    TextFile_GetFileContent(textfile) = NULL ;
+    TextFile_SetFileContent(textfile,NULL) ;
   }
   
   /* Allocate the memory space for the content */
   {
-    int n = TextFile_CountNbOfCharacters(textfile) ;
+    size_t n = TextFile_CountNbOfCharacters(textfile) ;
     
     if(n) {
-      char* content = (char*) Mry_New(char[n]) ;
+      char* content = (char*) Mry_New(char,n) ;
   
-      TextFile_GetFileContent(textfile) = content ;
+      TextFile_SetFileContent(textfile,content);
     }
   }
   
@@ -456,7 +433,7 @@ char* (TextFile_StoreFileContent)(TextFile_t* textfile)
     
       //while( (*c = fgetc(str)) != EOF ) c++ ;
       while( (i = fgetc(str)) != EOF ) {
-        c[0] = i ;
+        c[0] = (char) i ;
         c++ ;
       }
     

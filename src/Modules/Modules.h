@@ -40,7 +40,7 @@ extern Module_t*  (Modules_FindModule)(Modules_t*,const char*) ;
 
 
 struct Modules_t {              /* modules */
-  unsigned int n_modules ;      /* nb of modules */
+  int n_modules ;      /* nb of modules */
   Module_t* module ;            /* module */
 } ;
 

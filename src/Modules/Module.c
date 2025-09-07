@@ -25,7 +25,7 @@ Module_t* (Module_New)(void)
   {
     /* Allocation of space for the code name */
     {
-      char* code = (char*) Mry_New(char[Module_MaxLengthOfKeyWord]) ;
+      char* code = (char*) Mry_New(char,Module_MaxLengthOfKeyWord) ;
       
       Module_SetCodeNameOfModule(module,code) ;
     }
@@ -33,7 +33,7 @@ Module_t* (Module_New)(void)
     
     /* Allocation of space for the short title */
     {
-      char* title = (char*) Mry_New(char[Module_MaxLengthOfShortTitle]) ;
+      char* title = (char*) Mry_New(char,Module_MaxLengthOfShortTitle) ;
       
       Module_SetShortTitle(module,title) ;
     
@@ -43,7 +43,7 @@ Module_t* (Module_New)(void)
     
     /* Allocation of space for the author names */
     {
-      char* names = (char*) Mry_New(char[Module_MaxLengthOfAuthorNames]) ;
+      char* names = (char*) Mry_New(char,Module_MaxLengthOfAuthorNames) ;
       
       Module_SetNameOfAuthors(module,names) ;
       
@@ -108,7 +108,7 @@ void* (Module_Initialize)(void* self)
   {
     /* Allocation of space for the code name */
     {
-      char* code = (char*) Mry_New(char[Module_MaxLengthOfKeyWord]) ;
+      char* code = (char*) Mry_New(char,Module_MaxLengthOfKeyWord) ;
       
       Module_SetCodeNameOfModule(module_i,code) ;
     }
@@ -116,7 +116,7 @@ void* (Module_Initialize)(void* self)
     
     /* Allocation of space for the short title */
     {
-      char* title = (char*) Mry_New(char[Module_MaxLengthOfShortTitle]) ;
+      char* title = (char*) Mry_New(char,Module_MaxLengthOfShortTitle) ;
       
       Module_SetShortTitle(module_i,title) ;
     
@@ -126,7 +126,7 @@ void* (Module_Initialize)(void* self)
     
     /* Allocation of space for the author names */
     {
-      char* names = (char*) Mry_New(char[Module_MaxLengthOfAuthorNames]) ;
+      char* names = (char*) Mry_New(char,Module_MaxLengthOfAuthorNames) ;
       
       Module_SetNameOfAuthors(module_i,names) ;
       

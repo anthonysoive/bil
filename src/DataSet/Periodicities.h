@@ -26,7 +26,7 @@ extern void             (Periodicities_UpdateGraph)(Mesh_t*,Graph_t*) ;
 
 
 struct Periodicities_t {            /* Periodicities */
-  unsigned int   nbperiod ;         /* Nb of periodicities */
+  int   nbperiod ;         /* Nb of periodicities */
   Periodicity_t* periodicity ;      /* Periodicity */
 } ;
 

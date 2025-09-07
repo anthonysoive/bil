@@ -23,7 +23,7 @@ extern void             (OutputFiles_Delete)(void*) ;
 extern void     (OutputFiles_BackupSolutionAtTime_)(OutputFiles_t*,DataSet_t*,double,int) ;
 extern void     (OutputFiles_BackupSolutionAtPoint_)(OutputFiles_t*,DataSet_t*,double,const char*) ;
 extern Views_t* (OutputFiles_CreateGlobalViews)(OutputFiles_t*,Models_t*,TextFile_t*) ;
-extern double   (OutputFiles_Version)(OutputFiles_t*) ;
+extern char*   (OutputFiles_Version)(OutputFiles_t*) ;
 
 
 

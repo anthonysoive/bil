@@ -14,7 +14,7 @@
 #define TITLE "Mechanics from a microstructure (2017)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */
@@ -98,12 +98,12 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialStress[9];
 };
-}
-
-using namespace BaseName();
 
 
 static MPM_t mpm;
+}
+
+using namespace BaseName();
 
 
 
@@ -453,7 +453,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) */
 {
-  int i = mpm.ComputeTangentStifnessMatrixByFEM(el,t,dt,k);
+  int i = mpm.ComputeTangentStiffnessMatrixByFEM(el,t,dt,k);
   
   return(i);
 }

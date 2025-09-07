@@ -11,7 +11,7 @@
 #define TITLE "Plasticity with hardening (2017)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */
@@ -97,12 +97,39 @@ template<typename T = double>
 struct ConstantValues_t {
   T InitialStress[9];
 };
+
+
+/* The parameters below are read in the input data file */
+struct Parameters_t {
+  double Gravity;
+  double MassDensity_solid;
+  double InitialStress[9];
+  double PoissonRatio;
+  double YoungModulus;
+  double MacroStrainGradient[9];
+  double MacroFunctionIndex[9];
+  union {
+    struct {
+      double InitialCumulativePlasticShearStrain;
+      double Cohesion;
+      double FrictionAngle;
+      double DilatancyAngle;
+    };
+    struct {
+      double InitialPreconsolidationPressure;
+      double SlopeOfSwellingLine;
+      double SlopeOfVirginConsolidationLine;
+      double SlopeOfCriticalStateLine;
+      double InitialVoidRatio;
+    };
+  };
+};
+
+
+MPM_t mpm;
 }
 
 using namespace BaseName();
-
-
-static MPM_t mpm;
 
 
 
@@ -125,22 +152,17 @@ static double* MacroStrain(Element_t*,double) ;
 
 
 /* Material parameters */
-static double  gravity ;
-static double  rho_s ;
-static double* sig0 ;
-static double  hardv0 ;
 static double  macrogradient[9] ;
 static double  macrostrain[9] ;
-static double* cijkl ;
-static Plasticity_t* plasty ;
-static int     plasticmodel ;
-#if SharedMS_APIis(OpenMP)
-  #pragma omp threadprivate(gravity,rho_s,sig0,hardv0,macrogradient,macrostrain,cijkl,plasty,plasticmodel)
-#endif
+static enum {
+  None,
+  DruckerPrager,
+  CamClay
+} plasticmodel;
 
 #define  SetPlasticModel(I) \
          do { \
-           if(plasticmodel < 0) { \
+           if(plasticmodel == None) { \
              plasticmodel = I ; \
            } else if(plasticmodel != I) { \
              Message_FatalError("Incompatible model") ; \
@@ -154,80 +176,77 @@ static int     plasticmodel ;
 
 
 
+#if SharedMS_APIis(OpenMP)
+  #pragma omp threadprivate(macrogradient,macrostrain,plasticmodel)
+#endif
 /* To treat later */
 #if SharedMS_APIis(OpenMP)
   #error "Not available yet" 
-  #pragma omp threadprivate(Variable,Variable_n)
 #endif
 
 
-
-int pm(const char* s)
+int pm(const char *s)
 {
-         if(!strcmp(s,"gravity")) {
-    return(0) ;
-  } else if(!strcmp(s,"rho_s")) {
-    return(1) ;
-  } else if(!strcmp(s,"poisson")) {
-    return(2) ;
-  } else if(!strcmp(s,"young")) {
-    return(3) ;
-  } else if(!strcmp(s,"sig0"))  {
-    return(4) ;
+#define Parameters_Index(V)  CustomValues_Index(Parameters_t,V,double)
+         if(!strcmp(s,"gravity")) { 
+    return (Parameters_Index(Gravity)) ;
+  } else if(!strcmp(s,"rho_s")) { 
+    return (Parameters_Index(MassDensity_solid)) ;
+  } else if(!strcmp(s,"young")) { 
+    return (Parameters_Index(YoungModulus)) ;
+  } else if(!strcmp(s,"sig0")) {
+    return(Parameters_Index(InitialStress[0])) ;
   } else if(!strncmp(s,"sig0_",5)) {
     int i = (strlen(s) > 5) ? s[5] - '1' : 0 ;
     int j = (strlen(s) > 6) ? s[6] - '1' : 0 ;
-    
-    return(4 + 3*i + j) ;
-    
-    /* Model 1: Drucker-Prager */
-  } else if(!strcmp(s,"initial_cumulative_plastic_shear_strain")) {
-    SetPlasticModel(1) ;
-    return(13) ;
-  } else if(!strcmp(s,"cohesion")) {
-    SetPlasticModel(1) ;
-    return(14) ;
-  } else if(!strcmp(s,"friction")) {
-    SetPlasticModel(1) ;
-    return(15) ;
-  } else if(!strcmp(s,"dilatancy")) {
-    SetPlasticModel(1) ;
-    return(16) ;
-    
-    /* Model 2: Cam-clay */
-  } else if(!strcmp(s,"initial_pre-consolidation_pressure")) {
-    SetPlasticModel(2) ;
-    return(13) ;
-  } else if(!strcmp(s,"slope_of_swelling_line")) {
-    SetPlasticModel(2) ;
-    return(14) ;
-  } else if(!strcmp(s,"slope_of_virgin_consolidation_line")) {
-    SetPlasticModel(2) ;
-    return(15) ;
-  } else if(!strcmp(s,"slope_of_critical_state_line"))  {
-    SetPlasticModel(2) ;
-    return(16) ;
-  } else if(!strcmp(s,"initial_void_ratio")) {
-    SetPlasticModel(2) ;
-    return(17) ;
-    
+    return(Parameters_Index(InitialStress[3*i + j])) ;
+  } else if(!strcmp(s,"poisson"))       { 
+    return (Parameters_Index(PoissonRatio)) ;
   } else if(!strcmp(s,"macro-gradient")) {
-    return(18) ;
+    return(Parameters_Index(MacroStrainGradient[0])) ;
   } else if(!strncmp(s,"macro-gradient_",15)) {
     int i = (strlen(s) > 15) ? s[15] - '1' : 0 ;
     int j = (strlen(s) > 16) ? s[16] - '1' : 0 ;
-    
-    return(18 + 3*i + j) ;
-    
+    return(Parameters_Index(MacroStrainGradient[3*i + j])) ;
   } else if(!strcmp(s,"macro-fctindex")) {
-    return(27) ;
+    return(Parameters_Index(MacroFunctionIndex[0])) ;
   } else if(!strncmp(s,"macro-fctindex_",15)) {
     int i = (strlen(s) > 15) ? s[15] - '1' : 0 ;
     int j = (strlen(s) > 16) ? s[16] - '1' : 0 ;
+    return(Parameters_Index(MacroFunctionIndex[3*i + j])) ;
     
-    return(27 + 3*i + j) ;
+    /* Model 1: Drucker-Prager */
+  } else if(!strcmp(s,"initial_cumulative_plastic_shear_strain")) {
+    SetPlasticModel(DruckerPrager) ;
+    return (Parameters_Index(InitialCumulativePlasticShearStrain)) ;
+  } else if(!strcmp(s,"cohesion")) {
+    SetPlasticModel(DruckerPrager) ;
+    return (Parameters_Index(Cohesion)) ;
+  } else if(!strcmp(s,"friction")) {
+    SetPlasticModel(DruckerPrager) ;
+    return (Parameters_Index(FrictionAngle)) ;
+  } else if(!strcmp(s,"dilatancy")) {
+    return (Parameters_Index(DilatancyAngle)) ;
+    SetPlasticModel(DruckerPrager) ;
     
+    /* Model 2: Cam-clay */
+  } else if(!strcmp(s,"initial_pre-consolidation_pressure")) {
+    SetPlasticModel(CamClay) ;
+    return (Parameters_Index(InitialPreconsolidationPressure)) ;
+  } else if(!strcmp(s,"slope_of_swelling_line")) {
+    SetPlasticModel(CamClay) ;
+    return (Parameters_Index(SlopeOfSwellingLine)) ;
+  } else if(!strcmp(s,"slope_of_virgin_consolidation_line")) {
+    SetPlasticModel(CamClay) ;
+    return (Parameters_Index(SlopeOfVirginConsolidationLine)) ;
+  } else if(!strcmp(s,"slope_of_critical_state_line"))  {
+    SetPlasticModel(CamClay) ;
+    return (Parameters_Index(SlopeOfCriticalStateLine)) ;
+  } else if(!strcmp(s,"initial_void_ratio")) {
+    SetPlasticModel(CamClay) ;
+    return (Parameters_Index(InitialVoidRatio)) ;
   } else return(-1) ;
+#undef Parameters_Index
 }
 
 
@@ -241,7 +260,7 @@ double* MacroGradient(Element_t* el,double t)
     Functions_t* fcts = Material_GetFunctions(Element_GetMaterial(el)) ;
     Function_t*  fct = Functions_GetFunction(fcts) ;
     int nf = Functions_GetNbOfFunctions(fcts) ;
-    double* fctindex = &GetProperty("macro-fctindex") ;
+    double* fctindex = &Element_GetPropertyValue(el,"macro-fctindex") ;
     int i ;
     
     for(i = 0 ; i < 9 ; i++) {
@@ -256,7 +275,7 @@ double* MacroGradient(Element_t* el,double t)
   }
   
   {
-    double* g = &GetProperty("macro-gradient") ;
+    double* g = &Element_GetPropertyValue(el,"macro-gradient") ;
     int i ;
     
     for(i = 0 ; i < 9 ; i++) {
@@ -290,11 +309,12 @@ double* MacroStrain(Element_t* el,double t)
 
 void GetProperties(Element_t* el,double t)
 {
-  gravity = GetProperty("gravity") ;
-  rho_s   = GetProperty("rho_s") ;
-  sig0    = &GetProperty("sig0") ;
-  //hardv0  = GetProperty("hardv0") ;
+  //gravity = Element_GetPropertyValue(el,"gravity") ;
+  //rho_s   = Element_GetPropertyValue(el,"rho_s") ;
+  //sig0    = &Element_GetPropertyValue(el,"sig0") ;
+  //hardv0  = Element_GetPropertyValue(el,"hardv0") ;
   
+  #if 0
   {
     int id = SharedMS_CurrentThreadId ;
     GenericData_t* gdat = Element_FindMaterialGenericData(el,"Plasticity") ;
@@ -314,6 +334,7 @@ void GetProperties(Element_t* el,double t)
       hardv0  = Plasticity_GetHardeningVariable(plasty)[0] ;
     }
   }
+  #endif
 }
 
 
@@ -353,77 +374,79 @@ int ReadMatProp(Material_t* mat,DataFile_t* datafile)
 /** Read the material properties in the stream file ficd 
  *  Return the nb of (scalar) properties of the model */
 {
-  int NbOfProp = 36 ;
+  int NbOfProp = ((int) sizeof(Parameters_t)/sizeof(double)) ;
   #if SharedMS_APIis(None)
     int nthreads = 1 ;
   #else
     int nthreads = SharedMS_MaxNbOfThreads ;
   #endif
-  int i ;
 
   /* Par defaut tout a 0 */
-  for(i = 0 ; i < NbOfProp ; i++) Material_GetProperty(mat)[i] = 0. ;
-  
-  plasticmodel = -1 ;
-  
+  Material_SetPropertiesToZero(mat,NbOfProp);
+  plasticmodel = None ;
   Material_ScanProperties(mat,datafile,pm) ;
-  
-  
-  
+
   /* Plasticity */
   {
-    plasty = Mry_Create(Plasticity_t,nthreads,Plasticity_Create()) ;
+    Plasticity_t* plasty = Mry_Create(Plasticity_t,nthreads,Plasticity_Create()) ;
 
     Material_AppendData(mat,nthreads,plasty,"Plasticity") ;
   }
   
   /* Elastic and plastic properties */
-  for(i = 0 ; i < nthreads ; i++) {
-    Plasticity_t* plastyi = plasty + i ;
-    Elasticity_t* elasty = Plasticity_GetElasticity(plastyi) ;
+  {
+    Plasticity_t* plasty = Material_FindData(mat,"Plasticity") ;
     
-    {
-      /* Elasticity */
+    for(int i = 0 ; i < nthreads ; i++) {
+      Plasticity_t* plastyi = plasty + i ;
+      Elasticity_t* elasty = Plasticity_GetElasticity(plastyi) ;
+    
       {
-        double young   = Material_GetPropertyValue(mat,"young") ;
-        double poisson = Material_GetPropertyValue(mat,"poisson") ;
+        /* Parameters */
+        Parameters_t& par = ((Parameters_t*) Material_GetProperty(mat))[0] ;
         
-        Elasticity_SetToIsotropy(elasty) ;
-        Elasticity_SetParameters(elasty,young,poisson) ;
+        /* Elasticity */
+        {
+          double young = par.YoungModulus;
+          double poisson = par.PoissonRatio;
         
-        Elasticity_UpdateElasticTensors(elasty) ;
-      }
+          Elasticity_SetToIsotropy(elasty) ;
+          Elasticity_SetParameters(elasty,young,poisson) ;
+        
+          Elasticity_UpdateElasticTensors(elasty) ;
+        }
       
-      /* Drucker-Prager */
-      if(plasticmodel == 1) {
-        double cohesion = Material_GetPropertyValue(mat,"cohesion") ;
-        double af       = Material_GetPropertyValue(mat,"friction")*M_PI/180. ;
-        double ad       = Material_GetPropertyValue(mat,"dilatancy")*M_PI/180. ;
+        /* Drucker-Prager */
+        if(plasticmodel == DruckerPrager) {
+          double cohesion = par.Cohesion;
+          double af       = par.FrictionAngle*M_PI/180. ;
+          double ad       = par.DilatancyAngle*M_PI/180. ;
         
-        Plasticity_SetTo(plastyi,DruckerPrager) ;
-        Plasticity_SetParameters(plastyi,af,ad,cohesion,NULL) ;
+          Plasticity_SetTo(plastyi,DruckerPrager) ;
+          Plasticity_SetParameters(plastyi,af,ad,cohesion,NULL) ;
       
-      /* Cam-Clay with linear elasticity */
-      } else if(plasticmodel == 2) {
-        double kappa  = Material_GetPropertyValue(mat,"slope_of_swelling_line") ;
-        double lambda = Material_GetPropertyValue(mat,"slope_of_virgin_consolidation_line") ;
-        double M      = Material_GetPropertyValue(mat,"slope_of_critical_state_line") ;
-        double pc0    = Material_GetPropertyValue(mat,"initial_pre-consolidation_pressure") ;
-        double e0     = Material_GetPropertyValue(mat,"initial_void_ratio") ;
+        /* Cam-Clay with linear elasticity */
+        } else if(plasticmodel == CamClay) {
+          double kappa  = par.SlopeOfSwellingLine;
+          double lambda = par.SlopeOfVirginConsolidationLine;
+          double M      = par.SlopeOfCriticalStateLine;
+          double pc0    = par.InitialPreconsolidationPressure;
+          double e0     = par.InitialVoidRatio ;
         
-        Plasticity_SetTo(plastyi,CamClay) ;
-        Plasticity_SetParameters(plastyi,kappa,lambda,M,pc0,e0) ;
+          Plasticity_SetTo(plastyi,CamClay) ;
+          Plasticity_SetParameters(plastyi,kappa,lambda,M,pc0,e0) ;
         
-      } else {
-        Message_FatalError("Unknown model") ;
+        } else {
+          Message_FatalError("Unknown model") ;
+        }
       }
-    }
 
 #if 0
-    {      
-      Elasticity_PrintStiffnessTensor(elasty) ;
-    }
+      {      
+        Elasticity_PrintStiffnessTensor(elasty) ;
+      }
 #endif
+    }
   }
 
   return(NbOfProp) ;
@@ -530,7 +553,7 @@ int  ComputeImplicitTerms(Element_t* el,double t,double dt)
 int  ComputeMatrix(Element_t* el,double t,double dt,double* k)
 /** Compute the matrix (k) */
 {
-  int i = mpm.ComputeTangentStifnessMatrixByFEM(el,t,dt,k);
+  int i = mpm.ComputeTangentStiffnessMatrixByFEM(el,t,dt,k);
   
   return(i);
 }
@@ -658,6 +681,8 @@ int MPM_t::SetTangentMatrix(Element_t* el,double const& t,double const& dt,int c
       /* Tangent stiffness matrix */
       {
         /* Criterion */
+        int id = SharedMS_CurrentThreadId ;
+        Plasticity_t* plasty = Element_FindMaterialData(el,"Plasticity") + id ;
         double crit = val.CriterionValue ;
         
         if(crit >= 0.) {
@@ -708,10 +733,14 @@ Values_d* MPM_t::SetInputs(Element_t* el,const double& t,const int& p,double con
 Values_d*  MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Values_d const& val_n,Values_d& val)
 /** Compute the secondary variables from the primary ones. */
 {
-  int dim = Element_GetDimensionOfSpace(el) ;
+  /* Parameters */
+  Parameters_t& par = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  double& gravity = par.Gravity;
+  double& rho_s   = par.MassDensity_solid;
+  double* sig0    = par.InitialStress;
   /* Strains */
   double* eps = val.Strain ;
-  double* eps_n = val_n.Strain ;
+  double const* eps_n = val_n.Strain ;
   /* Plastic strains */
   double* eps_p  = val.PlasticStrain ;
   double const* eps_pn = val_n.PlasticStrain ;
@@ -720,36 +749,38 @@ Values_d*  MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Value
   {
     double* sig   = val.Stress ;
     double const* sig_n = val_n.Stress ;
-    double  hardv = val_n.HardeningVariable ;
+    double const hardv_n = val_n.HardeningVariable ;
     
     
     {
+      int id = SharedMS_CurrentThreadId ;
+      Plasticity_t* plasty = Element_FindMaterialData(el,"Plasticity") + id ;
+      Elasticity_t* elasty = Plasticity_GetElasticity(plasty) ;
+      double* cijkl = Elasticity_GetStiffnessTensor(elasty) ;
       double  deps[9] ;
-      int    i ;
       
       /* Incremental deformations */
-      for(i = 0 ; i < 9 ; i++) deps[i] =  eps[i] - eps_n[i] ;
+      for(int i = 0 ; i < 9 ; i++) deps[i] =  eps[i] - eps_n[i] ;
     
       /* Elastic trial stresses */
-      for(i = 0 ; i < 9 ; i++) sig[i] = sig_n[i] ;
+      for(int i = 0 ; i < 9 ; i++) sig[i] = sig_n[i] ;
     
       #define C(i,j)  (cijkl[(i)*9+(j)])
-      for(i = 0 ; i < 9 ; i++) {
-        int  j ;
-      
-        for(j = 0 ; j < 9 ; j++) {
+      for(int i = 0 ; i < 9 ; i++) {      
+        for(int j = 0 ; j < 9 ; j++) {
           sig[i] += C(i,j)*deps[j] ;
         }
       }
       #undef C
     
       /* Plastic strains */
-      for(i = 0 ; i < 9 ; i++) eps_p[i] = eps_pn[i] ;
+      for(int i = 0 ; i < 9 ; i++) eps_p[i] = eps_pn[i] ;
     
       //Plasticity_FreeBuffer(plasty) ;
     
       /* Projection */
       {
+        double hardv = hardv_n ;
         double* crit = ReturnMapping(sig,eps_p,&hardv) ;
         double* dlambda = Plasticity_GetPlasticMultiplier(plasty) ;
         
@@ -764,10 +795,10 @@ Values_d*  MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Value
   /* Backup body force */
   {
     {
+      int dim = Element_GetDimensionOfSpace(el) ;
       double* fmass = val.BodyForce ;
-      int i ;
       
-      for(i = 0 ; i < 3 ; i++) fmass[i] = 0 ;
+      for(int i = 0 ; i < 3 ; i++) fmass[i] = 0 ;
       fmass[dim - 1] = (rho_s)*gravity ;
     }
   }
@@ -780,7 +811,13 @@ Values_d*  MPM_t::Integrate(Element_t* el,const double& t,const double& dt,Value
 
 Values_d* MPM_t::Initialize(Element_t* el,double const& t,Values_d& val)
 {
+  /* Parameters */
+  Parameters_t& par = ((Parameters_t*) Element_GetProperty(el))[0] ;
+  double* sig0   = par.InitialStress;
   DataFile_t* datafile = Element_GetDataFile(el) ;
+  int id = SharedMS_CurrentThreadId ;
+  Plasticity_t* plasty = Element_FindMaterialData(el,"Plasticity") + id ;
+  double hardv0  = Plasticity_GetHardeningVariable(plasty)[0] ;
   
     {
       /* Initial stresses, hardening variable */

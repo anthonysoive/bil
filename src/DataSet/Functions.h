@@ -20,7 +20,7 @@ extern void         (Functions_Delete)  (void*) ;
 
 
 struct Functions_t {          /* time functions */
-  unsigned int n_fn ;         /* nb of functions */
+  int n_fn ;         /* nb of functions */
   Function_t* fn ;            /* function */
 } ;
 

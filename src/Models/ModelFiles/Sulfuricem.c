@@ -35,7 +35,7 @@
 #define TITLE   "Sulfuric acid attack of concrete" 
 #define AUTHORS "Grandclerc-Yuan-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of nodes (el must be used below) */

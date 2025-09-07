@@ -121,7 +121,7 @@ extern double*    (FVM_ComputeMassBalanceEquationResidu)(FVM_t*,double const*,do
 extern double*    (FVM_ComputeCellVolumes)(FVM_t*) ;
 extern double*    (FVM_ComputeCellSurfaceAreas)(FVM_t*) ;
 extern double*    (FVM_ComputeCellVolumesAndSurfaceAreas)(FVM_t*) ;
-extern short int  (FVM_FindLocalCellIndex)(FVM_t*,double*) ;
+extern unsigned short int  (FVM_FindLocalCellIndex)(FVM_t*,double*) ;
 extern double*    (FVM_ComputeIntercellDistances)(FVM_t*) ;
 extern double*    (FVM_ComputeTheNodalFluxVector)(FVM_t*,double*) ;
 extern double     (FVM_AverageCurrentImplicitTerm)(Mesh_t*,const char*,const int,const int) ;

@@ -10,8 +10,8 @@ struct Options_t;
 
 extern CoordinateFormat_t* (CoordinateFormat_Create)(Mesh_t*,Options_t*,const int) ;
 extern void                (CoordinateFormat_Delete)(void*) ;
-extern int                 (CoordinateFormat_AssembleElementMatrix)(CoordinateFormat_t*,double*,int*,int*,int,int) ;
-extern void                (CoordinateFormat_PrintMatrix)(CoordinateFormat_t*,const int,const char*) ;
+extern size_t              (CoordinateFormat_AssembleElementMatrix)(CoordinateFormat_t*,double*,int*,int*,int,size_t) ;
+extern void                (CoordinateFormat_PrintMatrix)(CoordinateFormat_t*,size_t,const char*) ;
 
 
 
@@ -41,13 +41,11 @@ extern void                (CoordinateFormat_PrintMatrix)(CoordinateFormat_t*,co
 /* Coordinate format:
  * a_ij = val[k] ; j = colind[k] ; i = rowind[k]   for  k = 0,..,nnz-1 */
 struct CoordinateFormat_t {
-  int     nnz ;       /* Nb of non zero values */
-  int     lvalue ;    /* Lentgth of array value */
-  int     lindex ;    /* Length of array index */
+  size_t     nnz ;       /* Nb of non zero values */
+  size_t     lvalue ;    /* Lentgth of array value */
+  size_t     lindex ;    /* Length of array index */
   double* value ;     /* Values */
   int*    index ;     /* Indices */
-  int*    colind ;    /* Column indices of the non zeros */
-  int*    rowind ;    /* Row indices of the non zeros */
   //Options_t* options ;
 } ;
 

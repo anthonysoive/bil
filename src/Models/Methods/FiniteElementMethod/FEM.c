@@ -46,7 +46,7 @@ _INLINE_ FEM_t* (FEM_Create)(void)
     int const nn = Element_MaxNbOfNodes ;
     int const neq = Model_MaxNbOfEquations ;
     int const ndof = nn*neq ;
-    double* output = (double*) Mry_New(double[ndof*ndof]) ;
+    double* output = (double*) Mry_New(double,ndof*ndof) ;
     
     FEM_SetOutput(fem,output) ;
   }
@@ -55,7 +55,7 @@ _INLINE_ FEM_t* (FEM_Create)(void)
   /* Space allocation for input */
   {
     int const np = IntFct_MaxNbOfIntPoints ;
-    double* input = (double*) Mry_New(double[np*FEM_MaxShift]) ;
+    double* input = (double*) Mry_New(double,np*FEM_MaxShift) ;
     
     FEM_SetInput(fem,input) ;
   }
@@ -63,7 +63,7 @@ _INLINE_ FEM_t* (FEM_Create)(void)
   
   /* Space allocation for pintfct */
   {
-    IntFct_t** pintfct = (IntFct_t**) Mry_New(IntFct_t*[IntFcts_MaxNbOfIntFcts]) ;
+    IntFct_t** pintfct = (IntFct_t**) Mry_New(IntFct_t*,IntFcts_MaxNbOfIntFcts) ;
     
     FEM_SetPointerToIntFct(fem,pintfct) ;
   }
@@ -192,7 +192,7 @@ _INLINE_ double*  (FEM_ComputeStiffnessMatrix)(FEM_t* fem,IntFct_t* fi,const dou
   auto nf  = IntFct_GetNbOfFunctions(fi) ;
   auto np  = IntFct_GetNbOfPoints(fi) ;
   auto dim_h = IntFct_GetDimension(fi) ;
-  auto ndof = nn*dim ;
+  size_t ndof = nn*dim ;
   double* weight = IntFct_GetWeight(fi) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
   size_t SizeNeeded = (sizeof(double))*ndof*ndof ;
@@ -206,10 +206,8 @@ _INLINE_ double*  (FEM_ComputeStiffnessMatrix)(FEM_t* fem,IntFct_t* fi,const dou
   }
   
   /* Initialization */
-  {
-    unsigned int i ;
-    
-    for(i = 0 ; i < ndof*ndof ; i++) kr[i] = zero ;
+  {    
+    for(size_t i = 0 ; i < ndof*ndof ; i++) kr[i] = zero ;
   }
   
   {    
@@ -431,8 +429,8 @@ _INLINE_ double*  (FEM_ComputeBiotMatrix)(FEM_t* fem,IntFct_t* fi,const double* 
   int nf  = IntFct_GetNbOfFunctions(fi) ;
   double* weight = IntFct_GetWeight(fi) ;
   Symmetry_t sym = Element_GetSymmetry(el) ;
-  int nrow = nn*dim ;
-  int ncol = nn ;
+  size_t nrow = nn*dim ;
+  size_t ncol = nn ;
   size_t SizeNeeded = nrow*ncol*(sizeof(double)) ;
   double* kc = (double*) FEM_AllocateInBuffer(fem,SizeNeeded) ;
   double* x[Element_MaxNbOfNodes] ;
@@ -443,25 +441,19 @@ _INLINE_ double*  (FEM_ComputeBiotMatrix)(FEM_t* fem,IntFct_t* fi,const double* 
   }
   
   /* Initialisation */
-  {
-    int i ;
-    
-    for(i = 0 ; i < nrow*ncol ; i++) kc[i] = zero ;
+  {    
+    for(size_t i = 0 ; i < nrow*ncol ; i++) kc[i] = zero ;
   }
   
-  {
-    int i ;
-    
-    for(i = 0 ; i < nn ; i++) {
+  {    
+    for(int i = 0 ; i < nn ; i++) {
       x[i] = Element_GetNodeCoordinate(el,i) ;
     }
   }
   
   /* One node mesh: for this special element the displacement u_i stands for strain_ii */
-  if(nn == 1 && dim_e == 3) {
-    int i ;
-    
-    for(i = 0 ; i < dim ; i++) {
+  if(nn == 1 && dim_e == 3) {    
+    for(int i = 0 ; i < dim ; i++) {
       kc[i] = C(i,i) ;
     }
     
@@ -473,13 +465,11 @@ _INLINE_ double*  (FEM_ComputeBiotMatrix)(FEM_t* fem,IntFct_t* fi,const double* 
   if(Element_HasZeroThickness(el)) {
     if(dim_h == dim - 1) {
       /* Assuming that the numbering of the element is formed with the nf first nodes  */
-      if(nn > nf) {
-        int p ;
-      
+      if(nn > nf) {      
         /* Check the numbering */
         Element_CheckNumberingOfOverlappingNodes(el,nf) ;
 
-        for(p = 0 ; p < np ; p++ , c += dec) {
+        for(int p = 0 ; p < np ; p++ , c += dec) {
           double* h  = IntFct_GetFunctionAtPoint(fi,p) ;
           double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
           double d   = Element_ComputeJacobianDeterminant(el,dh,nf,dim_h) ;
@@ -543,10 +533,8 @@ _INLINE_ double*  (FEM_ComputeBiotMatrix)(FEM_t* fem,IntFct_t* fi,const double* 
   }
   
   /* boucle sur les points d'integration */
-  {
-    int p ;
-    
-    for(p = 0 ; p < np ; p++ , c += dec) {
+  {    
+    for(int p = 0 ; p < np ; p++ , c += dec) {
       double* h  = IntFct_GetFunctionAtPoint(fi,p) ;
       double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
       double d   = Element_ComputeJacobianDeterminant(el,dh,nf,dim_h) ;
@@ -619,20 +607,16 @@ _INLINE_ double* (FEM_ComputeMassMatrix)(FEM_t* fem,IntFct_t* fi,const double* c
   double* x[Element_MaxNbOfNodes] ;
   
   /* Initialization */
-  {
-    int i ;
-    
-    for(i = 0 ; i < nn*nn ; i++) {
+  {    
+    for(int i = 0 ; i < nn*nn ; i++) {
       km[i] = 0 ;
     }
   }
   
   //if(Element_IsSubmanifold(el)) arret("FEM_ComputeMassMatrix") ;
 
-  {
-    int i ;
-    
-    for(i = 0 ; i < nn ; i++) {
+  {    
+    for(int i = 0 ; i < nn ; i++) {
       x[i] = Element_GetNodeCoordinate(el,i) ;
     }
   }
@@ -650,13 +634,11 @@ _INLINE_ double* (FEM_ComputeMassMatrix)(FEM_t* fem,IntFct_t* fi,const double* c
   if(Element_HasZeroThickness(el)) {
     if(dim_h == dim - 1) {
       /* Assuming that the numbering of the element is formed with the nf first nodes  */
-      if(nn > nf) {
-        int p ;
-      
+      if(nn > nf) {      
         /* Check the numbering */
         Element_CheckNumberingOfOverlappingNodes(el,nf) ;
     
-        for(p = 0 ; p < np ; p++ , c += dec) {
+        for(int p = 0 ; p < np ; p++ , c += dec) {
           double* h  = IntFct_GetFunctionAtPoint(fi,p) ;
           double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
           double d   = Element_ComputeJacobianDeterminant(el,dh,nf,dim_h) ;
@@ -716,10 +698,8 @@ _INLINE_ double* (FEM_ComputeMassMatrix)(FEM_t* fem,IntFct_t* fi,const double* c
   }
 
   /* Regular element */
-  {
-    int p ;
-    
-    for(p = 0 ; p < np ; p++ , c += dec) {
+  {    
+    for(int p = 0 ; p < np ; p++ , c += dec) {
       double* h  = IntFct_GetFunctionAtPoint(fi,p) ;
       double* dh = IntFct_GetFunctionGradientAtPoint(fi,p) ;
       double d   = Element_ComputeJacobianDeterminant(el,dh,nf,dim_h) ;
@@ -2150,9 +2130,10 @@ _INLINE_ double* (FEM_ComputeSurfaceLoadResidu)(FEM_t* fem,IntFct_t* intfct,Load
   
   
   /* tensor component */
-  if(strncmp(load_type,"sig_",4) == 0) {
-    int ii = load_type[4] - '1' ;
-    int jj = load_type[5] - '1' ;
+  if(strncmp(load_type,"sig_",4) == 0 || strncmp(load_type,"stress_",7) == 0) {
+    char* c = String_FindChar(load_type,'_') + 1;
+    int ii = (c) ? c[0] - 1 : -1; //load_type[4] - '1' ;
+    int jj = (c) ? c[1] - 1 : -1; //load_type[5] - '1' ;
     double ft = 1. ;
     
     if(ii < 0 || ii >= dim) {
@@ -2300,7 +2281,7 @@ _INLINE_ void (FEM_TransformResiduFromDegree2IntoDegree1)(FEM_t* fem,const int i
 
 _INLINE_ void   (FEM_AverageStresses)(Mesh_t* mesh,double* stress)
 {
-  unsigned int nel = Mesh_GetNbOfElements(mesh) ;
+  size_t nel = Mesh_GetNbOfElements(mesh) ;
   Element_t* el0 = Mesh_GetElement(mesh) ;
   double vol = FEM_ComputeVolume(mesh) ;
   
@@ -2311,13 +2292,11 @@ _INLINE_ void   (FEM_AverageStresses)(Mesh_t* mesh,double* stress)
     const char* modelswithstresses[N_MODELS] = {"Elast","Plast","MechaMic","Plastold"} ;
     const int   stressindex[N_MODELS] = {0,12,12,0} ;
     #undef N_MODELS
-    int i ;
     
-    for(i = 0 ; i < 9 ; i++) {
+    for(int i = 0 ; i < 9 ; i++) {
       double sig = 0 ;
-      unsigned int ie ;
     
-      for(ie = 0 ; ie < nel ; ie++) {
+      for(size_t ie = 0 ; ie < nel ; ie++) {
         Element_t* el = el0 + ie ;
         double* vim = Element_GetCurrentImplicitTerm(el) ;
         IntFct_t* intfct = Element_GetIntFct(el) ;
@@ -2358,7 +2337,7 @@ _INLINE_ double   (FEM_AverageCurrentImplicitTerm)(Mesh_t* mesh,const char* mode
  *  Return the volume average over the elements of the model "modelname".
  */
 {
-  unsigned int nel = Mesh_GetNbOfElements(mesh) ;
+  size_t nel = Mesh_GetNbOfElements(mesh) ;
   Element_t* el0 = Mesh_GetElement(mesh) ;
   double sum = 0 ;
   double vol = 0 ;
@@ -2368,10 +2347,8 @@ _INLINE_ double   (FEM_AverageCurrentImplicitTerm)(Mesh_t* mesh,const char* mode
   }
   
   /* Integration */
-  {
-    unsigned int ie ;
-    
-    for(ie = 0 ; ie < nel ; ie++) {
+  {    
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_t* el = el0 + ie ;
       Model_t* model = Element_GetModel(el) ;
       char* codename = Model_GetCodeNameOfModel(model) ;
@@ -2404,7 +2381,7 @@ _INLINE_ double   (FEM_AveragePreviousImplicitTerm)(Mesh_t* mesh,const char* mod
  *  Return the volume average over the elements of the model "modelname".
  */
 {
-  unsigned int nel = Mesh_GetNbOfElements(mesh) ;
+  size_t nel = Mesh_GetNbOfElements(mesh) ;
   Element_t* el0 = Mesh_GetElement(mesh) ;
   double sum = 0 ;
   double vol = 0 ;
@@ -2414,10 +2391,8 @@ _INLINE_ double   (FEM_AveragePreviousImplicitTerm)(Mesh_t* mesh,const char* mod
   }
   
   /* Integration */
-  {
-    unsigned int ie ;
-    
-    for(ie = 0 ; ie < nel ; ie++) {
+  {    
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_t* el = el0 + ie ;
       Model_t* model = Element_GetModel(el) ;
       char* codename = Model_GetCodeNameOfModel(model) ;
@@ -2446,15 +2421,13 @@ _INLINE_ double   (FEM_AveragePreviousImplicitTerm)(Mesh_t* mesh,const char* mod
 
 _INLINE_ double   (FEM_ComputeVolume)(Mesh_t* mesh)
 {
-  unsigned int nel = Mesh_GetNbOfElements(mesh) ;
+  size_t nel = Mesh_GetNbOfElements(mesh) ;
   Element_t* el0 = Mesh_GetElement(mesh) ;
   double vol = 0 ;
   
   /* The volume */
-  {
-    unsigned int ie ;
-    
-    for(ie = 0 ; ie < nel ; ie++) {
+  {    
+    for(size_t ie = 0 ; ie < nel ; ie++) {
       Element_t* el = el0 + ie ;
       IntFct_t* intfct = Element_GetIntFct(el) ;
       double one = 1 ;
@@ -2490,9 +2463,8 @@ _INLINE_ void (FEM_AddAverageTerms)(FEM_t* fem,const int nvi,const int nve,const
     
   {
     double* vi = vi0 + np*nvi ;
-    int i ;
     
-    for(i = 0 ; i < nvi ; i++) {
+    for(int i = 0 ; i < nvi ; i++) {
       double v =  Element_IntegrateOverElement(el,intfct,vi0 + i,nvi) ;
       
       vi[i] =  v/vol ;
@@ -2501,9 +2473,8 @@ _INLINE_ void (FEM_AddAverageTerms)(FEM_t* fem,const int nvi,const int nve,const
     
   {
     double* ve = ve0 + np*nve ;
-    int i ;
     
-    for(i = 0 ; i < nve ; i++) {
+    for(int i = 0 ; i < nve ; i++) {
       double v =  Element_IntegrateOverElement(el,intfct,ve0 + i,nve) ;
       
       ve[i] =  v/vol ;
@@ -2512,9 +2483,8 @@ _INLINE_ void (FEM_AddAverageTerms)(FEM_t* fem,const int nvi,const int nve,const
     
   {
     double* vc = vc0 + np*nvc ;
-    int i ;
     
-    for(i = 0 ; i < nvc ; i++) {
+    for(int i = 0 ; i < nvc ; i++) {
       double v =  Element_IntegrateOverElement(el,intfct,vc0 + i,nvc) ;
       
       vc[i] =  v/vol ;

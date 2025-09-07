@@ -18,13 +18,14 @@ struct Regions_t;
 struct Materials_t;
 
 
-extern Elements_t*  (Elements_New)                      (const int,const int) ;
+#include <stdio.h>
+extern Elements_t*  (Elements_New)                      (const size_t,const size_t) ;
 extern void         (Elements_Delete)                   (void*) ;
 extern void         (Elements_CreateMore)               (Elements_t*) ;
 extern void         (Elements_LinkUp)                   (Elements_t*,Materials_t*) ;
 extern void         (Elements_DefineProperties)         (Elements_t*) ;
-extern int          (Elements_ComputeNbOfMatrixEntries) (Elements_t*) ;
-extern int          (Elements_ComputeNbOfSelectedMatrixEntries)(Elements_t*,const int) ;
+extern size_t       (Elements_ComputeNbOfMatrixEntries) (Elements_t*) ;
+extern size_t       (Elements_ComputeNbOfSelectedMatrixEntries)(Elements_t*,const int) ;
 extern void         (Elements_UpdateMatrixRowColumnIndexes)(Elements_t*) ;
 extern void         (Elements_EliminateMatrixRowColumnIndexesOfOverlappingNodes)(Elements_t*) ;
 extern void         (Elements_UpdateMatrixRowColumnIndexesOfOverlappingNodes)(Elements_t*) ;
@@ -57,8 +58,8 @@ struct Elements_t {
   Buffers_t*  Buffers ;
   double      MaximumSizeOfElements ;
   double      MinimumSizeOfElements ;
-  unsigned int NbOfElements ;
-  unsigned int NbOfConnectivities ;
+  size_t NbOfElements ;
+  size_t NbOfConnectivities ;
 } ;
 
 

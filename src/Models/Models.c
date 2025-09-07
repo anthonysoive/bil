@@ -26,7 +26,7 @@ Models_t* (Models_New)(const int n_models)
   Models_GetModel(models) = NULL ;
     
   if(n_models) {
-    Model_t* model = (Model_t*) Mry_New(Model_t[n_models]) ;
+    Model_t* model = (Model_t*) Mry_New(Model_t,n_models) ;
       
     {
       int i ;
@@ -143,21 +143,20 @@ Models_t* (Models_CreateAll)(Geometry_t* geom)
 
 void (Models_Print)(char* codename,FILE* ficd)
 {
-  Geometry_t geom = {3} ;
-  Models_t* models = Models_CreateAll(&geom) ;
+  //Geometry_t geom = {3} ;
+  Geometry_t* geom = Geometry_New() ;
+  Models_t* models = Models_CreateAll(geom) ;
   int n_models = Models_GetNbOfModels(models) ;
   Model_t* model = Models_GetModel(models) ;
 
-  if(!codename) { /* all */
-    int i ;
-    
+  if(!codename) { /* all */    
     if(!ficd) {
       printf("  Model         |  Authors       |  Short Title\n") ;
       /*     "  14c...........|  14c...........|  ...........\n" */
       printf("----------------|----------------|-------------\n") ;
     }
 
-    for(i = 0 ; i < n_models ; i++) {
+    for(int i = 0 ; i < n_models ; i++) {
       Model_t* model_i = model + i ;
       
       printf("  %-14.14s|",Model_GetCodeNameOfModel(model_i)) ;
@@ -182,6 +181,7 @@ void (Models_Print)(char* codename,FILE* ficd)
     }
   }
   
+  Geometry_Delete(geom);
   Models_Delete(models) ;
   free(models) ;
 }

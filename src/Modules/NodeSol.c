@@ -7,12 +7,12 @@
 /* Extern functions */
 
 
-NodeSol_t* (NodeSol_Create)(const int n)
+NodeSol_t* (NodeSol_Create)(unsigned short int const n)
 {
   NodeSol_t* nodesol = (NodeSol_t*) Mry_New(NodeSol_t) ;
   
   {
-    double* u = (double*) Mry_New(double[n]) ;
+    double* u = (double*) Mry_New(double,n) ;
   
     NodeSol_SetNbOfUnknowns(nodesol,n) ;
   
@@ -52,10 +52,9 @@ void (NodeSol_Copy)(NodeSol_t* nodesol_d,NodeSol_t* nodesol_s)
     double* u_d = NodeSol_GetUnknown(nodesol_d) ;
         
     if(u_d != u_s) {
-      unsigned int nu = NodeSol_GetNbOfUnknowns(nodesol_s) ;
-      unsigned int i ;
+      unsigned short int nu = NodeSol_GetNbOfUnknowns(nodesol_s) ;
       
-      for(i = 0 ; i < nu ; i++) {
+      for(unsigned short int i = 0 ; i < nu ; i++) {
         u_d[i] = u_s[i] ;
       }
     }

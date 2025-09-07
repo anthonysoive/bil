@@ -11,7 +11,7 @@
 #define TITLE   "Frost actions in concrete"
 #define AUTHORS "Zeng,Fen-Chong,Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

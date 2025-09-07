@@ -24,11 +24,10 @@ Element_t*  (Element_New)(void)
   Element_t* el = (Element_t*) Mry_New(Element_t) ;
   
   {
-    Element_GetElementIndex(el)      = -1 ;
+    Element_GetElementIndex(el)      = 0 ;
     Element_GetPointerToNode(el)     = NULL ;
-    Element_GetDimension(el)         = -1 ;
+    Element_GetDimension(el)         = 0 ;
     Element_GetNbOfNodes(el)         = 0 ;
-    //Element_GetRegionTag(el)       = -1 ;
     Element_GetRegion(el)            = NULL ;
     Element_GetMaterial(el)          = NULL ;
     Element_GetMaterialIndex(el)     = -1 ;
@@ -48,16 +47,16 @@ Element_t*  (Element_New)(void)
 void (Element_CreateMore)(Element_t* el,Buffers_t* buffers,ShapeFcts_t* shapefcts,IntFcts_t* intfcts)
 {
   int imat = Element_GetMaterialIndex(el) ;
-  int nn  = Element_GetNbOfNodes(el) ;
-  int neq = Element_GetNbOfEquations(el) ;
-  int dim = Element_GetDimension(el) ;
+  unsigned short int nn  = Element_GetNbOfNodes(el) ;
+  unsigned short int neq = Element_GetNbOfEquations(el) ;
+  unsigned short int dim = Element_GetDimension(el) ;
   int ndof = nn*neq ;
   
 
   /* Memory space allocation for the pointers to unknowns and 
    * equations positions at nodes with initialization to 0 */
   if(imat >= 0) {
-    short int* upos = (short int* ) Mry_New(short int[2*ndof]) ;
+    short int* upos = (short int* ) Mry_New(short int,2*ndof) ;
     short int* epos = upos + ndof ;
     int i ;
       
@@ -73,7 +72,7 @@ void (Element_CreateMore)(Element_t* el,Buffers_t* buffers,ShapeFcts_t* shapefct
   
   /* Memory space allocation for the matrix */
   {
-    double* matrix = (double*) Mry_New(double[ndof*ndof]) ;
+    double* matrix = (double*) Mry_New(double,ndof*ndof) ;
     
     Element_GetMatrix(el) = matrix ;
   }
@@ -81,7 +80,7 @@ void (Element_CreateMore)(Element_t* el,Buffers_t* buffers,ShapeFcts_t* shapefct
   
   /* Memory space allocation for the residu */
   {
-    double* residu = (double*) Mry_New(double[ndof]) ;
+    double* residu = (double*) Mry_New(double,ndof) ;
     
     Element_GetResidu(el) = residu ;
   }
@@ -106,8 +105,9 @@ void (Element_CreateMore)(Element_t* el,Buffers_t* buffers,ShapeFcts_t* shapefct
         
       {
         if(Element_HasZeroThickness(el)) {
-          int nf = nn - Element_NbOfOverlappingNodes(el) ;
-          int dim_h = dim - 1 ;
+          unsigned short int non = Element_NbOfOverlappingNodes(el) ;
+          unsigned short int nf = (nn > non) ? nn - non : 0 ;
+          unsigned short int dim_h = (dim > 1) ? dim - 1 : 0 ;
           int j  = ShapeFcts_FindShapeFct(shapefcts,nf,dim_h) ;
 
           Element_GetShapeFct(el) = shapefct + j ;
@@ -130,8 +130,9 @@ void (Element_CreateMore)(Element_t* el,Buffers_t* buffers,ShapeFcts_t* shapefct
         
       {
         if(Element_HasZeroThickness(el)) {
-          int nf = nn - Element_NbOfOverlappingNodes(el) ;
-          int dim_h = dim - 1 ;
+          unsigned short int non = Element_NbOfOverlappingNodes(el) ;
+          unsigned short int nf = (nn > non) ? nn - non : 0 ;
+          unsigned short int dim_h = (dim > 1) ? dim - 1 : 0 ;
           int j  = IntFcts_FindIntFct(intfcts,nf,dim_h,"Gauss") ;
 
           Element_GetIntFct(el) = intfct + j ;
@@ -186,21 +187,19 @@ void (Element_AllocateMicrostructureSolutions)(Element_t const* el,Mesh_t* mesh,
  */
 {
   IntFct_t* intfct = Element_GetIntFct(el) ;
-  int NbOfIntPoints = IntFct_GetNbOfPoints(intfct) ;
+  size_t NbOfIntPoints = (size_t) IntFct_GetNbOfPoints(intfct) ;
 
   {
-    int ie = Element_GetElementIndex(el) ;
+    size_t ie = Element_GetElementIndex(el) ;
     Solution_t* solution = Element_GetSolution(el) ;
       
     /* Store "sols" for the whole history */
     if(solution) {
       do {
-        Solutions_t* sols = (Solutions_t*) Mry_New(Solutions_t[NbOfIntPoints]) ;
+        Solutions_t* sols = (Solutions_t*) Mry_New(Solutions_t,NbOfIntPoints) ;
           
-        {
-          int i ;
-    
-          for(i = 0 ; i < NbOfIntPoints ; i++) {
+        {    
+          for(size_t i = 0 ; i < NbOfIntPoints ; i++) {
             Solutions_t* solsi = Solutions_Create(mesh,nsol) ;
               
             sols[i] = solsi[0] ;
@@ -227,11 +226,10 @@ double** (Element_ComputePointerToNodalCoordinates)(Element_t const* element)
 /** Compute the nodal coordinates */
 {
   int nn = Element_GetNbOfNodes(element) ;
-  size_t SizeNeeded = nn*sizeof(double*) ;
+  size_t SizeNeeded = Element_MaxNbOfNodes*sizeof(double*) ;
   double** x = (double**) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     x[i] = Element_GetNodeCoordinate(element,i) ;
   }
   
@@ -245,15 +243,13 @@ double* (Element_ComputeNodalCoordinates)(Element_t const* element)
 {
   int nn = Element_GetNbOfNodes(element) ;
   int dim = Element_GetDimensionOfSpace(element) ;
-  size_t SizeNeeded = nn*dim*sizeof(double) ;
+  size_t SizeNeeded = Element_MaxNbOfNodes*3*sizeof(double) ;
   double* x = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     double* xi = Element_GetNodeCoordinate(element,i) ;
-    int j ;
     
-    for(j = 0 ; j < dim ; j++) {
+    for(int j = 0 ; j < dim ; j++) {
       x[i*dim + j] = xi[j] ;
     }
   }
@@ -267,11 +263,10 @@ double** (Element_ComputePointerToCurrentNodalUnknowns)(Element_t const* element
 /** Compute a pointer to the nodal unknowns at the current time */
 {
   int nn = Element_GetNbOfNodes(element) ;
-  size_t SizeNeeded = nn*(sizeof(double*)) ;
+  size_t SizeNeeded = Element_MaxNbOfNodes*sizeof(double*) ;
   double** u = (double**) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     u[i] = Element_GetCurrentNodalUnknown(element,i) ;
   }
 
@@ -284,11 +279,10 @@ double** (Element_ComputePointerToPreviousNodalUnknowns)(Element_t const* elemen
 /** Compute a pointer to the nodal unknowns at the current time */
 {
   int nn = Element_GetNbOfNodes(element) ;
-  size_t SizeNeeded = nn*(sizeof(double*)) ;
+  size_t SizeNeeded = Element_MaxNbOfNodes*sizeof(double*) ;
   double** u = (double**) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     u[i] = Element_GetPreviousNodalUnknown(element,i) ;
   }
 
@@ -297,21 +291,19 @@ double** (Element_ComputePointerToPreviousNodalUnknowns)(Element_t const* elemen
 
 
 
-double* (Element_ComputeDeepNodalUnknowns)(Element_t const* element,unsigned int depth)
+double* (Element_ComputeDeepNodalUnknowns)(Element_t const* element,int depth)
 /** Compute the nodal unknowns at the some depth */
 {
   int nn = Element_GetNbOfNodes(element) ;
   int neq = Element_GetNbOfEquations(element) ;
-  size_t SizeNeeded = nn*(neq*sizeof(double)) ;
+  size_t SizeNeeded = Element_MaxNbOfDOF*sizeof(double) ;
   double* u = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     Node_t* node = Element_GetNode(element,i) ;
     double* v = Node_GetUnknownInDistantPast(node,depth) ;
-    int    j ;
     
-    for(j = 0 ; j < neq ; j++) {
+    for(int j = 0 ; j < neq ; j++) {
       int jj = Element_GetNodalUnknownPosition(element,i,j) ;
       if(jj >= 0) {
         u[i*neq + j] = v[jj] ;
@@ -331,15 +323,13 @@ double* (Element_ComputeCurrentNodalUnknowns)(Element_t const* element)
 {
   int nn = Element_GetNbOfNodes(element) ;
   int neq = Element_GetNbOfEquations(element) ;
-  size_t SizeNeeded = nn*neq*sizeof(double) ;
+  size_t SizeNeeded = Element_MaxNbOfDOF*sizeof(double) ;
   double* u = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     double* v = Element_GetCurrentNodalUnknown(element,i) ;
-    int    j ;
     
-    for(j = 0 ; j < neq ; j++) {
+    for(int j = 0 ; j < neq ; j++) {
       int jj = Element_GetNodalUnknownPosition(element,i,j) ;
       
       if(jj >= 0) {
@@ -360,15 +350,13 @@ double* (Element_ComputePreviousNodalUnknowns)(Element_t const* element)
 {
   int nn = Element_GetNbOfNodes(element) ;
   int neq = Element_GetNbOfEquations(element) ;
-  size_t SizeNeeded = nn*neq*sizeof(double) ;
+  size_t SizeNeeded = Element_MaxNbOfDOF*sizeof(double) ;
   double* u = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     double* v = Element_GetPreviousNodalUnknown(element,i) ;
-    int    j ;
     
-    for(j = 0 ; j < neq ; j++) {
+    for(int j = 0 ; j < neq ; j++) {
       int jj = Element_GetNodalUnknownPosition(element,i,j) ;
       
       if(jj >= 0) {
@@ -389,16 +377,14 @@ double* (Element_ComputeIncrementalNodalUnknowns)(Element_t const* element)
 {
   int nn = Element_GetNbOfNodes(element) ;
   int neq = Element_GetNbOfEquations(element) ;
-  size_t SizeNeeded = nn*neq*sizeof(double) ;
+  size_t SizeNeeded = Element_MaxNbOfDOF*sizeof(double) ;
   double* u = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int    i ;
   
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     double* v1 = Element_GetCurrentNodalUnknown(element,i) ;
     double* vn = Element_GetPreviousNodalUnknown(element,i) ;
-    int    j ;
     
-    for(j = 0 ; j < neq ; j++) {
+    for(int j = 0 ; j < neq ; j++) {
       int jj = Element_GetNodalUnknownPosition(element,i,j) ;
       
       if(jj >= 0) {
@@ -416,14 +402,13 @@ double* (Element_ComputeIncrementalNodalUnknowns)(Element_t const* element)
 
 double* (Element_ComputeIncrementalImplicitTerms)(Element_t const* element)
 {
-  int n = Element_GetNbOfImplicitTerms(element) ;
+  size_t n = Element_GetNbOfImplicitTerms(element) ;
   double* vi1 = Element_GetCurrentImplicitTerm(element) ;
   double* vin = Element_GetPreviousImplicitTerm(element) ;
   size_t SizeNeeded = n*sizeof(double) ;
   double* vii = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
-  int i ;
   
-  for(i = 0 ; i < n ; i++) vii[i] = vi1[i] - vin[i] ;
+  for(size_t i = 0 ; i < n ; i++) vii[i] = vi1[i] - vin[i] ;
   
   return(vii) ;
 }
@@ -807,10 +792,10 @@ double (Element_ComputeJacobianDeterminant)(Element_t const* el,double* dh,int n
   Element_FreeBufferFrom(el,jac) ;
   
   if(det < 0) {
-    int index = Element_GetElementIndex(el) ;
+    size_t index = Element_GetElementIndex(el) ;
     
     arret("Element_ComputeJacobianDeterminant: negative determinant\n\
-    (det = %e) at element %d",det,index) ;
+    (det = %e) at element %lu",det,index) ;
   }
   
   return(det) ;
@@ -879,8 +864,8 @@ double*  (Element_ComputeCoordinateInReferenceFrame)(Element_t const* el,double*
 /** Compute the local coordinates in the reference element frame 
  *  which map into coordinates "x" in the actual space */
 {
-  unsigned int dim   = Element_GetDimensionOfSpace(el) ;
-  int nn = Element_GetNbOfNodes(el) ;
+  unsigned short int dim   = Element_GetDimensionOfSpace(el) ;
+  unsigned short int nn = Element_GetNbOfNodes(el) ;
   double* x_e[Element_MaxNbOfNodes] ;
   double diameter ;
   
@@ -921,8 +906,8 @@ double*  (Element_ComputeCoordinateInReferenceFrame)(Element_t const* el,double*
   /* Compute the coordinates in the reference element */
   {
     ShapeFct_t* shapefct = Element_GetShapeFct(el) ;
-    int dim_h = ShapeFct_GetDimension(shapefct) ;
-    int nf    = ShapeFct_GetNbOfNodes(shapefct) ;
+    unsigned short int dim_h = ShapeFct_GetDimension(shapefct) ;
+    unsigned short int nf    = ShapeFct_GetNbOfNodes(shapefct) ;
     double* a = ShapeFct_GetCoordinate(shapefct) ;
     int    max_iter = 20 ;
     double tol = 1.e-6 ;
@@ -1027,22 +1012,22 @@ int* (Element_ComputeMatrixRowAndColumnIndices)(Element_t const* el)
   int  nn  = Element_GetNbOfNodes(el) ;
   int  neq = Element_GetNbOfEquations(el) ;
   
-  size_t SizeNeeded = 2*nn*neq*sizeof(int) ;
+  size_t SizeNeeded = 2*Element_MaxNbOfDOF*sizeof(int) ;
   int* rowind = (int*) Element_AllocateInBuffer(el,SizeNeeded) ;
   int* colind = rowind + nn*neq ;
-  int  i ;
     
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     Node_t* node_i = Element_GetNode(el,i) ;
-    int    j ;
     
-    for(j = 0 ; j < neq ; j++) {
+    for(int j = 0 ; j < neq ; j++) {
       int ij = i*neq + j ;
       int ii_col = Element_GetUnknownPosition(el)[ij] ;
       int ii_row = Element_GetEquationPosition(el)[ij] ;
       
-      colind[ij] = (ii_col >= 0) ? Node_GetMatrixColumnIndex(node_i)[ii_col] : -1 ;
-      rowind[ij] = (ii_row >= 0) ? Node_GetMatrixRowIndex(node_i)[ii_row] : -1 ;
+      //colind[ij] = (ii_col >= 0) ? Node_GetMatrixColumnIndex(node_i)[ii_col] : -1 ;
+      //rowind[ij] = (ii_row >= 0) ? Node_GetMatrixRowIndex(node_i)[ii_row] : -1 ;
+      colind[ij] = Node_GetMatrixColumnIndexOf(node_i,ii_col) ;
+      rowind[ij] = Node_GetMatrixRowIndexOf(node_i,ii_row) ;
     }
   }
   
@@ -1057,16 +1042,14 @@ int* (Element_ComputeSelectedMatrixRowAndColumnIndices)(Element_t const* el,cons
   int neq  = Element_GetNbOfEquations(el) ;
   int ndof = nn*neq ;
   
-  size_t SizeNeeded = 2*nn*neq*sizeof(int) ;
+  size_t SizeNeeded = 2*Element_MaxNbOfDOF*sizeof(int) ;
   int* rowind = (int*) Element_AllocateInBuffer(el,SizeNeeded) ;
   int* colind = rowind + ndof ;
-  int  i ;
     
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     Node_t* node_i = Element_GetNode(el,i) ;
-    int    j ;
     
-    for(j = 0 ; j < neq ; j++) {
+    for(int j = 0 ; j < neq ; j++) {
       int ij = i*neq + j ;
       int ii_col = Element_GetUnknownPosition(el)[ij] ;
       int ii_row = Element_GetEquationPosition(el)[ij] ;
@@ -1125,15 +1108,15 @@ double (Element_ComputeSize)(Element_t const* element)
 
 double* (Element_ComputeSizes)(Element_t const* element)
 {
-  int nn = Element_GetNbOfNodes(element) ;
-  int dim = Element_GetDimensionOfSpace(element) ;
+  unsigned short int nn = Element_GetNbOfNodes(element) ;
+  unsigned short int dim = Element_GetDimensionOfSpace(element) ;
   size_t SizeNeeded = 3*sizeof(double) ;
   double* size = (double*) Element_AllocateInBuffer(element,SizeNeeded) ;
 
   {
     ShapeFct_t* shapefct = Element_GetShapeFct(element) ;
     double* dh = ShapeFct_GetFunctionGradient(shapefct) ;
-    int dim_e = Element_GetDimension(element) ;
+    unsigned short int dim_e = Element_GetDimension(element) ;
   
     {
       double  a[3] = {0,0,0} ;
@@ -1184,9 +1167,9 @@ double* (Element_ComputeSizes)(Element_t const* element)
 
 int (Element_HasZeroThickness)(Element_t const* element)
 {
-  int nn = Element_GetNbOfNodes(element) ;
+  unsigned short nn = Element_GetNbOfNodes(element) ;
   ShapeFct_t* shapefct = Element_GetShapeFct(element) ;
-  int dim_e = Element_GetDimension(element) ;
+  unsigned short int dim_e = Element_GetDimension(element) ;
   
   if(!shapefct) return(0) ;
   
@@ -1219,11 +1202,11 @@ int (Element_HasZeroThickness)(Element_t const* element)
 
 
 
-int (Element_NbOfOverlappingNodes)(Element_t const* element)
+unsigned short int (Element_NbOfOverlappingNodes)(Element_t const* element)
 /** Return the number of overlapping nodes for zero-thickness element. */
 {
-  int nn  = Element_GetNbOfNodes(element) ;
-  int dim = Element_GetDimension(element) ;
+  unsigned short int nn  = Element_GetNbOfNodes(element) ;
+  unsigned short int dim = Element_GetDimension(element) ;
   
   if(dim == 0) {
     switch (nn) {
@@ -1252,7 +1235,7 @@ int (Element_NbOfOverlappingNodes)(Element_t const* element)
   
   arret("Element_NbOfOverlappingNodes: not available") ;
   
-  return(-1) ;
+  return(0) ;
 }
 
 
@@ -1260,7 +1243,7 @@ int (Element_NbOfOverlappingNodes)(Element_t const* element)
 
 int (Element_OverlappingNode)(Element_t const* element,const int n)
 /** Return the index of the first node other than n 
- *  overlapping node n or n if it fails. */
+ *  that overlaps the node n or n if it fails. */
 {
   int nn = Element_GetNbOfNodes(element) ;
   int dim = Element_GetDimensionOfSpace(element) ;
@@ -1268,19 +1251,16 @@ int (Element_OverlappingNode)(Element_t const* element,const int n)
   double h = Element_ComputeSize(element) ;
   double tiny = h*1.e-10 ;
 
-  {
-    int i ;
-    
-    for(i = 0 ; i < nn ; i++) {
+  {    
+    for(int i = 0 ; i < nn ; i++) {
       double* xi = Element_GetNodeCoordinate(element,i) ;
       
       if(i == n) continue ;
       
       {
         double r = 0 ;
-        int j ;
     
-        for(j = 0 ; j < dim ; j++) {
+        for(int j = 0 ; j < dim ; j++) {
           double y = xn[j] - xi[j] ;
       
           r += y*y ;
@@ -1419,17 +1399,13 @@ int (Element_ComputeNbOfSelectedMatrixEntries)(Element_t const* element,const in
   int   len  = 0 ;
   
   {
-    int   jdof ;
-
-    for(jdof = 0 ; jdof < ndof ; jdof++) {
+    for(int jdof = 0 ; jdof < ndof ; jdof++) {
       int jcol = col[jdof] ;
     
       if(jcol < 0) continue ;
 
-      {
-        int idof ;
-            
-        for(idof = 0 ; idof < ndof ; idof++) {
+      {            
+        for(int idof = 0 ; idof < ndof ; idof++) {
           int irow = row[idof] ;
       
           if(irow < 0) continue ;
@@ -1745,12 +1721,14 @@ void  (Element_CopyCurrentSolutionIntoPreviousSolution)(Element_t const* el)
 }
 
 
+#if 0 // The return value is not correct
 double** (Element_ConvertToNodalUnknown)(Element_t const* el,double* f,int shift)
 /** Convert the node quantity pointed to by "f" into a simulated nodal unknown "u"
  *  at position 0. */
 {
   double uu[Element_MaxNbOfNodes][Node_MaxNbOfEquations];
-  double* u[Element_MaxNbOfNodes];
+  size_t SizeNeeded = Element_MaxNbOfNodes*sizeof(double*) ;
+  double** u = (double**) Element_AllocateInBuffer(el,SizeNeeded) ;
   int nn = Element_GetNbOfNodes(el) ;
   
   {
@@ -1762,6 +1740,7 @@ double** (Element_ConvertToNodalUnknown)(Element_t const* el,double* f,int shift
     
   return(u);
 }
+#endif
 
 
 
@@ -1835,10 +1814,10 @@ double*  (Element_ComputeIsoShapeFctInActualSpace)(Element_t const* el,double* x
   
   {
     unsigned short int dim_e = Element_GetDimension(el) ;
-    int nn = Element_GetNbOfNodes(el) ;
-    size_t SizeNeeded = (nn*4)*sizeof(double) ;
+    unsigned short int nn = Element_GetNbOfNodes(el) ;
+    size_t SizeNeeded = (Element_MaxNbOfNodes*4)*sizeof(double) ;
     double* h = (double*) Element_AllocateInBuffer(el,SizeNeeded) ;
-    double* dh = h + Element_GetNbOfNodes(el) ;
+    double* dh = h + nn ;
   
     ShapeFct_ComputeValuesAtPoint(dim_e,nn,a,h,dh) ;
 
@@ -2172,24 +2151,25 @@ double* (Element_ComputeInternodeDistances)(Element_t const* el)
 {
   int dim = Element_GetDimensionOfSpace(el) ;
   int nn  = Element_GetNbOfNodes(el) ;
-  size_t SizeNeeded = nn*nn*(sizeof(double)) ;
+  size_t SizeNeeded = Element_MaxNbOfNodes*Element_MaxNbOfNodes*sizeof(double) ;
   double* dist = (double*) Element_AllocateInBuffer(el,SizeNeeded) ;
-  int    i ;
   
   /* initialization */
-  for(i = 0 ; i < nn*nn ; i++)  dist[i] = 0. ;
+  for(int i = 0 ; i < nn*nn ; i++)  dist[i] = 0. ;
 
-  for(i = 0 ; i < nn ; i++) {
+  for(int i = 0 ; i < nn ; i++) {
     double* xi = Element_GetNodeCoordinate(el,i) ;
-    int j ;
-    for(j = i + 1 ; j < nn ; j++) {
+
+    for(int j = i + 1 ; j < nn ; j++) {
       double* xj = Element_GetNodeCoordinate(el,j) ;
       double dij = 0 ;
-      int n ;
-      for (n = 0 ; n < dim ; n++) {
+
+      for (int n = 0 ; n < dim ; n++) {
         double xij = xj[n] - xi[n] ;
+        
         dij += xij*xij ;
       }
+      
       dij = sqrt(dij) ;
       dist[nn*i + j] = dij ;
       dist[nn*j + i] = dij ;

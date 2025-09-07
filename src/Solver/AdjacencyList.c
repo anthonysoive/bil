@@ -10,42 +10,43 @@
 
 
 
-AdjacencyList_t* (AdjacencyList_Create)(int nvert,int* vert_nedges)
+AdjacencyList_t* (AdjacencyList_Create)(size_t nvert,unsigned short int* vert_nedges)
 {
-  int nedges ;
-  AdjacencyList_t* adj = (AdjacencyList_t*) Mry_New(AdjacencyList_t[nvert]) ;
+  AdjacencyList_t* adj = (AdjacencyList_t*) Mry_New(AdjacencyList_t,nvert) ;
+  size_t nedges = 0 ;
   
   
-  /* Nb of directed edges */
-  {
-    int i ;
-    
-    nedges = 0 ;
-    for(i = 0 ; i < nvert ; i++) {
-      nedges += vert_nedges[i] ;
-    }
+  /* The total nb of directed edges */
+  for(size_t i = 0 ; i < nvert ; i++) {
+    nedges += vert_nedges[i] ;
   }
-  
-  
+
+
   /* Allocate memory for the adjacency list */
   {
-    int i ;
-    int* list = (int*) Mry_New(int[nedges]) ;
-    
-    for(i = 0 ; i < nedges ; i++) {
-      list[i] = -1 ;
-    }
-      
-    {
-      int j = 0 ;
-      
-      for(i = 0 ; i < nvert ; i++) {
-        AdjacencyList_t* adji = adj + i ;
+    size_t* list = (size_t*) Mry_New(size_t,nedges) ;
+
+    AdjacencyList_GetNeighbor(adj) = list ;
+  }
+  
+  /* Initialize the nb of neighbors */
+  {    
+    for(size_t i = 0 ; i < nvert ; i++) {
+      AdjacencyList_t* adji = adj + i ;
         
-        AdjacencyList_GetNbOfNeighbors(adji) = 0 ;
-        AdjacencyList_GetNeighbor(adji) = list + j ;
-        j += vert_nedges[i] ;
-      }
+      AdjacencyList_GetNbOfNeighbors(adji) = 0 ;
+      AdjacencyList_GetMaxNbOfNeighbors(adji) = vert_nedges[i] ;
+    }
+  }
+
+  /* Initialize the pointer to the list of neighbors */
+  {      
+    for(size_t i = 1 ; i < nvert ; i++) {
+      AdjacencyList_t* adji = adj + i ;
+      size_t* list = AdjacencyList_GetNeighbor(adji-1);
+      unsigned short int n = AdjacencyList_GetMaxNbOfNeighbors(adji-1);
+
+      AdjacencyList_GetNeighbor(adji) = list + n ;
     }
   }
 
@@ -58,7 +59,7 @@ void (AdjacencyList_Delete)(void* self)
   AdjacencyList_t* adj = (AdjacencyList_t*) self ;
   
   {
-    int* list = AdjacencyList_GetNeighbor(adj) ;
+    size_t* list = AdjacencyList_GetNeighbor(adj) ;
     
     if(list) {
       free(list) ;

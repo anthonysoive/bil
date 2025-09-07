@@ -26,7 +26,7 @@ Solutions_t*   (Solutions_Create)(Mesh_t* mesh,const int n_sol)
   Solutions_GetMergeIndex(sols) = 0 ;
   
   {
-    Solution_t* sol = (Solution_t*) Mry_New(Solution_t[n_sol]) ;
+    Solution_t* sol = (Solution_t*) Mry_New(Solution_t,n_sol) ;
     int i ;
       
     for(i = 0 ; i < n_sol ; i++) {
@@ -216,17 +216,16 @@ void (Solutions_StepBackward)(Solutions_t* sols)
 void (Solutions_InitializeMeshPointers)(Solutions_t* sols,Mesh_t* mesh)
 /** Initialize the pointers of nodes and elements to sols. */
 {
-  int n_no = Mesh_GetNbOfNodes(mesh) ;
+  size_t n_no = Mesh_GetNbOfNodes(mesh) ;
   Node_t* no = Mesh_GetNode(mesh) ;
-  int n_el = Mesh_GetNbOfElements(mesh) ;
+  size_t n_el = Mesh_GetNbOfElements(mesh) ;
   Element_t* el = Mesh_GetElement(mesh) ;
-  int    i ;
 
-  for(i = 0 ; i < n_el ; i++) {
+  for(size_t i = 0 ; i < n_el ; i++) {
     Element_GetSolutions(el + i) = sols ;
   }
   
-  for(i = 0 ; i < n_no ; i++) {
+  for(size_t i = 0 ; i < n_no ; i++) {
     Node_GetSolutions(no + i) = sols ;
   }
 

@@ -150,84 +150,6 @@ TimeStep_t*  (TimeStep_Create)(DataFile_t* datafile,ObVals_t* obvals)
 
 
 
-#if 0
-TimeStep_t*  (TimeStep_Create)(DataFile_t* datafile,ObVals_t* obvals)
-{
-  TimeStep_t* timestep = TimeStep_New() ;
-  char*   line ;
-  char*   pline ;
-  
-  TimeStep_GetDataFile(timestep) = datafile ;
-  TimeStep_GetObVals(timestep) = obvals ;
-  
-  DataFile_OpenFile(datafile,"r") ;
-  
-  DataFile_SetFilePositionAfterKey(datafile,"ALGO,TIME,Time Steps",",",1) ;
-  
-  Message_Direct("Enter in %s","Time Steps") ;
-  Message_Direct("\n") ;
-  
-  
-  DataFile_StoreFilePosition(datafile) ;
-    
-  /* Dtini */
-  DataFile_MoveToStoredFilePosition(datafile) ;
-  while((line = DataFile_ReadLineFromCurrentFilePosition(datafile)) && !(pline = strstr(line,"Dtini"))) ;
-  if(line && (pline = strstr(line,"Dtini"))) {
-    pline = strchr(pline,'=') + 1 ;
-    TimeStep_GetInitialTimeStep(timestep) = atof(pline) ;
-  } else {
-    arret("TimeStep_Create : no Dtini") ;
-  }
-    
-  /* Dtmax */
-  DataFile_MoveToStoredFilePosition(datafile) ;
-  while((line = DataFile_ReadLineFromCurrentFilePosition(datafile)) && !(pline = strstr(line,"Dtmax"))) ;
-  if(line && (pline = strstr(line,"Dtmax"))) {
-    pline = strchr(pline,'=') + 1 ;
-    TimeStep_GetMaximumTimeStep(timestep) = atof(pline) ;
-  } else {
-    arret("TimeStep_Create : no Dtmax") ;
-  }
-    
-  /* Dtmin */
-  DataFile_MoveToStoredFilePosition(datafile) ;
-  while((line = DataFile_ReadLineFromCurrentFilePosition(datafile)) && !(pline = strstr(line,"Dtmin"))) ;
-  if(line && (pline = strstr(line,"Dtmin"))) {
-    pline = strchr(pline,'=') + 1 ;
-    TimeStep_GetMinimumTimeStep(timestep) = atof(pline) ;
-  } else {
-    TimeStep_GetMinimumTimeStep(timestep) = 0. ;
-  }
-    
-  /* Fraction */
-  DataFile_MoveToStoredFilePosition(datafile) ;
-  while((line = DataFile_ReadLineFromCurrentFilePosition(datafile)) && !(pline = strstr(line,"Reduction Factor"))) ;
-  if(line && (pline = strstr(line,"Reduction Factor"))) {
-    pline = strchr(pline,'=') + 1 ;
-    TimeStep_GetReductionFactor(timestep) = atof(pline) ;
-  } else {
-    TimeStep_GetReductionFactor(timestep) = 0.5 ;
-  }
-    
-  /* Raison */
-  DataFile_MoveToStoredFilePosition(datafile) ;
-  while((line = DataFile_ReadLineFromCurrentFilePosition(datafile)) && !(pline = strstr(line,"Common Ratio"))) ;
-  if(line && (pline = strstr(line,"Common Ratio"))) {
-    pline = strchr(pline,'=') + 1 ;
-    TimeStep_GetMaximumCommonRatio(timestep) = atof(pline) ;
-  } else {
-    TimeStep_GetMaximumCommonRatio(timestep) = 1.5 ;
-  }
-  
-  DataFile_CloseFile(datafile) ;
-  
-  return(timestep) ;
-}
-#endif
-
-
-
 
 double (TimeStep_ComputeTimeStep)(TimeStep_t* timestep,Solution_t* soln,double t1,double t2)
 /** Return the current time increment dt so that the current time is t = tn + dt.
@@ -269,19 +191,18 @@ double (TimeStep_ComputeTimeStep)(TimeStep_t* timestep,Solution_t* soln,double t
     dt = TimeStep_GetInitialTimeStep(timestep) ;
     
   } else {
-    unsigned int n_no = Nodes_GetNbOfNodes(nodes) ;
+    size_t n_no = Nodes_GetNbOfNodes(nodes) ;
     Node_t* no = Nodes_GetNode(nodes) ;
     ObVal_t* obval = TimeStep_GetObVal(timestep) ;
     int    obvalindex = 0 ;
-    int    nodeindex = -1 ;
+    Node_t* nodecrit = NULL;
     double varmax = zero ;
     double rs ;
-    unsigned int i ;
     
     //step = entre ;
     TimeStep_SetLocationInBetween(timestep) ;
     
-    for(i = 0 ; i < n_no ; i++) {
+    for(size_t i = 0 ; i < n_no ; i++) {
       Node_t* nodi = no + i ;
       int neq = Node_GetNbOfEquations(nodi) ;
       //double* u_1 = Node_GetCurrentUnknown(nodi) ;
@@ -303,10 +224,10 @@ double (TimeStep_ComputeTimeStep)(TimeStep_t* timestep,Solution_t* soln,double t
             if(fabs(u_n2[j]) > 0.) varrel /= fabs(u_n2[j]) ;
           }
 
-          if(nodeindex < 0 || varrel >= varmax) {
+          if(nodecrit == NULL || varrel >= varmax) {
             varmax = varrel ;
             obvalindex = Node_GetObValIndex(nodi)[j] ;
-            nodeindex = i ;
+            nodecrit = nodi;
           }
         }
       }
@@ -328,8 +249,10 @@ double (TimeStep_ComputeTimeStep)(TimeStep_t* timestep,Solution_t* soln,double t
       dt = TimeStep_GetMinimumTimeStep(timestep) ;
     }
     
-    if(nodeindex >= 0) {
-      Message_Direct("(%s[%d])",ObVal_GetNameOfUnknown(TimeStep_GetObVal(timestep) + obvalindex),nodeindex) ;
+    if(nodecrit) {
+      size_t nodeindex = Node_GetNodeIndex(nodecrit);
+      
+      Message_Direct("(%s[%lu])",ObVal_GetNameOfUnknown(TimeStep_GetObVal(timestep) + obvalindex),nodeindex) ;
     } else {
       Message_Direct("(none[-])") ;
     }

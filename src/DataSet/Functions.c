@@ -19,7 +19,7 @@ Functions_t* (Functions_New)(const int n_fncts)
   Functions_GetFunction(functions) = NULL ;
 
   if(n_fncts > 0) {
-    Function_t* function = (Function_t*) Mry_New(Function_t[n_fncts]) ;
+    Function_t* function = (Function_t*) Mry_New(Function_t,n_fncts) ;
     
     Functions_GetFunction(functions) = function ;
   }

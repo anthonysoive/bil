@@ -17,7 +17,7 @@
 
 /* Extern functions */
 
-Curves_t* (Curves_Create)(unsigned int n_curves)
+Curves_t* (Curves_Create)(int n_curves)
 {
   Curves_t *curves   = (Curves_t*) Mry_New(Curves_t) ;
   
@@ -25,7 +25,7 @@ Curves_t* (Curves_Create)(unsigned int n_curves)
   Curves_GetNbOfCurves(curves) = 0 ; /* Important initialization */
   
   {
-    Curve_t* cv = (Curve_t*) Mry_New(Curve_t[n_curves]) ;
+    Curve_t* cv = (Curve_t*) Mry_New(Curve_t,n_curves) ;
     unsigned int    i ;
     
     for(i = 0 ; i < n_curves ; i++) {

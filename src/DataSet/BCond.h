@@ -25,7 +25,6 @@ extern void      (BCond_AssignBoundaryConditionsAtOverlappingNodes)(BCond_t*,Nod
 #define BCond_MaxLengthOfRegionName      Region_MaxLengthOfRegionName
 
 
-#define BCond_GetRegionTag(BC)           ((BC)->RegionTag)
 #define BCond_GetRegionName(BC)          ((BC)->RegionName)
 #define BCond_GetNameOfUnknown(BC)       ((BC)->NameOfUnknown)
 #define BCond_GetNameOfEquation(BC)      ((BC)->NameOfEquation)
@@ -46,7 +45,6 @@ struct BCond_t {              /* Boundary condition */
   Functions_t* Functions ;
   Fields_t* Fields ;
   char*  EntryInDataFile ;     /* Entry point in the string of data */
-  int    RegionTag ;
   char*  RegionName ;
   char*  NameOfUnknown ;       /* Name of unknown to be eliminated */
   char*  NameOfEquation ;      /* Name of equation to be eliminated */

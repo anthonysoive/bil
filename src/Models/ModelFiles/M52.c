@@ -11,7 +11,7 @@
 #define TITLE "Freezing and thawing of concrete with salt"
 #define AUTHORS "Zeng"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

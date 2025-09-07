@@ -136,7 +136,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
 {
   /* Allocation of space for the primary variable indexes */
   {
-    int* ind = (int*) Mry_New(int[HardenedCementChemistry_NbOfPrimaryVariables]) ;
+    int* ind = (int*) Mry_New(int,HardenedCementChemistry_NbOfPrimaryVariables) ;
     
     HardenedCementChemistry_SetPrimaryVariableIndex(hcc,ind) ;
   }
@@ -144,7 +144,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
   
   /* Allocation of space for the primary variables */
   {
-    T* var = (T*) Mry_New(T[HardenedCementChemistry_NbOfPrimaryVariables]) ;
+    T* var = (T*) Mry_New(T,HardenedCementChemistry_NbOfPrimaryVariables) ;
     
     HardenedCementChemistry_SetPrimaryVariable(hcc,var) ;
   }
@@ -152,7 +152,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
   
   /* Allocation of space for the variables */
   {
-    T* var = (T*) Mry_New(T[HardenedCementChemistry_NbOfVariables]) ;
+    T* var = (T*) Mry_New(T,HardenedCementChemistry_NbOfVariables) ;
     
     HardenedCementChemistry_SetVariable(hcc,var) ;
   }
@@ -160,7 +160,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
   
   /* Allocation of space for saturation indexes */
   {
-    T* sat = (T*) Mry_New(T[HardenedCementChemistry_NbOfSaturationIndexes]) ;
+    T* sat = (T*) Mry_New(T,HardenedCementChemistry_NbOfSaturationIndexes) ;
     
     HardenedCementChemistry_SetSaturationIndex(hcc,sat) ;
   }
@@ -168,7 +168,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
   
   /* Allocation of space for Log10 saturation indexes */
   {
-    T* sat = (T*) Mry_New(T[HardenedCementChemistry_NbOfSaturationIndexes]) ;
+    T* sat = (T*) Mry_New(T,HardenedCementChemistry_NbOfSaturationIndexes) ;
     
     HardenedCementChemistry_SetLog10SaturationIndex(hcc,sat) ;
   }
@@ -176,7 +176,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
   
   /* Allocation of space for the constants */
   {
-    double* cst = (double*) Mry_New(double[HardenedCementChemistry_NbOfConstants]) ;
+    double* cst = (double*) Mry_New(double,HardenedCementChemistry_NbOfConstants) ;
     
     HardenedCementChemistry_SetConstant(hcc,cst) ;
   }
@@ -184,7 +184,7 @@ _INLINE_ void (HardenedCementChemistry_AllocateMemory)(HardenedCementChemistry_t
   
   /* Allocation of space for solubility product constants */
   {
-    double* ksp = (double*) Mry_New(double[HardenedCementChemistry_NbOfSolubilityProductConstants]) ;
+    double* ksp = (double*) Mry_New(double,HardenedCementChemistry_NbOfSolubilityProductConstants) ;
     
     HardenedCementChemistry_SetLog10Ksp(hcc,ksp) ;
   }

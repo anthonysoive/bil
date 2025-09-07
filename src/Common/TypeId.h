@@ -95,6 +95,8 @@ struct Views_t;
 #define TypeId_Delete(TID)           ((TID)->Delete())
 #define TypeId_DeleteData(TID,X)     ((TID)->DeleteData(X))
 
+#define TypeId_ConvertFromSizeToInt(X)      TypeId_t::ConvertFromSizeToInt(X)
+
 
 
 
@@ -102,6 +104,7 @@ struct Views_t;
         void*\
         ,char*\
         ,int*\
+        ,size_t*\
         ,double*
 
 #define TypeId_ListBIL \
@@ -182,8 +185,8 @@ struct Views_t;
         ,Views_t*
 
 
-#include "BilExtraLibs.h"
-#ifdef SUPERLUDISTLIB
+#include "BilConfig.h"
+#ifdef HAVE_SUPERLUDIST
   //#include "superlu.h"
   struct dScalePermstruct_t;
   struct dLUstruct_t;
@@ -197,7 +200,7 @@ struct Views_t;
   #define TypeId_ListSUPERLU
 #endif
 
-#ifdef PETSCLIB
+#ifdef HAVE_PETSC
   #include <petsc.h>
   //struct KSP;
   //struct PC;
@@ -221,11 +224,6 @@ struct Views_t;
 using TypeId_Variant_t = std::variant<TypeId_List>;
 
 
-#include <stdio.h>
-#include "Message.h"
-#include "Mry.h"
-
-#include "BilExtraLibs.h"
 extern void Damage_Delete(void*);
 extern void DataSet_Delete(void*);
 extern void Elasticity_Delete(void*);
@@ -242,18 +240,29 @@ extern void Plasticity_Delete(void*);
 extern void Solutions_Delete(void*);
 extern void Solver_Delete(void*);
 extern void Solvers_Delete(void*);
-#ifdef SUPERLUDISTLIB
+#ifdef HAVE_SUPERLUDIST
 extern void dScalePermstructFree(void*);
 extern void dLUstructFree(void*);
 extern void superlu_gridexit(void*);
 #endif
-#ifdef PETSCLIB
+#ifdef HAVE_PETSC
 #include <petsc.h>
-//extern void KSPDestroy(void*);
-//extern void PCDestroy(void*);
+//extern void KSPDestroy(KSP*);
+//extern void PCDestroy(PC*);
 #endif
 
 //#include "GenericObject.h"
+
+
+#include <stdio.h>
+#include <stdexcept>
+#include <limits>
+#include "Message.h"
+#include "Mry.h"
+
+
+constexpr size_t TypeId_MaxSizeToInt = static_cast<size_t>((std::numeric_limits<int>::max)());
+
 
 struct TypeId_t {
   private:
@@ -277,7 +286,7 @@ struct TypeId_t {
   size_t GetIdNumber(){return(_index);}
   size_t GetSize(){return(_size);}
   auto   GetData(){
-    return(std::visit([](auto const& x){return(x);},_var));
+    return(std::visit([](auto const& x)->void*{return((void*)x);},_var));
   }
   void (*GetDelete(void))(void*){return(_delete);}
   //GenericObject_Delete_t* GetDelete(){return(_delete);}
@@ -350,7 +359,7 @@ struct TypeId_t {
     } else if(this->Holds<Solvers_t>()) {
       Solvers_Delete(self);
     /* from SuperLU_DIST */
-    #ifdef SUPERLUDISTLIB
+    #ifdef HAVE_SUPERLUDIST
     } else if(this->Holds<dScalePermstruct_t>()) {
       dScalePermstructFree(self);
     } else if(this->Holds<dLUstruct_t>()) {
@@ -359,11 +368,11 @@ struct TypeId_t {
       superlu_gridexit(self);
     #endif
     /* from Petsc */
-    #ifdef PETSCLIB
+    #ifdef HAVE_PETSC
     } else if(this->Holds<KSP>()) {
-      KSPDestroy(self);
+      KSPDestroy((KSP*) self);
     } else if(this->Holds<PC>()) {
-      PCDestroy(self);
+      PCDestroy((PC*) self);
     #endif
     } else {
       Message_FatalError("DeleteData: unknown type") ;
@@ -371,7 +380,16 @@ struct TypeId_t {
 
     return ;
   }
+  
+  /* Safely convert from size_t to int. */
+  static int ConvertFromSizeToInt(size_t size) {
+    if(size > TypeId_MaxSizeToInt) {
+      throw std::overflow_error("size_t value is too big to fit into an int.");
+    }
+    return static_cast<int>(size);
+  }
 } ;
+
 
 
 #if 0

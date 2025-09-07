@@ -8,31 +8,37 @@ extern "C" {
 
 
 /* Forward declarations */
-struct String_t; //typedef struct String_t       String_t ;
+//struct String_t; //typedef struct String_t       String_t ;
 
 
 
-static int   String_bytes ;
-static char* String_pchar ;
+static int   String_bytes;
+static char* String_pchar;
+static char const* String_pcchar;
+static void* String_void;
 
 
 //extern char*       (String_Create)         (const char*) ;
 //extern void        (String_Delete)         (void*) ;
-extern char*       (String_FindToken3)           (const char*,const char*,const char*) ;
-extern char*       (String_FindAndSkipToken3)    (const char*,const char*,const char*) ;
-extern char*       (String_FindNthToken3)        (const char*,const char*,const int) ;
-extern char*       (String_FindNthToken4)        (const char*,const char*,const char*,const int) ;
-extern int         (String_CountTokens2)         (const char*,const char*) ;
-extern int         (String_CountTokens3)         (const char*,const char*,const char*) ;
-extern int         (String_CountTokensAloneInOneLine2)(const char*,const char*) ;
-extern int         (String_CountTokensAloneInOneLine3)(const char*,const char*,const char*) ;
-extern char**      (String_BreakIntoTokens)      (const char*,const char*) ;
-extern int         (String_NbOfTokens)           (char**) ;
-extern char*       (String_CopyLine)             (const char*) ;
-extern const char* (String_SkipRemainingComments)(const char*) ;
-extern int         (String_NbOfUncommentedLines) (const char*,const char*) ;
-extern int         (String_FindPositionIndex)    (const char*,const char* const*,const int) ;
-extern char*       (String_RemoveComments)       (char*,char*) ;
+extern char* (String_FindToken)        (char*,const char*) ;
+extern char const* (String_FindToken)  (char const*,const char*) ;
+extern char* (String_FindToken)        (char*,const char*,const char*) ;
+extern char const* (String_FindToken)  (char const*,const char*,const char*) ;
+extern char* (String_FindAndSkipToken) (char*,const char*) ;
+extern char const* (String_FindAndSkipToken) (char const*,const char*) ;
+extern char* (String_FindAndSkipToken) (char*,const char*,const char*) ;
+extern char const* (String_FindAndSkipToken) (char const*,const char*,const char*) ;
+extern char* (String_FindNthToken)     (char*,const char*,const int) ;
+extern char* (String_FindNthToken)     (char*,const char*,const char*,const int) ;
+extern int   (String_CountTokens)         (char*,const char*) ;
+extern int   (String_CountTokens)         (char*,const char*,const char*) ;
+extern int   (String_CountTokensAloneInOneLine)(char*,const char*) ;
+extern int   (String_CountTokensAloneInOneLine)(char*,const char*,const char*) ;
+extern char* (String_CopyLine)             (const char*) ;
+//extern const char* (String_SkipRemainingComments)(const char*) ;
+//extern int         (String_NbOfUncommentedLines) (const char*,const char*) ;
+extern int   (String_FindPositionIndex)    (const char*,const char* const*,const int) ;
+extern char* (String_RemoveComments)       (char const*,char*) ;
 
 
 
@@ -73,8 +79,7 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 #define String_ScanArray(STR,N,FMT,V) \
         do { \
           char* String_c = STR ; \
-          int String_i ; \
-          for(String_i = 0 ; String_i < (N) ; String_i++) { \
+          for(size_t String_i = 0 ; String_i < (N) ; String_i++) { \
             String_c += String_Scan(String_c,FMT,(V) + String_i) ; \
           } \
         } while(0)
@@ -83,8 +88,7 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 #define String_ScanArrays(STR,N,FMT,...) \
         do { \
           char* String_c = STR ; \
-          int String_i ; \
-          for(String_i = 0 ; String_i < (N) ; String_i++) { \
+          for(size_t String_i = 0 ; String_i < (N) ; String_i++) { \
             String_c += String_Scan(String_c,FMT,String_IncrementAll(__VA_ARGS__)) ; \
           } \
         } while(0)
@@ -92,8 +96,7 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 #define String_ScanArrays0(STR,N,FMT,...) \
         do { \
           char* String_c = STR ; \
-          int String_i ; \
-          for(String_i = 0 ; String_i < (N) ; String_i++) { \
+          for(size_t String_i = 0 ; String_i < (N) ; String_i++) { \
             String_c += String_Scan(String_c,FMT,__VA_ARGS__) ; \
             Algos_SEPWITH(String_IncrementAll0(__VA_ARGS__),;) ; \
           } \
@@ -102,10 +105,6 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 
 /** Gets the advanced position in the string. */
 #define String_GetAdvancedPosition \
-        (String_pchar)
-
-
-#define String_GetPosition \
         (String_pchar)
 
 
@@ -134,7 +133,7 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 #define String_IncrementAll0(...) \
         Algos_MAP(Tuple_TUPLE(__VA_ARGS__),String_Increment0)
 
-//        strcat(strcpy(String_Save,FMT),"%n")
+//        std::strcat(strcpy(String_Save,FMT),"%n")
 
 
 
@@ -142,11 +141,11 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 /* Find characters
  * --------------- */
 #define String_FindChar(STR,C) \
-        ((STR) ? (char*) strchr(STR,C) : NULL)
+        ((STR) ? std::strchr(STR,C) : NULL)
         
 
 #define String_FindAnyChar(STR,Cs) \
-        ((STR) ? strpbrk(STR,Cs) : NULL)
+        ((STR) ? std::strpbrk(STR,Cs) : NULL)
         
 
 #define String_FindEndOfLine(STR) \
@@ -168,11 +167,11 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 
 
 #define String_SkipAnyChars(STR,Cs) \
-        ((STR) ? (STR) + strspn(STR,Cs) : NULL)
+        ((STR) ? (STR) + std::strspn(STR,Cs) : NULL)
         
 
 #define String_SkipAnyOtherChars(STR,Cs) \
-        ((STR) ? (STR) + strcspn(STR,Cs) : NULL)
+        ((STR) ? (STR) + std::strcspn(STR,Cs) : NULL)
         
 
 #define String_SkipBlankChars(STR) \
@@ -213,7 +212,7 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
         Utils_CAT_NARG(String_CaseIgnoredIs,__VA_ARGS__)(__VA_ARGS__)
         
 #define String_BeginsWithAnyChar(STR,Cs) \
-        ((STR) ? strspn(STR,Cs) : 0)
+        ((STR) ? std::strspn(STR,Cs) : 0)
 
 #define String_BeginsWithSingleLineComment(STR) \
         (String_Is(STR,"#",1) || String_Is(STR,"//",2))
@@ -227,70 +226,16 @@ extern char*       (String_RemoveComments)       (char*,char*) ;
 
 /* Implementation */
 #define String_Is2(STR,...) \
-        ((STR) ? (!strcmp(STR,__VA_ARGS__)) : 0)
+        ((STR) ? (!std::strcmp(STR,__VA_ARGS__)) : 0)
         
 #define String_Is3(STR,...) \
-        ((STR) ? (!strncmp(STR,__VA_ARGS__)) : 0)
+        ((STR) ? (!std::strncmp(STR,__VA_ARGS__)) : 0)
         
 #define String_CaseIgnoredIs2(STR,...) \
         ((STR) ? (!strcasecmp(STR,__VA_ARGS__)) : 0)
         
 #define String_CaseIgnoredIs3(STR,...) \
         ((STR) ? (!strncasecmp(STR,__VA_ARGS__)) : 0)
-
-
-
-
-/* Find tokens
- * ----------- */
-#define String_FindToken(...) \
-        Utils_CAT_NARG(String_FindToken,__VA_ARGS__)(__VA_ARGS__)
-        
-#define String_FindTokenEndingLines(...) \
-        Utils_CAT_NARG(String_FindTokenEndingLines,__VA_ARGS__)(__VA_ARGS__)
-        
-#define String_FindNthToken(...) \
-        Utils_CAT_NARG(String_FindNthToken,__VA_ARGS__)(__VA_ARGS__)
-
-        
-/* Implementation */
-#define String_FindToken2(STR,TOK) \
-        ((STR) ? (char*) strstr(STR,TOK) : NULL)
-
-#define String_FindTokenEndingLines2(STR,TOK) \
-        (String_pchar = String_FindToken2(STR,TOK), \
-        (String_IsTheLastTokenOfTheLine(String_pchar) ? String_pchar : NULL))
-
-
-
-/* Find and skip tokens
- * -------------------- */
-        
-#define String_FindAndSkipToken(...) \
-        Utils_CAT_NARG(String_FindAndSkipToken,__VA_ARGS__)(__VA_ARGS__)
-
-        
-/* Implementation */
-#define String_FindAndSkipToken2(STR,TOK) \
-        ((String_pchar = String_FindToken(STR,TOK)) ? String_pchar + strlen(TOK) : NULL)
-
-
-
-/* Count tokens
- * ------------ */
-#define String_CountTokens(...) \
-        Utils_CAT_NARG(String_CountTokens,__VA_ARGS__)(__VA_ARGS__)
-
-#define String_CountTokensAloneInOneLine(...) \
-        Utils_CAT_NARG(String_CountTokensAloneInOneLine,__VA_ARGS__)(__VA_ARGS__)
-
-
-
-/* Test
- * ---- */
-#define String_HasAtMostOneTokenBeforeEndOfLine(STR) \
-        (String_SkipBlankChars(String_SkipNextToken(STR))[0] == '\n')
-
 
 
 
@@ -315,8 +260,8 @@ struct String_t {
 }
 #endif
 
-#include <string.h>
-#include <strings.h>
+#include <cstring>
+//#include <strings.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include "Arg.h"

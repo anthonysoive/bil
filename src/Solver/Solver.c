@@ -9,7 +9,7 @@
 #include "Message.h"
 #include "CommandLine.h"
 #include "Context.h"
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "ResolutionMethod.h"
 #include "CroutMethod.h"
 #include "DistributedMS.h"
@@ -19,25 +19,25 @@
 #include "Matrix.h"
 #include "GenericData.h"
 
-#ifdef SUPERLULIB
+#ifdef HAVE_SUPERLU
   #include "SuperLUMethod.h"
 #endif
 
-#ifdef SUPERLUMTLIB
+#ifdef HAVE_SUPERLUMT
   #include "SuperLUMTMethod.h"
   #include "superlu.h"
 #endif
 
-#ifdef SUPERLUDISTLIB
+#ifdef HAVE_SUPERLUDIST
   #include "SuperLUDistMethod.h"
   #include "superlu.h"
 #endif
 
-#if defined (BLASLIB) && defined (LAPACKLIB)
+#if defined (HAVE_BLAS) && defined (HAVE_LAPACK)
   #include "MA38Method.h"
 #endif
 
-#if defined (PETSCLIB)
+#if defined (HAVE_PETSC)
   #include "PetscKSPMethod.h"
   #include "PetscAIJFormat.h"
   #include <petsc.h>
@@ -50,14 +50,14 @@
   Extern functions
 */
 
-Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const int imatrix)
+Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,unsigned short int const n_res,unsigned short int const imatrix)
 {
   Solver_t* solver = (Solver_t*) Mry_New(Solver_t) ;
   
   
   /* Nb of rows/columns */
   {
-    int n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
+    size_t n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
     
     Solver_GetNbOfColumns(solver) = n_col ;
   }
@@ -90,17 +90,17 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
     if(Solver_ResolutionMethodIs(solver,CROUT)) {
       Solver_GetSolve(solver) = CroutMethod_Solve ;
       
-    #ifdef SUPERLULIB
+    #ifdef HAVE_SUPERLU
     } else if(Solver_ResolutionMethodIs(solver,SuperLU)) {
       Solver_GetSolve(solver) = SuperLUMethod_Solve ;
       
       /* Allocate work spaces for dgssvx */
       {
         int n = Solver_GetNbOfColumns(solver) ;
-        void* etree  = Mry_New(int[n]) ;
-        void* R      = Mry_New(double[n]) ;
-        void* C      = Mry_New(double[n]) ;
-        void* err    = Mry_New(double[2]) ;
+        void* etree  = Mry_New(int,n) ;
+        void* R      = Mry_New(double,n) ;
+        void* C      = Mry_New(double,n) ;
+        void* err    = Mry_New(double,2) ;
         GenericData_t* getree = GenericData_Create(n,etree,"etree") ;
         GenericData_t* gR     = GenericData_Create(n,R,"R") ;
         GenericData_t* gC     = GenericData_Create(n,C,"C") ;
@@ -118,7 +118,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         Solver_AppendGenericWorkSpace(solver,gerr) ;
       
         if(lwork) {
-          void* work = Mry_New(double[lwork]) ;
+          void* work = Mry_New(double,lwork) ;
           GenericData_t* gwork = GenericData_Create(lwork,work,"work") ;
         
           Solver_AppendGenericWorkSpace(solver,gwork) ;
@@ -126,19 +126,19 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       }
     #endif
       
-    #ifdef SUPERLUMTLIB
+    #ifdef HAVE_SUPERLUMT
     } else if(Solver_ResolutionMethodIs(solver,SuperLUMT)) {
       Solver_GetSolve(solver) = SuperLUMTMethod_Solve ;
       
       /* Allocate work spaces for dgssvx */
       {
         int n = Solver_GetNbOfColumns(solver) ;
-        void* etree  = Mry_New(int[n]) ;
-        void* colcnt_h = Mry_New(int[n]) ;
-        void* part_super_h = Mry_New(int[n]) ;
-        void* R      = Mry_New(double[n]) ;
-        void* C      = Mry_New(double[n]) ;
-        void* err    = Mry_New(double[2]) ;
+        void* etree  = Mry_New(int,n) ;
+        void* colcnt_h = Mry_New(int,n) ;
+        void* part_super_h = Mry_New(int,n) ;
+        void* R      = Mry_New(double,n) ;
+        void* C      = Mry_New(double,n) ;
+        void* err    = Mry_New(double,2) ;
         GenericData_t* getree = GenericData_Create(n,etree,"etree") ;
         GenericData_t* gcolcnt_h = GenericData_Create(n,colcnt_h,"colcnt_h") ;
         GenericData_t* gpart_super_h = GenericData_Create(n,part_super_h,"part_super_h") ;
@@ -168,7 +168,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
         Solver_AppendGenericWorkSpace(solver,gerr) ;
       
         if(lwork) {
-          void* work = Mry_New(double[lwork]) ;
+          void* work = Mry_New(double,lwork) ;
           GenericData_t* gwork = GenericData_Create(lwork,work,"work") ;
         
           Solver_AppendGenericWorkSpace(solver,gwork) ;
@@ -176,7 +176,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       }
     #endif
       
-    #ifdef SUPERLUDISTLIB
+    #ifdef HAVE_SUPERLUDIST
     } else if(Solver_ResolutionMethodIs(solver,SuperLUDist)) {
       Solver_GetSolve(solver) = SuperLUDistMethod_Solve ;
       
@@ -244,7 +244,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       }
     #endif
     
-    #if defined (BLASLIB) && defined (LAPACKLIB)
+    #if defined (HAVE_BLAS) && defined (HAVE_LAPACK)
     } else if(Solver_ResolutionMethodIs(solver,MA38)) {
       Solver_GetSolve(solver) = MA38Method_Solve ;
 
@@ -252,14 +252,14 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
       {
         int n_col = Solver_GetNbOfColumns(solver) ;
         int lwork = 4 * n_col ;
-        void* work = Mry_New(double[lwork]) ;
+        void* work = Mry_New(double,lwork) ;
         GenericData_t* gwork = GenericData_Create(lwork,work,"work") ;
       
         Solver_AppendGenericWorkSpace(solver,gwork) ;
       }
     #endif
     
-    #if defined (PETSCLIB)
+    #if defined (HAVE_PETSC)
     } else if(Solver_ResolutionMethodIs(solver,PetscKSP)) {
       Solver_GetSolve(solver) = PetscKSPMethod_Solve ;
       
@@ -291,7 +291,7 @@ Solver_t*  (Solver_Create)(Mesh_t* mesh,Options_t* options,const int n_res,const
          * "-ksp_rtol <rtol>", "-ksp_atol <atol>", "-ksp_dtol <dtol>
          **/
         {
-          int n = Solver_GetNbOfColumns(solver) ;
+          size_t n = Solver_GetNbOfColumns(solver) ;
           PetscReal rtol = 1.e-4/n ;
           
           KSPSetTolerances(*ksp,rtol,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT) ;
@@ -370,7 +370,7 @@ void  (Solver_Delete)(void* self)
     }
   }
   
-  #if defined (PETSCLIB)
+  #if defined (HAVE_PETSC)
   {
     if(Solver_ResolutionMethodIs(solver,PetscKSP)) {
       PetscBool isfinalized ;

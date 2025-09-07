@@ -20,10 +20,10 @@ extern void            (TextFile_CloseFile)(TextFile_t*) ;
 extern void            (TextFile_StoreFilePosition)(TextFile_t*) ;
 extern void            (TextFile_MoveToStoredFilePosition)(TextFile_t*) ;
 extern char*           (TextFile_ReadLineFromCurrentFilePosition)(TextFile_t*,char*,int) ;
-extern char*           (TextFile_ReadLineFromCurrentFilePositionInString)(TextFile_t*,char*,int) ;
-extern long int        (TextFile_CountNbOfCharacters)(TextFile_t*) ;
-extern long int        (TextFile_CountNbOfEatenCharacters)(TextFile_t*) ;
-extern int             (TextFile_CountTheMaxNbOfCharactersPerLine)(TextFile_t*) ;
+extern char*           (TextFile_ReadLineFromCurrentFilePositionInString)(TextFile_t*,char*,size_t) ;
+extern size_t          (TextFile_CountNbOfCharacters)(TextFile_t*) ;
+extern size_t          (TextFile_CountNbOfEatenCharacters)(TextFile_t*) ;
+extern size_t          (TextFile_CountTheMaxNbOfCharactersPerLine)(TextFile_t*) ;
 extern int             (TextFile_Exists)(TextFile_t*) ;
 extern void            (TextFile_CleanTheStream)(TextFile_t*) ;
 extern FILE*           (TextFile_FileStreamCopy)(TextFile_t*) ;
@@ -38,8 +38,12 @@ extern char*           (TextFile_StoreFileContent)(TextFile_t*) ;
 #define TextFile_Rewind(TF) \
         do { \
           rewind(TextFile_GetFileStream(TF)) ; \
-          TextFile_GetCurrentPositionInString(TF) = 0 ; \
-        } while(0) 
+          TextFile_GetPreviousPositionInFileContent(TF) = TextFile_GetFileContent(TF);\
+          TextFile_GetCurrentPositionInFileContent(TF) = TextFile_GetFileContent(TF);\
+        } while(0)
+        
+          //TextFile_GetCurrentPositionInString(TF) = 0 ;
+
 
 #define TextFile_DoesNotExist(TF) \
         (!TextFile_Exists(TF))
@@ -80,16 +84,40 @@ extern char*           (TextFile_StoreFileContent)(TextFile_t*) ;
 #define TextFile_GetFileContent(TF)       ((TF)->filecontent)
 #define TextFile_GetPreviousPositionInString(TF)   ((TF)->prestrpos)
 #define TextFile_GetCurrentPositionInString(TF)    ((TF)->curstrpos)
+#define TextFile_GetPreviousPositionInFileContent(TF)   ((TF)->prepos)
+#define TextFile_GetCurrentPositionInFileContent(TF)    ((TF)->curpos)
 
 
-
+/*
 #define TextFile_GetCurrentPositionInFileContent(TF) \
         (TextFile_GetFileContent(TF) + TextFile_GetCurrentPositionInString(TF))
+*/
 
 #define TextFile_SetCurrentPositionInFileContent(TF,C) \
         do { \
-          TextFile_GetCurrentPositionInString(TF) = C - TextFile_GetFileContent(TF) ; \
+          TextFile_GetCurrentPositionInFileContent(TF) = (char*) C;\
         } while(0)
+
+
+#define TextFile_SetFileContent(TF,C) \
+        do { \
+          TextFile_GetFileContent(TF) = (char*) C;\
+          TextFile_GetPreviousPositionInFileContent(TF) = (char*) C;\
+          TextFile_GetCurrentPositionInFileContent(TF) = (char*) C;\
+        } while(0)
+
+/*
+          ptrdiff_t TextFile_d = C - TextFile_GetFileContent(TF);\
+          TextFile_GetCurrentPositionInString(TF) = size_t ((TextFile_d > 0) ?  TextFile_d : 0);\
+*/
+
+
+/*
+#define TextFile_SetCurrentPositionInString(TF,N) \
+        do { \
+          TextFile_GetCurrentPositionInString(TF) = N;\
+        } while(0)
+*/
 
 
 
@@ -102,14 +130,16 @@ struct TextFile_t {           /* File */
   char*     filecontent ;
   FILE*     stream ;          /* Current file stream if any */
   fpos_t*   pos ;             /* Previous stored file position of the stream */
-  int       prestrpos ;       /* Previous position in the string file content */
-  int       curstrpos ;       /* Current position in the string file content */
+  //size_t    prestrpos ;       /* Previous position in the string file content */
+  //size_t    curstrpos ;       /* Current position in the string file content */
   /* char*     line ;            *//* memory space for a line */
   /* Buffer_t* buffer ;          *//* Buffer */
   /* long int ccount ;           *//* Nb of characters in file */
   /* long int wcount ;           *//* Nb of words in file */
   /* long int lcount ;           *//* Nb of lines in file */
   /* int linelength ;            *//* Length of the longest line */
+  char*    prepos ;       /* Previous position in the file content */
+  char*    curpos ;       /* Current position in the file content */
 } ;
 
 
@@ -118,4 +148,5 @@ struct TextFile_t {           /* File */
 #endif
 
 #include "String_.h"
+#include <cstddef>
 #endif

@@ -11,7 +11,7 @@
 #define TITLE "Elasticity with damage (2020)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

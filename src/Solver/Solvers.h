@@ -13,7 +13,7 @@ struct Options_t;
 struct Solver_t;
 
 
-extern Solvers_t*  (Solvers_Create)(Mesh_t*,Options_t*,const int) ;
+extern Solvers_t*  (Solvers_Create)(Mesh_t*,Options_t*,unsigned short int const) ;
 extern void        (Solvers_Delete)(void*) ;
 
 

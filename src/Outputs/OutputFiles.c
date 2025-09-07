@@ -34,8 +34,8 @@ OutputFiles_t*   (OutputFiles_Create)(char* filename,int n_dates,int n_points)
   
   /* The file name */
   {
-    int LengthOfName = strlen(filename) + 1 ;
-    char* name = (char*) Mry_New(char[LengthOfName]) ;
+    size_t LengthOfName = strlen(filename) + 1 ;
+    char* name = (char*) Mry_New(char,LengthOfName) ;
     
     strcpy(name,filename) ;
 
@@ -49,11 +49,11 @@ OutputFiles_t*   (OutputFiles_Create)(char* filename,int n_dates,int n_points)
   /* Date Output Files */
   {
     int n = ceil(log10((double) n_dates+1)) ;
-    int LengthOfName = strlen(filename) + 3 + n ;
-    char* name = (char*) Mry_New(char[LengthOfName]) ;
+    size_t LengthOfName = strlen(filename) + 3 + n ;
+    char* name = (char*) Mry_New(char,LengthOfName) ;
     
     {
-      OutputFile_t* outputfile = (OutputFile_t*) Mry_New(OutputFile_t[n_dates]) ;
+      OutputFile_t* outputfile = (OutputFile_t*) Mry_New(OutputFile_t,n_dates) ;
       int i ;
       
       for(i = 0 ; i < n_dates ; i++) {
@@ -81,11 +81,11 @@ OutputFiles_t*   (OutputFiles_Create)(char* filename,int n_dates,int n_points)
   /* Point Output Files */
   {
     int n = ceil(log10((double) n_points+1)) ;
-    int LengthOfName = strlen(filename) + 3 + n ;
-    char* name = (char*) Mry_New(char[LengthOfName]) ;
+    size_t LengthOfName = strlen(filename) + 3 + n ;
+    char* name = (char*) Mry_New(char,LengthOfName) ;
     
     {  
-      OutputFile_t* outputfile = (OutputFile_t*) Mry_New(OutputFile_t[n_points]) ;
+      OutputFile_t* outputfile = (OutputFile_t*) Mry_New(OutputFile_t,n_points) ;
       int i ;
       
       for(i = 0 ; i < n_points ; i++) {
@@ -117,7 +117,7 @@ OutputFiles_t*   (OutputFiles_Create)(char* filename,int n_dates,int n_points)
   
   /* Text line */
   {
-    char* line = (char*) Mry_New(char[OutputFiles_MaxLengthOfTextLine]) ;
+    char* line = (char*) Mry_New(char,OutputFiles_MaxLengthOfTextLine) ;
     
     OutputFiles_GetTextLine(outputfiles) = line ;
   }
@@ -194,12 +194,12 @@ void   (OutputFiles_Delete)(void* self)
 
 
 
-double (OutputFiles_Version)(OutputFiles_t* outputfiles)
+char* (OutputFiles_Version)(OutputFiles_t* outputfiles)
 /** Return the version number of Bil which output files
  *  have been created with.
  */
 {
-  double version = 0 ;
+  char* line = OutputFiles_GetTextLine(outputfiles);
   
   /* Read the version in the first line */
   {
@@ -213,13 +213,13 @@ double (OutputFiles_Version)(OutputFiles_t* outputfiles)
   
     //if((c = strstr(c,"Version") + strlen("Version"))) {
     if((c = String_FindAndSkipToken(c,"Version"))) {
-      sscanf(c,"%lf",&version) ;
+      sscanf(c,"%s",line) ;
     }
   
     TextFile_CloseFile(textfile) ;
   }
   
-  return(version) ;
+  return(line) ;
 }
 
 
@@ -229,8 +229,8 @@ void (OutputFiles_BackupSolutionAtTime_)(OutputFiles_t* outputfiles,DataSet_t* d
 /* Backup solutions at a given time in the appropriate output file */
 {
   Mesh_t* mesh = DataSet_GetMesh(dataset) ;
-  unsigned int dim = Mesh_GetDimension(mesh) ;
-  int n_el = Mesh_GetNbOfElements(mesh) ;
+  int dim = Mesh_GetDimension(mesh) ;
+  size_t n_el = Mesh_GetNbOfElements(mesh) ;
   Element_t* el = Mesh_GetElement(mesh) ;
   Materials_t* materials = DataSet_GetMaterials(dataset) ;
   Models_t* usedmodels = Materials_GetUsedModels(materials) ;
@@ -268,14 +268,13 @@ void (OutputFiles_BackupSolutionAtTime_)(OutputFiles_t* outputfiles,DataSet_t* d
   
   {
     unsigned int headings[10] = {0,0,0,0,0,0,0,0,0,0} ;
-    int    ie ;
     
     if(n_usedmodels > 10) {
       arret("OutputFiles_BackupSolutionAtTime (1): too many used models") ;
     }
   
 
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       Element_t* elt = el + ie ;
       Material_t* mat = Element_GetMaterial(elt) ;
       char*  codename = (mat) ? Material_GetCodeNameOfModel(mat) : NULL ;
@@ -367,7 +366,7 @@ void (OutputFiles_BackupSolutionAtPoint_)(OutputFiles_t* outputfiles,DataSet_t* 
 {
   Mesh_t* mesh = DataSet_GetMesh(dataset) ;
   Points_t* points = DataSet_GetPoints(dataset) ;
-  unsigned int dim = Mesh_GetDimension(mesh) ;
+  int dim = Mesh_GetDimension(mesh) ;
   int npt = Points_GetNbOfPoints(points) ;
   
   OutputFile_t* outputfile = OutputFiles_GetPointOutputFile(outputfiles) ;

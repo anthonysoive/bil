@@ -23,7 +23,7 @@ extern void       (Views_Delete)(void*) ;
 
 
 struct Views_t {            /* Views */
-  unsigned int nbofviews ;  /* nb of views */
+  int nbofviews ;  /* nb of views */
   View_t *view ;            /* view */
 } ;
 

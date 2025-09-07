@@ -20,7 +20,7 @@ ShapeFcts_t*  ShapeFcts_Create(void)
   /* Memory space for shape functions */
   {
     int n = ShapeFcts_MaxNbOfShapeFcts ;
-    ShapeFct_t* shapefct = (ShapeFct_t*) Mry_New(ShapeFct_t[n]) ;
+    ShapeFct_t* shapefct = (ShapeFct_t*) Mry_New(ShapeFct_t,n) ;
     
     ShapeFcts_GetShapeFct(shapefcts) = shapefct ;
   }
@@ -57,33 +57,30 @@ void  (ShapeFcts_Delete)(void* self)
 
 
 
-int ShapeFcts_FindShapeFct(ShapeFcts_t* shapefcts,int nn,int dim)
+int ShapeFcts_FindShapeFct(ShapeFcts_t* shapefcts,unsigned short int nn,unsigned short int dim)
 /** Find a Shape Function class defined by 
  *  nn = Nb of nodes 
  *  dim = local dimension
  *  Return the index of the shape function. */
 {
   int n_fi = ShapeFcts_GetNbOfShapeFcts(shapefcts) ;
-  int    i ;
 
   /* Does the function already exist? */
-  for(i = 0 ; i < n_fi ; i++) {
+  for(int i = 0 ; i < n_fi ; i++) {
     ShapeFct_t* fi = ShapeFcts_GetShapeFct(shapefcts) + i ;
-    int    i_nn = ShapeFct_GetNbOfNodes(fi) ;
-    int    i_dim = ShapeFct_GetDimension(fi) ;
+    unsigned short int i_nn = ShapeFct_GetNbOfNodes(fi) ;
+    unsigned short int i_dim = ShapeFct_GetDimension(fi) ;
 
     if((nn == i_nn) && (dim == i_dim)) {
       return(i) ; /* Existing function */
     }
   }
 
-  i = ShapeFcts_AddShapeFct(shapefcts,nn,dim) ;
-
-  return(i) ;
+  return(ShapeFcts_AddShapeFct(shapefcts,nn,dim)) ;
 }
 
 
-int ShapeFcts_AddShapeFct(ShapeFcts_t* shapefcts,int nn,int dim)
+int ShapeFcts_AddShapeFct(ShapeFcts_t* shapefcts,unsigned short int nn,unsigned short int dim)
 /** Add a Shape Function class defined by 
  *  nn = Nb of nodes 
  *  dim = local dimension

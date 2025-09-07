@@ -11,7 +11,7 @@
 #define TITLE "Poroplasticity with hardening (2019)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */
@@ -107,12 +107,12 @@ struct OtherValues_t {
   T MassDensity_liquid;
   T Porosity;
 };
-}
-
-using namespace BaseName();
 
 
 static MPM_t mpm;
+}
+
+using namespace BaseName();
 
 
 

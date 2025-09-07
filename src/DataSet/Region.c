@@ -13,7 +13,7 @@ Region_t*  (Region_New)(void)
   
   /* Allocation of space for the region name */
   {
-    char* name = (char*) Mry_New(char[Region_MaxLengthOfRegionName]) ;
+    char* name = (char*) Mry_New(char,Region_MaxLengthOfRegionName) ;
     
     Region_GetRegionName(region) = name ;
   }

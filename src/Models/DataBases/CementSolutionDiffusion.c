@@ -73,7 +73,7 @@ void (CementSolutionDiffusion_AllocateMemory)(CementSolutionDiffusion_t* csd)
   
   /* Allocation of space for the potentials */
   {
-    int n = CementSolutionDiffusion_MaxNbOfPotentialVectors ;
+    size_t n = CementSolutionDiffusion_MaxNbOfPotentialVectors ;
     size_t sz = n*CementSolutionDiffusion_NbOfSpecies*sizeof(double) ;
     double* pot = (double*) malloc(sz) ;
     
@@ -85,7 +85,7 @@ void (CementSolutionDiffusion_AllocateMemory)(CementSolutionDiffusion_t* csd)
   
   /* Allocation of space for the pointer to potentials */
   {
-    int n = CementSolutionDiffusion_MaxNbOfPotentialVectors ;
+    size_t n = CementSolutionDiffusion_MaxNbOfPotentialVectors ;
     size_t sz = n*sizeof(double*) ;
     double** ppot = (double**) malloc(sz) ;
     
@@ -95,9 +95,8 @@ void (CementSolutionDiffusion_AllocateMemory)(CementSolutionDiffusion_t* csd)
     
     {
       double* pot = CementSolutionDiffusion_GetPotential(csd) ;
-      int i ;
       
-      for(i = 0 ; i < n ; i++) {
+      for(size_t i = 0 ; i < n ; i++) {
         ppot[i] = pot + i*CementSolutionDiffusion_NbOfSpecies ;
       }
     }

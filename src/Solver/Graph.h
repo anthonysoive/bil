@@ -12,37 +12,49 @@ struct Graph_t; //typedef struct Graph_t Graph_t ;
 struct AdjacencyList_t;
 
 
-extern Graph_t*  (Graph_Create)(int,int*) ;
+extern Graph_t*  (Graph_Create)(size_t,unsigned short int*) ;
 extern void      (Graph_Delete)(void*) ;
 
 
-#define Graph_GetNbOfVertices(graph)              ((graph)->nvertices)
-#define Graph_GetNbOfEdges(graph)                 ((graph)->nedges)
-#define Graph_GetAdjacencyList(graph)             ((graph)->adj)
+#define Graph_GetNbOfVertices(G)              ((G)->nvertices)
+#define Graph_GetNbOfEdges(G)                 ((G)->nedges)
+#define Graph_GetAdjacencyList(G)             ((G)->adj)
 
 
-#define Graph_GetDegreeOfVertex(graph,i) \
-        AdjacencyList_GetNbOfNeighbors(Graph_GetAdjacencyList(graph) + i)
+#define Graph_GetDegreeOfVertex(G,I) \
+        AdjacencyList_GetNbOfNeighbors(Graph_GetAdjacencyList(G) + I)
         
-#define Graph_GetNeighborOfVertex(graph,i) \
-        AdjacencyList_GetNeighbor(Graph_GetAdjacencyList(graph) + i)
+#define Graph_GetMaxDegreeOfVertex(G,I) \
+        AdjacencyList_GetMaxNbOfNeighbors(Graph_GetAdjacencyList(G) + I)
+        
+#define Graph_GetNeighborOfVertex(G,I) \
+        AdjacencyList_GetNeighbor(Graph_GetAdjacencyList(G) + I)
+
+#define Graph_MaxDegreeNotAttainedAtVertex(G,I) \
+        AdjacencyList_MaxNbOfNeighborsIsNotAttained(Graph_GetAdjacencyList(G) + I)
 
 
-#define Graph_UpdateTheNbOfEdges(graph) \
+#define Graph_AddEdge(G,I,J) \
+        do {\
+          AdjacencyList_AddNeighbor(Graph_GetAdjacencyList(G) + I,J);\
+          AdjacencyList_AddNeighbor(Graph_GetAdjacencyList(G) + J,I);\
+        } while(0)
+
+
+#define Graph_UpdateTheNbOfEdges(G) \
         do { \
-          int nvert = Graph_GetNbOfVertices(graph) ; \
-          int nedges = 0 ; \
-          int i ; \
-          for(i = 0 ; i < nvert ; i++) { \
-            nedges += Graph_GetDegreeOfVertex(graph,i) ; \
+          size_t nvert = Graph_GetNbOfVertices(G) ; \
+          size_t nedges = 0 ; \
+          for(size_t i = 0 ; i < nvert ; i++) { \
+            nedges += Graph_GetDegreeOfVertex(G,i) ; \
           } \
-          Graph_GetNbOfEdges(graph) = nedges/2 ; \
+          Graph_GetNbOfEdges(G) = nedges/2 ; \
         } while(0)
 
 
 struct Graph_t {              /* Graph */
-  unsigned int  nvertices ;   /* Nb of vertices */
-  unsigned int  nedges ;      /* Nb of edges */
+  size_t  nvertices ;   /* Nb of vertices */
+  size_t  nedges ;      /* Nb of edges */
   AdjacencyList_t* adj ;      /* Adjacency list */
 } ;
 

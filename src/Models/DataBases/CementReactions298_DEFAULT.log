@@ -1,0 +1,100 @@
+
+Info: Started on Mon Jul 14 10:50:34 2025
+
+
+Cement hydrates dissociation reactions at T = 298                       |  Log(k)  
+------------------------------------------------------------------------|----------
+Hydroxides:                                                             |
+CH(s)              =  Ca[2+] + 2OH[-]                                   | -5.19734 
+S(am)              =  SiO2[0]                                           | -2.71529 
+SH(s) + H2O        =  H4SiO4[0]                                         | -2.71529 
+AH3(s)             = 2Al[3+] + 6OH[-]                                   | -68      
+AH3(s) + 2OH[-]    = 2Al(OH)4[-]                                        | -1.12    
+Sulfates:                                                               |
+CSH2(s)            =  Ca[2+] + SO4[2-] + 2H2O                           | -4.58    
+AFm phases:                                                             |
+AFm(s) + 12H[+]    = 4Ca[2+] + 2Al[3+] + SO4[2-] + 18H2O                |  72.4074 
+AFm(s)             = 4Ca[2+] + 2Al(OH)4[-] + SO4[2-] + 4OH[-] + 6H2O    | -29.26   
+C2AH8(s)           = 2Ca[2+] + 2Al(OH)4[-] + 2OH[-] + 3H2O              | -13.56   
+CAH10(s)           =  Ca[2+] + 2Al(OH)4[-] + 6H2O                       | -7.6     
+AFt phases:                                                             |
+Al-Ettringite(s) + 12H[+] = 6Ca[2+] + 2Al[3+] + 3SO4[2-] + 38H2O        |  56.6585 
+Al-Ettringite(s)   = 6Ca[2+] + 2Al(OH)4[-] + 3SO4[2-] + 4OH[-] + 26H2O  | -44.9    
+Hydrogarnets:                                                           |
+C3AH6(s) + 12H[+]  = 3Ca[2+] + 2Al[3+] + 12H2O                          |  80.32   
+C3AH6(s)           = 3Ca[2+] + 2Al(OH)4[-] + 4OH[-]                     | -20.5    
+Salts:                                                                  |
+Friedel's salt(s)  = 4Ca[2+] + 2Al(OH)4[-] + 2Cl[-] + 4OH[-] + 4H2O     | -27.27   
+Kuzel's salt(s)    = Friedel's salt(l) - Cl[-] + 0.5SO4[2-] + 2H2O      | -28.53   
+
+
+Calcium carbonate dissociation reaction at T = 298  |  Log(k)  
+----------------------------------------------------|----------
+Calcite(s)         =  Ca[2+] + CO3[2-]              | -8.47898 
+Aragonite(s)       =  Ca[2+] + CO3[2-]              | -8.3351  
+Vaterite(s)        =  Ca[2+] + CO3[2-]              | -7.91216 
+
+
+Other constants
+---------------
+Log(a_co2eq)        = -1.460465e+01
+Log(a_h2so4eq)      = -3.184042e+01
+
+Homogeneous reaction at T = 298                       |  Log(k)  
+------------------------------------------------------|----------
+Homogeneous reactions involving compounds of type I
+---------------------------------------------------
+
+Water
+H2O                 = H[+] + OH[-]                    | -14.0044 
+
+Calcium compounds
+CaOH[+]             = Ca[2+] + OH[-]                  | -1.22439 
+Ca[2+] + H2O        = CaOH[+] + H[+]                  | -12.78   
+Ca(OH)2[0]          = Ca[2+] + 2OH[-]                 |  0       
+
+Silicon compounds
+H3SiO4[-]  + H2O    = H4SiO4[0] + OH[-]               | -4.19    
+H2SiO4[2-] + H2O    = H3SiO4[-] + OH[-]               | -0.67    
+H2SiO4[2-] + H[+]   = H3SiO4[-]                       |  13.3344 
+H2SiO4[2-] + 2H[+]  = H4SiO4[0]                       |  23.1488 
+
+Sodium compounds
+NaOH[0]             = Na[+] + OH[-]                   |  0.18    
+
+Potassium compounds
+KOH[0]              = K[+] + OH[-]                    |  0.46    
+
+Carbon compounds
+H2CO3[0]            = CO2[0] + H2O                    |  2.77    
+HCO3[-] + H2O       = H2CO3[0] + OH[-]                | -10.4    
+CO3[2-] + H2O       = HCO3[-] + OH[-]                 | -3.67    
+
+Sulfur compounds
+H2SO4[0]            = HSO4[-] + H[+]                  |  6       
+HSO4[-]             = SO4[2-] + H[+]                  | -1.97754 
+H2SO4[0] + 2OH[-]   = SO4[2-] + 2H2O                  |  32.0312 
+
+Aluminium compounds
+AlO4H4[-]           = Al[3+] + 4OH[-]                 | -33.121  
+
+Homogeneous reactions involving compounds of type II
+----------------------------------------------------
+
+Calcium-silicon compounds
+CaH3SiO4[+]         = Ca[2+] + H3SiO4[-]              | -1.2     
+CaH2SiO4[0]         = Ca[2+] + H2SiO4[2-]             | -4.6     
+
+Calcium-carbon compounds
+CaHCO3[+]           = Ca[2+] + HCO3[-]                | -1.10467 
+CaCO3[0]            = Ca[2+] + CO3[2-]                | -3.22286 
+
+Sodium-carbon compounds
+NaHCO3[0]           = Na[+] + HCO3[-]                 |  0.25    
+NaCO3[-]            = Na[+] + CO3[2-]                 | -1.27    
+
+Calcium-sulfur compounds
+CaHSO4[+]           = Ca[2+] + HSO4[-]                | -1.10585 
+CaSO4[0]            = Ca[2+] + SO4[2-]                | -2.19641 
+
+

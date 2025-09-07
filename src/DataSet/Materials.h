@@ -36,7 +36,7 @@ extern void         (Materials_Delete)(void*) ;
 
 
 struct Materials_t {          /* materials */
-  unsigned int n_mat ;        /**< Nb of materials */
+  int n_mat ;        /**< Nb of materials */
   Material_t* mat ;           /**< Material */
   Models_t* models ;          /**< Used models */
 } ;

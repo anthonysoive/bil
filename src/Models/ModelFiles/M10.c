@@ -8,7 +8,7 @@
 #define TITLE   "Richards Equation (3D)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Macros */
 #define NEQ     (1)

@@ -29,15 +29,13 @@ LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t* mesh,const int imatrix)
 
   /* Allocation of space */
   {
-    int n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
+    size_t n_col = Mesh_GetNbOfMatrixColumns(mesh)[imatrix] ;
     /*  les hauteurs de colonne (hc) */
-    int*  hc = (int*) Mry_New(int[n_col]) ;
+    size_t*  hc = (size_t*) Mry_New(size_t,n_col) ;
 
 
-    {
-      int i ;
-      
-      for(i = 0 ; i < n_col ; i++) hc[i] = 0 ;
+    {      
+      for(size_t i = 0 ; i < n_col ; i++) hc[i] = 0 ;
     }
     
 
@@ -45,21 +43,19 @@ LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t* mesh,const int imatrix)
       int n_ddl ;
       
       {
-        int n_no = Mesh_GetNbOfNodes(mesh) ;
+        size_t n_no = Mesh_GetNbOfNodes(mesh) ;
         Node_t* no = Mesh_GetNode(mesh) ;
-        int i ;
       
         n_ddl = 0 ;
-        for(i = 0 ; i < n_no ; i++) n_ddl += Node_GetNbOfEquations(no + i) ;
+        for(size_t i = 0 ; i < n_no ; i++) n_ddl += Node_GetNbOfEquations(no + i) ;
       }
       
       /* The upper column heights: hc[i] = height of the upper column i */
       {
-        int n_el = Mesh_GetNbOfElements(mesh) ;
+        size_t n_el = Mesh_GetNbOfElements(mesh) ;
         Element_t* el = Mesh_GetElement(mesh) ;
-        int ie ;
         
-        for(ie = 0 ; ie < n_el ; ie++) {
+        for(size_t ie = 0 ; ie < n_el ; ie++) {
           if(Element_GetMaterial(el + ie)) {
             int   nn  = Element_GetNbOfNodes(el + ie) ;
             int   neq = Element_GetNbOfEquations(el + ie) ;
@@ -93,7 +89,7 @@ LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t* mesh,const int imatrix)
                 if(ii >= 0) {
                   //int k  = Node_GetMatrixColumnIndex(node_i)[ii] ;
                   int k  = Node_GetSelectedMatrixColumnIndexOf(node_i,ii,imatrix) ;
-                  if(k >= 0 && k - k0 > hc[k]) hc[k] = k - k0 ;
+                  if(k >= 0 && k - k0 > hc[k]) hc[k] = (size_t) (k - k0) ;
                 }
               }
             }
@@ -104,21 +100,19 @@ LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t* mesh,const int imatrix)
   
   
     {
-      int   nnz_l ;
+      size_t   nnz_l ;
       
       /* Number of non zero values in the upper triangular matrix */
-      {
-        int i ;
-      
+      {      
         nnz_l = 0 ;
-        for(i = 0 ; i < n_col ; i++) nnz_l += hc[i] ;
+        for(size_t i = 0 ; i < n_col ; i++) nnz_l += hc[i] ;
       }
 
 
       /* Allocation of space for the non zeros */
       {
-        int nnz = 2*nnz_l + n_col ;
-        double* z = (double*) Mry_New(double[nnz]) ;
+        size_t nnz = 2*nnz_l + n_col ;
+        double* z = (double*) Mry_New(double,nnz) ;
     
         LDUSKLFormat_GetNbOfNonZeroValues(a) = nnz ;
         LDUSKLFormat_GetNonZeroValue(a)  = z ;
@@ -128,8 +122,7 @@ LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t* mesh,const int imatrix)
       /* les tableaux de pointeurs de ligne et colonne */
       {
         double* z = LDUSKLFormat_GetNonZeroValue(a) ;
-        double** p = (double**) Mry_New(double*[2*n_col]) ;
-        int i ;
+        double** p = (double**) Mry_New(double*,2*n_col) ;
     
         LDUSKLFormat_GetPointerToLowerRow(a) = p ;
         LDUSKLFormat_GetPointerToUpperColumn(a) = p + n_col ;
@@ -142,7 +135,7 @@ LDUSKLFormat_t* (LDUSKLFormat_Create)(Mesh_t* mesh,const int imatrix)
           LDUSKLFormat_GetPointerToLowerRow(a)[0] = z ;
           LDUSKLFormat_GetPointerToUpperColumn(a)[0] = z + nnz_l ;
       
-          for(i = 1 ; i < n_col ; i++) {
+          for(size_t i = 1 ; i < n_col ; i++) {
             z = LDUSKLFormat_GetPointerToLowerRow(a)[i - 1] ;
             LDUSKLFormat_GetPointerToLowerRow(a)[i] = z + hc[i] ;
             LDUSKLFormat_GetPointerToUpperColumn(a)[i] = z + nnz_l + hc[i] ;
@@ -185,7 +178,7 @@ void (LDUSKLFormat_Delete)(void* self)
 
 
 
-int (LDUSKLFormat_AssembleElementMatrix)(LDUSKLFormat_t* a,double* ke,int* cole,int* lige,int n)
+size_t (LDUSKLFormat_AssembleElementMatrix)(LDUSKLFormat_t* a,double* ke,int* cole,int* lige,int n)
 /** Assemble the local matrix ke into the global matrix a 
  *  Return the nb of entries */
 {
@@ -197,7 +190,7 @@ int (LDUSKLFormat_AssembleElementMatrix)(LDUSKLFormat_t* a,double* ke,int* cole,
 #define U(i,j)  (*(LDUSKLFormat_GetPointerToUpperColumn(a)[j] - j + i))
 #define L(i,j)  (*(LDUSKLFormat_GetPointerToLowerRow(a)[i] - i + j))
 */
-  int len = 0 ;
+  size_t len = 0 ;
   int rank = DistributedMS_RankOfCallingProcess ;
   
   if(rank > 0) return(len) ;
@@ -238,13 +231,12 @@ int (LDUSKLFormat_AssembleElementMatrix)(LDUSKLFormat_t* a,double* ke,int* cole,
 
 
 
-void (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t* a,unsigned int n,const char* keyword)
+void (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t* a,size_t n,const char* keyword)
 {
   double*  d = LDUSKLFormat_GetDiagonal(a) ;
   double** u = LDUSKLFormat_GetPointerToUpperColumn(a) ;
   double** l = LDUSKLFormat_GetPointerToLowerRow(a) ;
-  int nnz = LDUSKLFormat_GetNbOfNonZeroValues(a) ;
-  int    irow,jcol ;
+  size_t nnz = LDUSKLFormat_GetNbOfNonZeroValues(a) ;
   int rank = DistributedMS_RankOfCallingProcess ;
   
   if(rank > 0) return ;
@@ -252,14 +244,14 @@ void (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t* a,unsigned int n,const char* key
   fprintf(stdout,"\n") ;
   
   fprintf(stdout,"LDU matrix:\n") ;
-  fprintf(stdout,"n_col = %u nnz = %d\n",n,nnz) ;
+  fprintf(stdout,"n_col = %lu nnz = %lu\n",n,nnz) ;
 
   fprintf(stdout,"\n") ;
   
   fprintf(stdout,"diagonal \"diag\" diag: val\n") ;
   
-  for(irow = 0 ; irow < (int) n ; irow++) {
-    fprintf(stdout,"diag %d: % e\n",irow,d[irow]) ;
+  for(size_t irow = 0 ; irow < n ; irow++) {
+    fprintf(stdout,"diag %lu: % e\n",irow,d[irow]) ;
   }
   
   fprintf(stdout,"\n") ;
@@ -270,13 +262,13 @@ void (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t* a,unsigned int n,const char* key
 
   fprintf(stdout,"sup matrix \"col\" col: (row)val ...\n") ;
   
-  for(jcol = 1 ; jcol < (int) n ; jcol++) {
+  for(size_t jcol = 1 ; jcol < n ; jcol++) {
     double* p ;
     
-    fprintf(stdout,"col %d:",jcol) ;
+    fprintf(stdout,"col %lu:",jcol) ;
     
     for(p = u[jcol - 1] ; p < u[jcol] ; p++) {
-      irow = jcol - (u[jcol] - p) ;
+      int irow = jcol - (u[jcol] - p) ;
       fprintf(stdout," (%d)% e",irow,*p) ;
     }
     
@@ -287,13 +279,13 @@ void (LDUSKLFormat_PrintMatrix)(LDUSKLFormat_t* a,unsigned int n,const char* key
   
   fprintf(stdout,"inf matrix \"row\" row: (col)val ...\n") ;
   
-  for(irow = 1 ; irow < (int) n ; irow++) {
+  for(size_t irow = 1 ; irow < n ; irow++) {
     double* p ;
     
-    fprintf(stdout,"row %d:",irow) ;
+    fprintf(stdout,"row %lu:",irow) ;
     
     for(p = l[irow - 1] ; p < l[irow] ; p++) {
-      jcol = irow - (l[irow] - p) ;
+      int jcol = irow - (l[irow] - p) ;
       fprintf(stdout," (%d)% e",jcol,*p) ;
     }
     

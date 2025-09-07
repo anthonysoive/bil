@@ -11,7 +11,7 @@
 #define TITLE "Non stationary flow surface model for claystone (2023)"
 #define AUTHORS "Hao-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

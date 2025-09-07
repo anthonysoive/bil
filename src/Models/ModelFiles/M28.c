@@ -11,7 +11,7 @@
 #define TITLE   "Drying-Wetting with Salt (1D case)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

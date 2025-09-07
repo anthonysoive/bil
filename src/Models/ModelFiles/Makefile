@@ -140,8 +140,7 @@ work_10:
 
 work_11:
 	for file in ${ALLFILES}; do (\
-	cp $$file $$file.bak && \
-	sed 's/^#include "PredefinedMethods.h/#include "PredefinedModelMethods.h/g' $$file.bak > $$file \
+	sed 's/^#include "PredefinedMethods.h/#include "PredefinedModelMethods.h/g' $$file > $$file.bak \
 	); done
 
 
@@ -152,10 +151,14 @@ work_12:
 	); done
 
 
-work_test:
-	for file in M52b.c; do (\
-	cp $$file $$file.bak && \
-	sed 's/^#include "PredefinedMethods.h/#include "PredefinedModelMethods.h/g' $$file.bak > $$file \
+mvfilebaktofile:
+	for file in ${ALLFILES}; do (\
+	mv $$file.bak $$file \
+	); done
+	
+difffilebakandfile:
+	for file in ${ALLFILES}; do (\
+	diff $$file.bak $$file \
 	); done
 
 

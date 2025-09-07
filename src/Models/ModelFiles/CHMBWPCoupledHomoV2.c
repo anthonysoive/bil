@@ -9,7 +9,7 @@
 #define TITLE   "Chemo-hydro-mechanics of bituminized waste products"
 #define AUTHORS "G.MELOT"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Nb of equations */
 #define NEQ     (2 + dim)

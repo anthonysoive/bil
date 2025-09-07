@@ -14,8 +14,8 @@ struct ShapeFct_t;
 
 extern ShapeFcts_t*  (ShapeFcts_Create)(void) ;
 extern void          (ShapeFcts_Delete)(void*) ;
-extern int           (ShapeFcts_FindShapeFct)(ShapeFcts_t*,int,int) ;
-extern int           (ShapeFcts_AddShapeFct)(ShapeFcts_t*,int,int) ;
+extern int           (ShapeFcts_FindShapeFct)(ShapeFcts_t*,unsigned short int,unsigned short int) ;
+extern int           (ShapeFcts_AddShapeFct)(ShapeFcts_t*,unsigned short int,unsigned short int) ;
 
 
 #define ShapeFcts_MaxNbOfShapeFcts             (10)
@@ -25,7 +25,7 @@ extern int           (ShapeFcts_AddShapeFct)(ShapeFcts_t*,int,int) ;
 
 
 struct ShapeFcts_t {          /* Shape functions */
-  unsigned int n_sh ;         /* Number of shape functions */
+  int n_sh ;         /* Number of shape functions */
   ShapeFct_t*  sh ;           /* Shape function */
 } ;
 

@@ -50,9 +50,7 @@ extern void           (NodesSol_CopySelectedSequentialUnknowns)(NodesSol_t*,Node
 /* complete the structure types by using the typedef */
 struct NodesSol_t {           /* Nodal Solutions */
   Nodes_t* nodes ;
-  unsigned int NbOfNodes ;
-  //unsigned int NbOfDOF ;      /* Nb of DOF */
-  //double*      NodalValue ;
+  size_t NbOfNodes ;
   NodeSol_t* nodesol ;
 } ;
 

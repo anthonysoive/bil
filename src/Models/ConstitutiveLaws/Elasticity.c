@@ -23,21 +23,21 @@ Elasticity_t*  (Elasticity_Create)(void)
   
   /* Allocation of space for the stiffness tensor */
   {
-    double* c = (double*) Mry_New(double[81]) ;
+    double* c = (double*) Mry_New(double,81) ;
     
     Elasticity_GetStiffnessTensor(elasty) = c ;
   }
   
   /* Allocation of space for the compliance tensor */
   {
-    double* c = (double*) Mry_New(double[81]) ;
+    double* c = (double*) Mry_New(double,81) ;
     
     Elasticity_GetComplianceTensor(elasty) = c ;
   }
   
   /* Allocation of space for the type */
   {
-    char* c = (char*) Mry_New(char[Elasticity_MaxLengthOfKeyWord]) ;
+    char* c = (char*) Mry_New(char,Elasticity_MaxLengthOfKeyWord) ;
     
     Elasticity_GetType(elasty) = c ;
     /* Default = isotropy */
@@ -46,14 +46,14 @@ Elasticity_t*  (Elasticity_Create)(void)
   
   /* Allocation of space for the parameters */
   {
-    double* c = (double*) Mry_New(double[Elasticity_MaxNbOfParameters]) ;
+    double* c = (double*) Mry_New(double,Elasticity_MaxNbOfParameters) ;
     
     Elasticity_GetParameter(elasty) = c ;
   }
   
   /* Allocation of space for the stress tensor */
   {
-    double* c = (double*) Mry_New(double[9]) ;
+    double* c = (double*) Mry_New(double,9) ;
     
     Elasticity_GetStressTensor(elasty) = c ;
   }

@@ -23,7 +23,7 @@ Fields_t* (Fields_New)(const int n_fields)
     
   {
     if(n_fields > 0) {
-      Field_t* field = (Field_t*) Mry_New(Field_t[n_fields]) ;
+      Field_t* field = (Field_t*) Mry_New(Field_t,n_fields) ;
       int i ;
       
       for(i = 0 ; i < n_fields ; i++) {

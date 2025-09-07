@@ -13,18 +13,17 @@
 
 
 
-Solvers_t*  (Solvers_Create)(Mesh_t* mesh,Options_t* options,const int n)
+Solvers_t*  (Solvers_Create)(Mesh_t* mesh,Options_t* options,unsigned short int const n)
 {
-  int NbOfMatrices = Mesh_GetNbOfMatrices(mesh) ;
+  unsigned short int NbOfMatrices = Mesh_GetNbOfMatrices(mesh) ;
   Solvers_t* solvers = (Solvers_t*) Mry_New(Solvers_t) ;
   
   Solvers_GetNbOfSolvers(solvers) = NbOfMatrices ;
   
   {
-    Solver_t* solver = (Solver_t*) Mry_New(Solver_t[NbOfMatrices]) ;
-    int i ;
+    Solver_t* solver = (Solver_t*) Mry_New(Solver_t,NbOfMatrices) ;
     
-    for(i = 0 ; i < NbOfMatrices ; i++) {
+    for(unsigned short int i = 0 ; i < NbOfMatrices ; i++) {
       Solver_t* solver_i = Solver_Create(mesh,options,n,i) ;
       
       solver[i] = solver_i[0] ;

@@ -19,11 +19,6 @@ endif()
 project(bil LANGUAGES C CXX Fortran)
 
 
-option(ENABLE_OPENMP   "Enable OpenMP parallelization"   OFF)
-option(ENABLE_PTHREADS "Enable Pthreads parallelization" OFF)
-option(ENABLE_MPI      "Enable MPI parallelization"      OFF)
-
-
 # Add the CMake directory for custon CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -67,21 +62,6 @@ set(BIL_LIB bil-${BIL_VERSION}-${CMAKE_BUILD_TYPE})
 set(BIL_EXE ${BIL_LIB}.exe)
 
 
-# Extra-libraries
-# ---------------
-set(BILEXTRALIBS_H BilExtraLibs.h)
-set(BIL_EXTRALIBS)
-include(Extralibs)
-
-
-
-include(SetCompilerFlags)
-
-
-# Bil options
-# -----------
-include(SetBilConfig)
-
 
 # the executable and the library
 add_subdirectory(src)
@@ -103,6 +83,12 @@ if(VALGRIND)
     COMMAND ${VALGRIND} --tool=memcheck --leak-check=full --read-var-info=yes ${BIL_EXE} ${arg}
   )
 endif()
+
+
+# Redirect stdout and stderr to bil.log
+add_custom_target(tolog
+  COMMAND make > bil.log 2>&1
+)
 
 
 # Epilogue

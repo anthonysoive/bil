@@ -18,7 +18,7 @@ IntFcts_t*  (IntFcts_Create)(void)
 
   /* Memory space for interpolation functions */
   {
-    IntFct_t* intfct = (IntFct_t*) Mry_New(IntFct_t[IntFcts_MaxNbOfIntFcts]) ;
+    IntFct_t* intfct = (IntFct_t*) Mry_New(IntFct_t,IntFcts_MaxNbOfIntFcts) ;
     
     IntFcts_GetIntFct(intfcts) = intfct ;
   }
@@ -55,7 +55,7 @@ void (IntFcts_Delete)(void* self)
 
 
 
-int IntFcts_FindIntFct(IntFcts_t* intfcts,int nn,int dim,const char* type)
+int IntFcts_FindIntFct(IntFcts_t* intfcts,unsigned short int nn,unsigned short int dim,const char* type)
 /** Find an Interpolation Function class defined by 
  *  nn = nb of functions 
  *  dim = local dimension
@@ -68,8 +68,8 @@ int IntFcts_FindIntFct(IntFcts_t* intfcts,int nn,int dim,const char* type)
   /* Does the function already exist? */
   for(i = 0 ; i < n_fi ; i++) {
     IntFct_t* fi  = IntFcts_GetIntFct(intfcts) + i ;
-    int    i_nn   = IntFct_GetNbOfFunctions(fi) ;
-    int    i_dim  = IntFct_GetDimension(fi) ;
+    unsigned short int    i_nn   = IntFct_GetNbOfFunctions(fi) ;
+    unsigned short int    i_dim  = IntFct_GetDimension(fi) ;
     char*  i_type = IntFct_GetType(fi) ;
 
     if((nn == i_nn) && (dim == i_dim) && (strcmp(type,i_type) == 0)) {
@@ -83,7 +83,7 @@ int IntFcts_FindIntFct(IntFcts_t* intfcts,int nn,int dim,const char* type)
 }
 
 
-int IntFcts_AddIntFct(IntFcts_t* intfcts,int nn,int dim,const char* type)
+int IntFcts_AddIntFct(IntFcts_t* intfcts,unsigned short int nn,unsigned short int dim,const char* type)
 /** Add an Interpolation Function class defined by 
  *  nn = nb of functions 
  *  dim = local dimension

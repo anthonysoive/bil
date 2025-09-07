@@ -107,7 +107,7 @@ CurvesFile_t*   (CurvesFile_Create)(void)
   /* Memory space for the text line to be read */
   {
     int n = CurvesFile_MaxLengthOfTextLine ;
-    char* line = (char*) Mry_New(char[n]) ;
+    char* line = (char*) Mry_New(char,n) ;
     
     CurvesFile_GetTextLine(curvesfile) = line ;
   }
@@ -139,22 +139,6 @@ void (CurvesFile_Delete)(void* self)
   
   free(CurvesFile_GetTextLine(curvesfile)) ;
 }
-
-
-
-#ifdef NOTDEFINED
-void (CurvesFile_MoveToFilePositionStartingInputData)(CurvesFile_t* curvesfile)
-/** Set the file position of the stream to the beginning of the input data. */
-{
-  FILE *str  = CurvesFile_GetFileStream(curvesfile) ;
-  fpos_t* pos = CurvesFile_GetFilePositionStartingInputData(curvesfile) ;
-  
-  /* Set the file position of the stream to the stored position */
-  if(fsetpos(str,pos)) {
-    arret("CurvesFile_MoveToFilePositionStartingInputData") ;
-  }
-}
-#endif
 
 
 int   (CurvesFile_Initialize)(CurvesFile_t* curvesfile,const char* cmdline)

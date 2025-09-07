@@ -127,8 +127,8 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
   Residu_t* residu = Solver_GetResidu(solver) ;
   double*   b = (double*) Residu_GetRHS(residu) ;
   double*   u = (double*) Residu_GetSolution(residu) ;
-  int nrhs = Residu_GetNbOfRHS(residu) ;
-  int ncol = Residu_GetLengthOfRHS(residu) ;
+  size_t nrhs = Residu_GetNbOfRHS(residu) ;
+  size_t ncol = Residu_GetLengthOfRHS(residu) ;
   double*  pb[9] = {b,b+ncol,b+2*ncol,b+ncol,b+3*ncol,b+4*ncol,b+2*ncol,b+4*ncol,b+5*ncol} ;
   double*  pu[9] = {u,u+ncol,u+2*ncol,u+ncol,u+3*ncol,u+4*ncol,u+2*ncol,u+4*ncol,u+5*ncol} ;
   double    E[9] = {1,0.5,0.5,0.5,1,0.5,0.5,0.5,1} ;
@@ -145,23 +145,20 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
 
 
   /* Initializations */
-  {
-    int j ;
-    
-    for(j = 0 ; j < 81 ; j++) c[j] = 0 ;
+  {    
+    for(int j = 0 ; j < 81 ; j++) c[j] = 0 ;
   }
   
 
   /* The matrix and the r.h.s. */
   {
-    int n_el = Mesh_GetNbOfElements(mesh) ;
+    size_t n_el = Mesh_GetNbOfElements(mesh) ;
     Element_t* el = Mesh_GetElement(mesh) ;
 #define NE (Element_MaxNbOfNodes*Model_MaxNbOfEquations)
     double ke[NE*NE] ;
 #undef NE
-    int ie ;
     
-    for(ie = 0 ; ie < n_el ; ie++) {
+    for(size_t ie = 0 ; ie < n_el ; ie++) {
       Material_t* mat = Element_GetMaterial(el + ie) ;
     
       if(mat) {
@@ -179,34 +176,29 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
           int  nn = Element_GetNbOfNodes(el + ie) ;
           int neq = Element_GetNbOfEquations(el + ie) ;
           int ndof = nn*neq ;
-          int n ;
                 
-          for(n = 0 ; n < nn ; n++) {
+          for(int n = 0 ; n < nn ; n++) {
             Node_t* node_n = Element_GetNode(el + ie,n) ;
             double* x_n = Node_GetCoordinate(node_n) ;
-            int m ;
                 
-            for(m = 0 ; m < nn ; m++) {
+            for(int m = 0 ; m < nn ; m++) {
               Node_t* node_m = Element_GetNode(el + ie,m) ;
               double* x_m = Node_GetCoordinate(node_m) ;
-              int i ;
         
-              for(i = 0 ; i < dim ; i++) {
+              for(int i = 0 ; i < dim ; i++) {
                 int ni = n*neq + i ;
                 int jj_row = Element_GetEquationPosition(el + ie)[ni] ;
                 
                 /*  The r.h.s. stored in pb */
                 if(jj_row >= 0) {
                   int row_i = Node_GetMatrixRowIndex(node_n)[jj_row] ;
-                  int j ;
           
                   if(row_i >= 0) {
-                    for(j = 0 ; j < dim ; j++) {
+                    for(int j = 0 ; j < dim ; j++) {
                       int mj = m*neq + j ;
                       int ij = ni * ndof + mj ;
-                      int k ;
                       
-                      for(k = j ; k < dim ; k++) {
+                      for(int k = j ; k < dim ; k++) {
                         int      jk = 3 * j + k ;
                         double* bjk = pb[jk] ;
 
@@ -217,18 +209,13 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
                 }
                 
                 /*  First part of C */
-                {
-                  int j ;
-          
-                  for(j = 0 ; j < dim ; j++) {
+                {          
+                  for(int j = 0 ; j < dim ; j++) {
                     int mj = m*neq + j ;
                     int ij = ni * ndof + mj ;
-                    int k ;
                       
-                    for(k = 0 ; k < dim ; k++) {
-                      int l ;
-          
-                      for(l = 0 ; l < dim ; l++) {
+                    for(int k = 0 ; k < dim ; k++) {          
+                      for(int l = 0 ; l < dim ; l++) {
                         C(k,i,l,j) += x_n[k] * ke[ij] * x_m[l] ;
                       }
                     }
@@ -245,12 +232,8 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
 
   /* The solutions */
   {
-    int k ;
-
-    for(k = 0 ; k < dim ; k++) {
-      int l ;
-          
-      for(l = k ; l < dim ; l++) {
+    for(int k = 0 ; k < dim ; k++) {          
+      for(int l = k ; l < dim ; l++) {
         Solver_GetRHS(solver) = pb[3 * k + l] ;
         Solver_GetSolution(solver) = pu[3 * k + l] ;
         Solver_Solve(solver) ;
@@ -263,27 +246,18 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
 
 
   /* The macroscopic tangent stiffness matrix */
-  {
-    int i ;
-        
-    for(i = 0 ; i < dim ; i++) {
-      int j ;
-      
-      for(j = 0 ; j < dim ; j++) {
-        int k ;
-          
-        for(k = 0 ; k < dim ; k++) {
-          int l ;
-          
-          for(l = 0 ; l < dim ; l++) {
+  {        
+    for(int i = 0 ; i < dim ; i++) {      
+      for(int j = 0 ; j < dim ; j++) {          
+        for(int k = 0 ; k < dim ; k++) {          
+          for(int l = 0 ; l < dim ; l++) {
             double  ub = 0. ;
             
             {
               double* uik = pu[3 * i + k] ;
               double* blj = pb[3 * l + j] ;
-              int p ;
               
-              for(p = 0 ; p < ncol ; p++) {
+              for(int p = 0 ; p < ncol ; p++) {
                 ub += uik[p] * blj[p] ;
               }
             }
@@ -302,9 +276,8 @@ int (FEM2_HomogenizeTangentStiffnessTensor)(FEM2_t* fem2,double t,double dt,doub
 
   {
     double vol = FEM_ComputeVolume(mesh) ;
-    int j ;
     
-    for(j = 0 ; j < 81 ; j++) c[j] /= vol ;
+    for(int j = 0 ; j < 81 ; j++) c[j] /= vol ;
   }
   
   return(0) ;
@@ -523,8 +496,8 @@ int (FEM2_HomogenizeTangentStiffnessTensor1)(Mesh_t* mesh,Solver_t* solver,doubl
   Residu_t* residu = Solver_GetResidu(solver) ;
   double*   b = (double*) Residu_GetRHS(residu) ;
   double*   u = (double*) Residu_GetSolution(residu) ;
-  int nrhs = Residu_GetNbOfRHS(residu) ;
-  int ncol = Residu_GetLengthOfRHS(residu) ;
+  size_t nrhs = Residu_GetNbOfRHS(residu) ;
+  size_t ncol = Residu_GetLengthOfRHS(residu) ;
   double*  pb[9] = {b,b+ncol,b+2*ncol,b+ncol,b+3*ncol,b+4*ncol,b+2*ncol,b+4*ncol,b+5*ncol} ;
   double*  pu[9] = {u,u+ncol,u+2*ncol,u+ncol,u+3*ncol,u+4*ncol,u+2*ncol,u+4*ncol,u+5*ncol} ;
   double    E[9] = {1,0.5,0.5,0.5,1,0.5,0.5,0.5,1} ;

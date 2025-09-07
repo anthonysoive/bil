@@ -11,7 +11,7 @@
 #define TITLE "Unsaturated soils (2019)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

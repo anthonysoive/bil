@@ -1,7 +1,7 @@
 
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#if defined (BLASLIB) && defined (LAPACKLIB)
+#if defined (HAVE_BLAS) && defined (HAVE_LAPACK)
 
 #include <stdio.h>
 #include <stdlib.h>

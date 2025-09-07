@@ -14,7 +14,7 @@ Results_t* (Results_Create)(int n)
   Results_GetNbOfResults(results) = n ;
   
   {
-    Result_t* result = (Result_t*) Mry_New(Result_t[n]) ;
+    Result_t* result = (Result_t*) Mry_New(Result_t,n) ;
     int i ;
     
     for(i = 0 ; i < n ; i++) {

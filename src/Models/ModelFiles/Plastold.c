@@ -11,7 +11,7 @@
 #define TITLE "Plasticity with hardening (2017)"
 #define AUTHORS "Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 
 /* Nb of equations */

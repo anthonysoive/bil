@@ -31,9 +31,9 @@ struct Buffers_t;
         Math_SolveByGaussEliminationKIJ
 
 
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#ifdef LAPACKLIB
+#ifdef HAVE_LAPACK
 #if defined(__cplusplus)
   extern "C" {
 #endif

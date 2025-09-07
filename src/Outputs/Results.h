@@ -20,7 +20,7 @@ extern void       (Results_Delete)(void*) ;
 
 
 struct Results_t {            /* Results */
-  unsigned int nbofresults ;  /* nb of results */
+  int nbofresults ;  /* nb of results */
   Result_t* result ;          /* result */
 } ;
 

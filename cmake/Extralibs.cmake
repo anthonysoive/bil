@@ -1,16 +1,20 @@
 
 # Re-build the library file
-message("Updating the library file: ${BILEXTRALIBS_H}")
-file(REMOVE ${BILEXTRALIBS_H})
-file(TOUCH  ${BILEXTRALIBS_H})
+#[[
+message("Updating the library file: ${BIL_PATH}/BilExtraLibs.h")
+file(REMOVE ${BIL_PATH}/BilExtraLibs.h)
+file(TOUCH  ${BIL_PATH}/BilExtraLibs.h)
 
-file(APPEND ${BILEXTRALIBS_H} "#ifndef BILEXTRALIBS_H\n")
-file(APPEND ${BILEXTRALIBS_H} "#define BILEXTRALIBS_H\n")
+file(APPEND ${BIL_PATH}/BilExtraLibs.h "#ifndef BILEXTRALIBS_H\n")
+file(APPEND ${BIL_PATH}/BilExtraLibs.h "#define BILEXTRALIBS_H\n")
+
+file(APPEND ${BIL_PATH}/BilExtraLibs.h "#include \"BilConfig.h\"\n")
+#]]
 
 set(BILEXTRALIBS_INSTALL_RPATH)
 set(BIL_EXTRALIBS)
 
-file(STRINGS EXTRALIBS libs REGEX "^[^# ]")
+file(STRINGS ${BIL_PATH}/EXTRALIBS libs REGEX "^[^# ]")
 
 foreach(lib IN ITEMS ${libs})
   #message("lib = ${lib}")
@@ -20,7 +24,8 @@ foreach(lib IN ITEMS ${libs})
   #message("lib_name = ${lib_name}")
   #message("lib_path = ${lib_path}")
   
-  if(EXISTS "${lib_path}")
+  # This is an alternative to option, only if ENABLE_${lib_name} is false.
+  if(EXISTS "${lib_path}" AND NOT ENABLE_${lib_name})
   
     get_filename_component(lib_full_path ${lib_path} ABSOLUTE)
     get_filename_component(${lib_name}_DIR ${lib_full_path} DIRECTORY)
@@ -28,17 +33,20 @@ foreach(lib IN ITEMS ${libs})
     list(APPEND BILEXTRALIBS_INSTALL_RPATH ${${lib_name}_DIR})
     list(APPEND BIL_EXTRALIBS ${lib_full_path})
     
-    file(APPEND ${BILEXTRALIBS_H} "#define ${lib_name}LIB  ${${lib_name}_DIR}\n")
+    #file(APPEND ${BIL_PATH}/BilExtraLibs.h "#define ${lib_name}LIB  ${${lib_name}_DIR}\n")
     
     message("${lib_name} library found in " ${${lib_name}_DIR})
     #message("is added to the cache")
+
+    #file(APPEND ${BIL_PATH}/BilExtraLibs.h "#define HAVE_${lib_name}\n")
+    set(HAVE_${lib_name} TRUE)
   endif()
 endforeach()
 
 list(REMOVE_DUPLICATES BILEXTRALIBS_INSTALL_RPATH)
 list(REMOVE_DUPLICATES BIL_EXTRALIBS)
 
-file(APPEND ${BILEXTRALIBS_H} "#endif")
+#file(APPEND ${BIL_PATH}/BilExtraLibs.h "#endif")
 
 
 if(NOT "${BIL_EXTRALIBS}" STREQUAL "")

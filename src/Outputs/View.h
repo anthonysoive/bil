@@ -24,7 +24,7 @@ extern void       (View_Delete)(void*) ;
 
 
 struct View_t {               /* View (scalar, vector, tensor) */
-  short int n ;               /* Nb of components (1,3,9) */
+  int n ;               /* Nb of components (1,3,9) */
   char*   name ;              /* Name of the view */
   int     index ;             /* Index of the view in the global set of views */
 } ;

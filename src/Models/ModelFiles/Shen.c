@@ -24,7 +24,7 @@
 #define TITLE   "Carbonation of CBM with scCO2 (2012)"
 #define AUTHORS "Shen"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Macros */
 #define NEQ     (7)

@@ -23,7 +23,7 @@ extern void      (BConds_AssignBoundaryConditions)(BConds_t*,Mesh_t*,double) ;
 
 
 struct BConds_t {             /* boundary conditions */
-  unsigned int n_cl ;         /* nb */
+  int n_cl ;         /* nb */
   BCond_t* cl ;               /* boundary condition */
 } ;
 

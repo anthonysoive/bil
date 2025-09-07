@@ -51,6 +51,9 @@ extern double* (Plasticity_DerivativeOfFlowRules)(Tfunc,Plasticity_t*,const doub
 template<typename Tfunc>
 extern double* (Plasticity_DerivativeOfYieldFunction)(Tfunc,Plasticity_t*,const double*,const double*) ;
 
+template<typename T>
+double* Plasticity_ReturnMapping(Plasticity_t*,T*,T*,T*);
+
 
 /* Accessors */
 #define Plasticity_GetCodeNameOfModel(PL)            ((PL)->codenameofmodel)
@@ -153,7 +156,7 @@ extern double* (Plasticity_DerivativeOfYieldFunction)(Tfunc,Plasticity_t*,const 
         Plasticity_ComputeTangentStiffnessTensor3
 
 
-#if 1
+#if 0
 #define Plasticity_ReturnMapping(PL,...) \
         ({ \
           Plasticity_ReturnMapping_t* Plasticity_rm = Plasticity_GetReturnMapping(PL); \
@@ -291,9 +294,9 @@ struct Plasticity_t {
   double* hardv ;  /** Hardening variable */
   double* dhardv ; /** Typical small increment of hardening variable */
   double  dstress ; /** Typical small increment of stress */
-  int     ncriteria ;  /** Nb of criteria */
-  int     nhardv ;  /** Nb of hardening variables */
-  int     nnhardv ;  /** Nb of non hardening variables */
+  unsigned short int     ncriteria ;  /** Nb of criteria */
+  unsigned short int     nhardv ;  /** Nb of hardening variables */
+  unsigned short int     nnhardv ;  /** Nb of non hardening variables */
   double* hardm ;  /** Hardening modulus */
   double* criterion ; /** Value of the yield function criterion */
   double* fc ;     /** fc(k,l) = dfsds(j,i) * C(i,j,k,l) */

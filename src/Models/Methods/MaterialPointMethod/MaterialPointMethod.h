@@ -1,6 +1,10 @@
 #ifndef MATERIALPOINTMETHOD_H
 #define MATERIALPOINTMETHOD_H
 
+#ifndef USE_AUTODIFF
+  #define USE_AUTODIFF false
+#endif
+
 #include "Element.h"
 #include "CustomValues.h"
 #include "ConstitutiveIntegrator.h"
@@ -107,8 +111,8 @@ struct MaterialPointMethod_t {
 
   virtual V<double>* SetFluxes(Element_t*,double const&,int const&,int const&,V<double> const&,V<double>*){return(NULL);}
   /** On input: (el,t,i,j,grdval,val)
-   *  i,j = node numbers from which and to which flux is computed.
-   *  grdval = value gradient
+   *  i,j = node numbers from which and to which fluxes are computed.
+   *  grdval = value gradients
    * 
    *  On output:
    *  val[i] and val[j] are updated.
@@ -137,10 +141,10 @@ struct MaterialPointMethod_t {
    *  dui[k] are updated
    */
 
-  void DefineNbOfInternalValues(Element_t* el,int const N) {
-    int const nvi = CustomValues_NbOfImplicitValues(V<double>);
-    int const nve = CustomValues_NbOfExplicitValues(V<double>);
-    int const nv0 = CustomValues_NbOfConstantValues(V<double>);
+  void DefineNbOfInternalValues(Element_t* el,size_t N) {
+    size_t nvi = CustomValues_NbOfImplicitValues(V<double>);
+    size_t nve = CustomValues_NbOfExplicitValues(V<double>);
+    size_t nv0 = CustomValues_NbOfConstantValues(V<double>);
           
     Element_SetNbOfImplicitTerms(el,N*nvi) ;
     Element_SetNbOfExplicitTerms(el,N*nve) ;
@@ -173,7 +177,6 @@ struct MaterialPointMethod_t {
 
         
   int ComputeInitialStateByFEM(Element_t* el,double const t) {
-    int i;
     double* vi = Element_GetImplicitTerm(el) ;
     double** u = Element_ComputePointerToCurrentNodalUnknowns(el) ;
     ConstitutiveIntegrator_t<D> ci(this);
@@ -181,14 +184,11 @@ struct MaterialPointMethod_t {
     if(Element_IsSubmanifold(el)) return(0) ;
     ci.Set(el,t,0,u,vi,u,vi) ;
     Element_ComputeMaterialProperties(el,t) ;
-    i = ci.ComputeInitialStateByFEM();
-          
-    return(i);
+    return(ci.ComputeInitialStateByFEM());
   }
   
         
   int ComputeInitialStateByFVM(Element_t* el,double const t) {
-    int i;
     double* vi = Element_GetImplicitTerm(el) ;
     double** u = Element_ComputePointerToCurrentNodalUnknowns(el) ;
     ConstitutiveIntegrator_t<D> ci(this);
@@ -196,14 +196,11 @@ struct MaterialPointMethod_t {
     if(Element_IsSubmanifold(el)) return(0) ;
     ci.Set(el,t,0,u,vi,u,vi) ;
     Element_ComputeMaterialProperties(el,t) ;
-    i = ci.ComputeInitialStateByFVM();
-    
-    return(i);
+    return(ci.ComputeInitialStateByFVM());
   }
 
 
   int ComputeExplicitTermsByFEM(Element_t* el,double const t) {
-    int i;
     double* vi_n = Element_GetPreviousImplicitTerm(el) ;
     double** u_n = Element_ComputePointerToPreviousNodalUnknowns(el) ;
     ConstitutiveIntegrator_t<D> ci(this);
@@ -211,14 +208,11 @@ struct MaterialPointMethod_t {
     if(Element_IsSubmanifold(el)) return(0) ;
     ci.Set(el,t,0,u_n,vi_n,u_n,vi_n) ;
     Element_ComputeMaterialProperties(el,t) ;
-    i = ci.ComputeExplicitTermsByFEM();
-    
-    return(i);
+    return(ci.ComputeExplicitTermsByFEM());
   }
 
 
   int ComputeExplicitTermsByFVM(Element_t* el,double const t) {
-    int i;
     double* vi_n = Element_GetPreviousImplicitTerm(el) ;
     double** u_n = Element_ComputePointerToPreviousNodalUnknowns(el) ;
     ConstitutiveIntegrator_t<D> ci(this);
@@ -226,14 +220,11 @@ struct MaterialPointMethod_t {
     if(Element_IsSubmanifold(el)) return(0) ;
     ci.Set(el,t,0,u_n,vi_n,u_n,vi_n) ;
     Element_ComputeMaterialProperties(el,t) ;
-    i = ci.ComputeExplicitTermsByFVM();
-    
-    return(i);
+    return(ci.ComputeExplicitTermsByFVM());
   }
 
 
   int ComputeImplicitTermsByFEM(Element_t* el,double const t,double const dt) {
-    int i;
     double* vi    = Element_GetCurrentImplicitTerm(el);
     double* vi_n  = Element_GetPreviousImplicitTerm(el);
     double** u   = Element_ComputePointerToCurrentNodalUnknowns(el);
@@ -243,14 +234,11 @@ struct MaterialPointMethod_t {
     if(Element_IsSubmanifold(el)) return(0);
     ci.Set(el,t,dt,u_n,vi_n,u,vi);
     Element_ComputeMaterialProperties(el,t);
-    i = ci.ComputeImplicitTermsByFEM();
-    
-    return(i);
+    return(ci.ComputeImplicitTermsByFEM());
   }
 
 
   int ComputeImplicitTermsByFVM(Element_t* el,double const t,double const dt) {
-    int k;
     double* vi    = Element_GetCurrentImplicitTerm(el);
     double* vi_n  = Element_GetPreviousImplicitTerm(el);
     double** u   = Element_ComputePointerToCurrentNodalUnknowns(el);
@@ -260,13 +248,11 @@ struct MaterialPointMethod_t {
     if(Element_IsSubmanifold(el)) return(0);
     ci.Set(el,t,dt,u_n,vi_n,u,vi);
     Element_ComputeMaterialProperties(el,t);
-    k = ci.ComputeImplicitTermsByFVM();
-    
-    return(k);
+    return(ci.ComputeImplicitTermsByFVM());
   }
 
 
-  int ComputeTangentStifnessMatrixByFEM(Element_t* el,double const t,double const dt,double* k) {
+  int ComputeTangentStiffnessMatrixByFEM(Element_t* el,double const t,double const dt,double* k) {
     double*  vi   = Element_GetCurrentImplicitTerm(el) ;
     double*  vi_n = Element_GetPreviousImplicitTerm(el) ;
     double** u    = Element_ComputePointerToCurrentNodalUnknowns(el) ;
@@ -307,11 +293,13 @@ struct MaterialPointMethod_t {
     ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
     
     {
-      #ifdef USE_AUTODIFF
-      double* kp = ci.ComputeAutodiffPoromechanicalMatrixByFEM(e_mech);
-      #else
-      double* kp = ci.ComputePoromechanicalMatrixByFEM(e_mech);
-      #endif
+      double* kp;
+      
+      if(USE_AUTODIFF) {
+        kp = ci.ComputeAutodiffPoromechanicalMatrixByFEM(e_mech);
+      } else {
+        kp = ci.ComputePoromechanicalMatrixByFEM(e_mech);
+      }
       
       if(!kp) return(1);
       
@@ -337,11 +325,13 @@ struct MaterialPointMethod_t {
     ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
     
     {
-      #ifdef USE_AUTODIFF
-      double* km = ci.ComputeAutodiffMassConservationMatrixByFEM();
-      #else
-      double* km = ci.ComputeMassConservationMatrixByFEM();
-      #endif
+      double* km;
+      
+      if(USE_AUTODIFF) {
+        km = ci.ComputeAutodiffMassConservationMatrixByFEM();
+      } else {
+        km = ci.ComputeMassConservationMatrixByFEM();
+      }
       
       if(!km) return(1);
       
@@ -367,11 +357,13 @@ struct MaterialPointMethod_t {
     ci.Set(el,t,dt,u_n,vi_n,u,vi) ;
     
     {
-      #ifdef USE_AUTODIFF
-      double* km = ci.ComputeAutodiffMassConservationMatrixByFVM();
-      #else
-      double* km = ci.ComputeMassConservationMatrixByFVM();
-      #endif
+      double* km;
+      
+      if(USE_AUTODIFF) {
+        km = ci.ComputeAutodiffMassConservationMatrixByFVM();
+      } else {
+        km = ci.ComputeMassConservationMatrixByFVM();
+      }
       
       if(!km) return(1);
       

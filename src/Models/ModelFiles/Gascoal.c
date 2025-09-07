@@ -12,7 +12,7 @@
 #define TITLE   "Transport and adsorption of gas in fractured coal seam"
 #define AUTHORS "Nikoosokhan-Espinoza-Dangla"
 
-#include "PredefinedMethods.h"
+#include "PredefinedModelMethods.h"
 
 /* Nb of equations of the model */
 #define NEQ   (dim+1)
@@ -27,7 +27,7 @@
 #define U_Gas    E_Gas
 
 
-/* Method chosen at compiling time.
+/* Method chosen at compile time.
  * Each equation is associated to a specific unknown.
  * Each unknown can deal with specific modelings.
  * Uncomment/comment to let only one unknown per equation */

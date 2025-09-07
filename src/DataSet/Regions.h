@@ -28,7 +28,7 @@ extern Region_t*   (Regions_FindRegion)     (Regions_t*,const char*) ;
 
 struct Regions_t {
   Region_t*    Region ;
-  unsigned int NbOfRegions ;
+  int NbOfRegions ;
 } ;
 
 

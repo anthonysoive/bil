@@ -22,7 +22,7 @@ Options_t*  (Options_Create)(Context_t* ctx)
 
   {
     int   max_mot_debug = Options_MaxLengthOfKeyWord ;
-    char* c = (char*) Mry_New(char[5*max_mot_debug]) ;
+    char* c = (char*) Mry_New(char,5*max_mot_debug) ;
 
     Options_GetPrintedInfos(options)      = c ;
     Options_GetResolutionMethod(options)  = (c += max_mot_debug) ;

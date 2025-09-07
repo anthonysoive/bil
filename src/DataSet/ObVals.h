@@ -23,7 +23,7 @@ extern int        (ObVals_FindObValIndex)(ObVals_t*,char*) ;
 
 
 struct ObVals_t {             /* objective variations */
-  unsigned int n_obj ;        /* nb */
+  int n_obj ;        /* nb */
   ObVal_t* obj ;              /* objective variation */
 } ;
 

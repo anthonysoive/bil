@@ -28,7 +28,7 @@ Material_t* (Material_New)(void)
     
     /* Allocation of space for the code name of the model */
     {
-      char* name = (char*) Mry_New(char[Material_MaxLengthOfKeyWord]) ;
+      char* name = (char*) Mry_New(char,Material_MaxLengthOfKeyWord) ;
       
       Material_GetCodeNameOfModel(mat) = name ;
     }
@@ -40,7 +40,7 @@ Material_t* (Material_New)(void)
     
     /* The properties (also part of the generic data) */
     {
-      double* pr = (double*) Mry_New(double[Material_MaxNbOfProperties]) ;
+      double* pr = (double*) Mry_New(double,Material_MaxNbOfProperties) ;
     
       Material_GetNbOfProperties(mat) = 0 ;
       Material_GetProperty(mat) = pr ;
@@ -59,7 +59,7 @@ Material_t* (Material_New)(void)
     
     /* The method */
     {
-      char* meth = (char*) Mry_New(char[Material_MaxLengthOfKeyWord]) ;
+      char* meth = (char*) Mry_New(char,Material_MaxLengthOfKeyWord) ;
       
       Material_GetMethod(mat) = meth ;
     }
@@ -270,91 +270,6 @@ int  (Material_ReadProperties)(Material_t* material,DataFile_t* datafile)
   
   return(0) ;
 }
-
-
-
-#if 0
-void (Material_ScanProperties)(Material_t* mat,DataFile_t* datafile,int (*pm)(const char*))
-/** Read the material properties in the stream file ficd */
-{
-  //FILE *ficd = DataFile_GetFileStream(datafile) ;
-  int    nd = Material_GetNbOfProperties(mat) ;
-  short int    cont = 1 ;
-  
-  //if(!ficd) return ;
-
-  while(cont) {
-    char   mot[Material_MaxLengthOfKeyWord] = {'\n'} ;
-    char*  line = DataFile_ReadLineFromCurrentFilePosition(datafile) ;
-    //char* equal = (line) ? strchr(line,'=') : NULL ;
-    
-    //if(!equal) continue ;
-    
-    if(!line) break ;
-    
-    sscanf(line," %[^= ]",mot) ;
-    //sscanf(line,"%*[ ]%[^=]",mot) ;
-
-    /* Reading some curves */
-    if(!strncmp(mot,"Courbes",6) || !strncmp(mot,"Curves",5)) {
-      Curves_t* curves = Material_GetCurves(mat) ;
-      
-      Curves_ReadCurves(curves,line) ;
-      
-      if(Curves_GetNbOfCurves(curves) > Material_MaxNbOfCurves) {
-        arret("Material_ScanProperties (2) : trop de courbes") ;
-      }
-
-    /* Reading the method */
-    } else if(!strncmp(mot,"Method",6)) {
-      char* p = strchr(line,'=') ;
-      
-      if(p) {
-        char* cr = strchr(p,'\n') ;
-        
-        if(cr) *cr = '\0' ;
-        
-        p += strspn(p,"= ") ;
-        //sscanf(p,"%s",Material_GetMethod(mat)) ;
-        strcpy(Material_GetMethod(mat),p) ;
-      }
-      
-    /* Reading the material properties and storing through pm */
-    } else if(pm) {
-      char   *p = strchr(line,'=') ;
-
-      /* We assume that this is a property as long as "=" is found */
-      if(p) {
-        int i = (*pm)(mot) ;
-        
-        if(i >= 0) {
-        
-          sscanf(p+1,"%lf",Material_GetProperty(mat) + i) ;
-          nd = (nd > i + 1) ? nd : i + 1 ;
-        
-        } else {
-        
-          Message_RuntimeError("%s is not known",mot) ;
-          
-        }
-      
-      /* ... otherwise we stop reading */
-      } else {
-        
-        /* go out */
-        cont = 0 ;
-      }
-      
-    } else {
-      break ;
-    }
-    
-  }
-
-  Material_GetNbOfProperties(mat) = nd ;
-  return ;
-}
-#endif
 
 
 

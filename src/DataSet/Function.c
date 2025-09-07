@@ -21,13 +21,13 @@ Function_t*  (Function_New)(const int n)
   Function_GetNbOfPoints(function) = n ;
 
   {
-    double* x = (double*) Mry_New(double[n]) ;
+    double* x = (double*) Mry_New(double,n) ;
     
     Function_GetXValue(function) = x ;
   }
 
   {
-    double* f = (double*) Mry_New(double[n]) ;
+    double* f = (double*) Mry_New(double,n) ;
     
     Function_GetFValue(function) = f ;
   }

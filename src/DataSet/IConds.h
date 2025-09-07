@@ -28,7 +28,7 @@ extern void      (IConds_AssignInitialConditions)(IConds_t*,Mesh_t*,double) ;
 
 struct IConds_t {             /* Initial Conditions */
   char*  file ;               /* Name of file containing nodal values */
-  unsigned int n_ic ;         /* Nb of IC */
+  int n_ic ;         /* Nb of IC */
   ICond_t* ic ;               /* Initial condition */
 } ;
 

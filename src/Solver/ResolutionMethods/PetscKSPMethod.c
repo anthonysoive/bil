@@ -1,6 +1,6 @@
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 
-#ifdef PETSCLIB
+#ifdef HAVE_PETSC
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,28 +51,26 @@ int   PetscKSPMethod_Solve(Solver_t* solver)
     /* Store the solution */
     {
       double* sol = Residu_GetSolution(residu) ;
-      int n = Residu_GetLengthOfRHS(residu) ;
+      size_t n = Residu_GetLengthOfRHS(residu) ;
       double* array ;
-      int i ;
       
       VecGetArray(*X,&array) ;
       
       {
         PetscInt low ;
         PetscInt high ;
-        int i ;
       
         VecGetOwnershipRange(*X,&low,&high) ;
         
-        for(i = 0 ; i < low ; i++) {
+        for(int i = 0 ; i < low ; i++) {
           sol[i] = 0 ;
         }
-        for(i = low ; i < high ; i++) {
+        for(int i = low ; i < high ; i++) {
           int k = i - low ;
           
           sol[i] = array[k] ;
         }
-        for(i = high ; i < n ; i++) {
+        for(size_t i = high ; i < n ; i++) {
           sol[i] = 0 ;
         }
       }

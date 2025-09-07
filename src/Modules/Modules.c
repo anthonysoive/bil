@@ -23,7 +23,7 @@ Modules_t* (Modules_New)(const int n_modules)
   Modules_SetNbOfModules(modules,n_modules) ;
   
   {
-    Module_t* module = (Module_t*) Mry_New(Module_t[n_modules]) ;
+    Module_t* module = (Module_t*) Mry_New(Module_t,n_modules) ;
   
     {
       int i ;

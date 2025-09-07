@@ -29,7 +29,7 @@ Solution_t*   (Solution_Create)(Mesh_t* mesh)
   /* Allocation of space for the times and the time steps */
   {
     int n = Solution_GetNbOfSequences(sol) ;
-    double* t = (double*) Mry_New(double[2*n]) ;
+    double* t = (double*) Mry_New(double,2*n) ;
     double* dt = t + n ;
 
     Solution_SetSequentialTime(sol,t) ;
@@ -39,7 +39,7 @@ Solution_t*   (Solution_Create)(Mesh_t* mesh)
   /* Allocation of space for the step indexes */
   {
     int n = Solution_GetNbOfSequences(sol) ;
-    int* index = (int*) Mry_New(int[n]) ;
+    int* index = (int*) Mry_New(int,n) ;
     
     Solution_SetSequentialStepIndex(sol,index) ;
   }
@@ -174,18 +174,18 @@ void (Solution_CopySelectedSequentialUnknowns)(Solution_t* sol_dest,Solution_t* 
 
 
 #if 1
-Solution_t* (Solution_GetSolutionInDistantPast)(Solution_t* sol,unsigned int dist)
+Solution_t* (Solution_GetSolutionInDistantPast)(Solution_t* sol,int dist)
 {
-  while(dist--) sol = Solution_GetPreviousSolution(sol) ;
+  while(dist-- > 0) sol = Solution_GetPreviousSolution(sol) ;
   return(sol) ;
 }
 #endif
 
 
 #if 0
-Solution_t* (Solution_GetSolutionInDistantFuture)(Solution_t* sol,unsigned int dist)
+Solution_t* (Solution_GetSolutionInDistantFuture)(Solution_t* sol,int dist)
 {
-  while(dist--) sol = Solution_GetNextSolution(sol) ;
+  while(dist-- > 0) sol = Solution_GetNextSolution(sol) ;
   return(sol) ;
 }
 #endif
@@ -225,11 +225,10 @@ void (Solution_InterpolateCurrentUnknowns)(Solution_t* sol_1,const int sequentia
     /* Interpolation of the specified unknowns */
     {
       Nodes_t* nodes = Solution_GetNodes(sol_1) ;
-      unsigned int nb_nodes = Nodes_GetNbOfNodes(nodes) ;
+      size_t nb_nodes = Nodes_GetNbOfNodes(nodes) ;
       Node_t* node = Nodes_GetNode(nodes) ;
-      int   i ;
   
-      for(i = 0 ; i < nb_nodes ; i++) {
+      for(size_t i = 0 ; i < nb_nodes ; i++) {
         Node_t* nodi = node + i ;
         int*    node_seq_ind = Node_GetSequentialIndexOfUnknown(nodi) ;
         int  nb_unk = Node_GetNbOfUnknowns(nodi) ;

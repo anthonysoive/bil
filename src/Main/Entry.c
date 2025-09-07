@@ -365,7 +365,7 @@ void Entry_CLI(Entry_t* entry)
       int nprocs = DistributedMS_NbOfProcessors ;
       
       Message_Direct("Nb of processors: %d\n",nprocs) ;
-      Message_Direct("Distributed Memory API: "Utils_STR(DistributedMS_API)"\n") ;
+      Message_Direct("Distributed Memory API: " Utils_STR(DistributedMS_API)"\n") ;
     }
     #endif
   

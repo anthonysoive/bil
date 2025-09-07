@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
-#include "BilExtraLibs.h"
+#include "BilConfig.h"
 #include "Options.h"
 #include "Mesh.h"
 #include "Message.h"
@@ -12,7 +12,7 @@
 
 #include "PetscAIJFormat.h"
 
-#ifdef PETSCLIB
+#ifdef HAVE_PETSC
 #include <petsc.h>
 #endif
 
@@ -22,7 +22,7 @@
 /* Extern functions */
 
 
-#ifdef PETSCLIB
+#ifdef HAVE_PETSC
 
 PetscAIJFormat_t* (PetscAIJFormat_Create)(Mesh_t* mesh,const int imatrix)
 /* Create a matrix in PetscAIJFormat format */
@@ -96,14 +96,14 @@ void (PetscAIJFormat_Delete)(void* self)
 
 
 
-int (PetscAIJFormat_AssembleElementMatrix)(PetscAIJFormat_t* a,double* ke,int* col,int* row,int ndof)
+size_t (PetscAIJFormat_AssembleElementMatrix)(PetscAIJFormat_t* a,double* ke,int* col,int* row,int ndof)
 /** Assemble the local matrix ke into the global matrix a 
  *  Return the nb of entries */
 {
   Mat* aij = (Mat*) PetscAIJFormat_GetStorage(a) ;
   int nrow = ndof ;
   int ncol = ndof ;
-  int len = 0 ;
+  size_t len = 0 ;
 
   {
     PetscInt Istart ;

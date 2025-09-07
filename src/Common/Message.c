@@ -45,7 +45,7 @@ Message_t*  (Message_Create)(void)
   Message_t* msg = (Message_t*) Mry_New(Message_t) ;
   
   {
-    char* date = (char*) Mry_New(char[26]) ;
+    char* date = (char*) Mry_New(char,26) ;
     
     Message_GetLaunchDate(msg) = date ;
   }

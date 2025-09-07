@@ -33,7 +33,7 @@ extern double**    (Element_ComputePointerToPreviousNodalUnknowns) (Element_t co
 extern double*     (Element_ComputeCurrentNodalUnknowns)           (Element_t const*) ;
 extern double*     (Element_ComputePreviousNodalUnknowns)          (Element_t const*) ;
 extern double*     (Element_ComputeIncrementalNodalUnknowns)       (Element_t const*) ;
-extern double*     (Element_ComputeDeepNodalUnknowns)              (Element_t const*,unsigned int) ;
+extern double*     (Element_ComputeDeepNodalUnknowns)              (Element_t const*,int) ;
 extern double**    (Element_ComputePointerToNodalCoordinates)      (Element_t const*) ;
 extern double*     (Element_ComputeNodalCoordinates)               (Element_t const*) ;
 extern int         (Element_FindUnknownPositionIndex)              (Element_t const*,const char*) ;
@@ -53,7 +53,7 @@ extern double      (Element_ComputeJacobianDeterminant)            (Element_t co
 extern double*     (Element_ComputeInverseJacobianMatrix)          (Element_t const*,double*,int,const int) ;
 extern int         (Element_OverlappingNode)                       (Element_t const*,const int) ;
 extern int         (Element_HasZeroThickness)                      (Element_t const*) ;
-extern int         (Element_NbOfOverlappingNodes)                  (Element_t const*) ;
+extern unsigned short int (Element_NbOfOverlappingNodes)           (Element_t const*) ;
 extern void        (Element_MakeUnknownContinuousAcrossZeroThicknessElement)(Element_t const*,const char*);
 extern void        (Element_MakeEquationContinuousAcrossZeroThicknessElement)(Element_t const*,const char*);
 extern int         (Element_FindNodeIndex)                         (Element_t const*,const Node_t*) ;
@@ -94,7 +94,6 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
 #define Element_GetDimension(ELT)              ((ELT)->Dimension)
 #define Element_GetNbOfNodes(ELT)              ((ELT)->NbOfNodes)
 #define Element_GetPointerToNode(ELT)          ((ELT)->PointerToNode)
-//#define Element_GetRegionTag(ELT)              ((ELT)->RegionTag)
 #define Element_GetRegion(ELT)                 ((ELT)->Region)
 #define Element_GetMaterial(ELT)               ((ELT)->Material)
 #define Element_GetMaterialIndex(ELT)          ((ELT)->MaterialIndex)
@@ -293,7 +292,7 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
         Material_FindGenericData(Element_GetMaterial(ELT),__VA_ARGS__)
 
 #define Element_ComputeMaterialProperties(ELT,...) \
-        Model_GetComputeMaterialProperties(Element_GetModel(ELT))(ELT,__VA_ARGS__)
+        Model_ComputeMaterialProperties(Element_GetModel(ELT),ELT,__VA_ARGS__)
 
 
 
@@ -462,6 +461,7 @@ extern double*     (Element_ComputeInternodeDistances)             (Element_t co
 
 typedef Node_t*   Node_tt ;
 
+#include <stdio.h>
 /* Minmize the size of the struct by re-organizing the order of its members*/
 struct Element_t {
   Node_tt* PointerToNode ;
@@ -475,11 +475,10 @@ struct Element_t {
   double* Residu ;            /* Elementary residu */
   short int* UnknownPosition ;  /* local position of unknowns at nodes */
   short int* EquationPosition ; /* local position of equations at nodes */
-  //int    RegionTag ;
   int    MaterialIndex ;
-  int Dimension ;              /* dimension of the element (0,1,2,3) */
-  unsigned int ElementIndex ;
-  int NbOfNodes ;
+  unsigned short int Dimension ;              /* dimension of the element (0,1,2,3) */
+  size_t ElementIndex ;
+  unsigned short int NbOfNodes ;
   /* n_vi and n_ve must be kept for old methods! */
   int n_vi ;                  /* Nb of implicit terms */
   int n_ve ;                  /* Nb of explicit terms */

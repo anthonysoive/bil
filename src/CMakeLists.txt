@@ -1,7 +1,33 @@
+# Compiler flags
+# --------------
+include(SetCompilerFlags)
 
+
+# Options (disabled by default)
+# -----------------------------
+option(ENABLE_OPENMP   "Enable OpenMP parallelization"   OFF)
+option(ENABLE_PTHREADS "Enable Pthreads parallelization" OFF)
+option(ENABLE_MPI      "Enable MPI parallelization"      OFF)
+option(ENABLE_AUTODIFF "Enable autodiff interface"       OFF)
+option(ENABLE_FLTK     "Enable FLTK graphical user interface" OFF)
+option(ENABLE_PETSC    "Enable PETSc linear solvers"     OFF)
+option(ENABLE_BLAS     "Enable BLAS for linear algebra" OFF)
+option(ENABLE_LAPACK   "Enable Lapack for linear algebra" OFF)
+option(ENABLE_EIGEN    "Enable Eigen for linear algebra" OFF)
+option(ENABLE_SUPERLU  "Enable SuperLU solver" OFF)
+include(EnableBilOptions)
+
+
+# Extra-libraries (alternatives to options)
+# -----------------------------------------
+include(SetExtralibs)
+set_extralibs(BIL_EXTRALIBS BILEXTRALIBS_INSTALL_RPATH)
+
+
+# Bil source files
+# ----------------
 include(DirsAndSourcesOfBil)
 dirs_and_sources_of_bil(BIL_DIRSALL BIL_SRCALL BIL_SRCMAIN)
-
 
 
 #[[
@@ -77,43 +103,35 @@ set_target_properties(${BIL_EXE}
 
 target_link_libraries(${BIL_EXE} ${BIL_LIB} ${BIL_EXTRALIBS})
 
-if(HAVE_OPENMP)
+if(ENABLE_OPENMP)
   find_package(OpenMP)
   if(OpenMP_FOUND)
     Message(STATUS "Compiler supports OpenMP.")
+    set(HAVE_OPENMP TRUE)
     target_link_libraries(${BIL_EXE} OpenMP::OpenMP_C)
   else()
     Message(STATUS "Compiler doesn't support OpenMP.")
   endif()
-else()
-  string(FIND "${BIL_EXTRALIBS}" "OPENMP" openmp)
-  if(${openmp} GREATER -1)
-    Message(FATAL_ERROR "Please enable OpenMP.")
-  endif()
 endif()
 
 
-if(HAVE_PTHREAD)
+if(ENABLE_PTHREAD)
   find_package(Threads)
   if(Threads_FOUND)
     Message(STATUS "Compiler supports Pthread.")
+    set(HAVE_PTHREAD TRUE)
     target_link_libraries(${BIL_EXE} Threads::Threads)
   else()
     Message(STATUS "Compiler doesn't support Pthread.")
   endif()
-else()
-  string(FIND "${BIL_EXTRALIBS}" "PTHREAD" pthread)
-  if(${pthread} GREATER -1)
-    Message(FATAL_ERROR "Please enable Pthread.")
-  endif()
 endif()
 
 
-if(HAVE_MPI)
+if(ENABLE_MPI)
   find_package(MPI)
   if(MPI_FOUND)
     Message(STATUS "Compiler supports MPI.")
-    #target_link_libraries(${BIL_EXE} MPI::MPI_C)
+    set(HAVE_MPI TRUE)
     target_link_libraries(${BIL_EXE} MPI::MPI_CXX)
   else()
     Message(STATUS "Compiler doesn't support MPI.")
@@ -127,11 +145,12 @@ else()
 endif()
 
 
-if(HAVE_AUTODIFF)
+if(ENABLE_AUTODIFF)
   UNSET(AUTODIFF_PATH CACHE)
   find_path(AUTODIFF_PATH forward/real.hpp PATHS ${CMAKE_INSTALL_FULL_INCLUDEDIR}/autodiff)
   if(AUTODIFF_PATH)
     Message(STATUS "Compiler supports autodiff.")
+    set(HAVE_AUTODIFF TRUE)
   else()
     Message(FATAL ERROR "Compiler doesn't support autodiff.")
   endif()
@@ -145,6 +164,124 @@ if(HAVE_AUTODIFF)
 endif()
 
 
+if(ENABLE_FLTK)
+  # first, try to use fltk-config for fltk >= 1.3 (FindFLTK is buggy on Unix,
+  # where e.g. xft and xinerama options are not dealt with)
+  find_program(FLTK_CONFIG_SCRIPT fltk-config)
+  if(FLTK_CONFIG_SCRIPT)
+    execute_process(COMMAND ${FLTK_CONFIG_SCRIPT} --api-version
+                    OUTPUT_VARIABLE FLTK_VERSION)
+    string(STRIP "${FLTK_VERSION}" FLTK_VERSION)
+    if(FLTK_VERSION VERSION_GREATER_EQUAL "1.3.0")
+      #add_subdirectory(src/fltk)
+      #set_config_option(HAVE_FLTK "Fltk")
+      set(HAVE_FLTK TRUE)
+      message(STATUS "Using fltk-config script for Fltk " ${FLTK_VERSION})
+      execute_process(COMMAND ${FLTK_CONFIG_SCRIPT} --use-gl --use-images --includedir
+                      OUTPUT_VARIABLE FLTK_INCLUDE_DIR)
+      string(STRIP ${FLTK_INCLUDE_DIR} FLTK_INCLUDE_DIR)
+      list(APPEND EXTERNAL_INCLUDES ${FLTK_INCLUDE_DIR})
+      execute_process(COMMAND ${FLTK_CONFIG_SCRIPT} --use-gl --use-images --ldflags
+                      OUTPUT_VARIABLE FLTK_LIBRARIES)
+      string(STRIP ${FLTK_LIBRARIES} FLTK_LIBRARIES)
+    endif()
+  else()
+  # then try the built-in FindFLTK module
+    message(STATUS "The fltk-config script for Fltk is not found")
+    #set(FLTK_SKIP_FORMS TRUE)
+    #set(FLTK_SKIP_FLUID TRUE)
+    find_package(FLTK)
+    if(FLTK_FOUND)
+      Message(STATUS "Compiler supports FLTK.")
+      #add_subdirectory(src/fltk)
+      #set_config_option(HAVE_FLTK "Fltk")
+      set(HAVE_FLTK TRUE)
+      #list(APPEND EXTERNAL_INCLUDES ${FLTK_INCLUDE_DIR})
+    endif()
+  endif()
+  # workaround for Fedora/Suse messing up fltk-config (see issue #417)
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    string(REGEX MATCH "X11" FLTK_X11 ${FLTK_LIBRARIES})
+    if(NOT FLTK_X11)
+      Message(STATUS "The library FLTK_X11 is not found")
+      find_package(X11)
+      if(X11_FOUND)
+        Message(STATUS "Compiler supports X11.")
+        #list(APPEND EXTERNAL_INCLUDES ${X11_INCLUDE_DIR})
+        #list(APPEND EXTERNAL_LIBRARIES ${X11_LIBRARIES})
+      endif()
+    endif()
+  endif()
+endif()
+
+
+if(ENABLE_PETSC)
+  # new-style PETSc installations (in standard system directories)
+  find_library(PETSC_LIBS petsc)
+  find_path(PETSC_INC "petsc.h" PATH_SUFFIXES include/petsc)
+  if(PETSC_LIBS AND PETSC_INC)
+    Message(STATUS "Compiler supports PETSC.")
+    set(HAVE_PETSC TRUE)
+    target_link_libraries(${BIL_EXE} ${PETSC_LIBS})
+    #list(APPEND EXTERNAL_LIBRARIES ${PETSC_LIBS})
+    #list(APPEND EXTERNAL_INCLUDES ${PETSC_INC})
+  else()
+    Message(STATUS "Compiler doesn't support PETSC.")
+  endif()
+  if(NOT HAVE_MPI)
+    Message(FATAL_ERROR "PETSC needs MPI, please enable MPI.")
+  endif()
+endif()
+
+
+
+if(ENABLE_BLAS)
+  # use the standard cmake tests,
+  # which require a working Fortran compiler
+  enable_language(Fortran)
+  find_package(BLAS)
+  if(BLAS_FOUND)
+    Message(STATUS "Compiler supports Blas.")
+    set(HAVE_BLAS TRUE)
+    target_link_libraries(${BIL_EXE} ${BLAS_LIBRARIES})
+  else()
+    Message(STATUS "Compiler doesn't support Blas.")
+  endif()
+endif()
+
+
+if(ENABLE_LAPACK)
+  # use the standard cmake tests,
+  # which require a working Fortran compiler
+  enable_language(Fortran)
+  find_package(LAPACK)
+  if(LAPACK_FOUND)
+    Message(STATUS "Compiler supports Lapack.")
+    set(HAVE_LAPACK TRUE)
+    target_link_libraries(${BIL_EXE} ${LAPACK_LIBRARIES})
+  else()
+    Message(STATUS "Compiler doesn't support Lapack.")
+  endif()
+endif()
+
+
+if(ENABLE_SUPERLU)
+  find_library(SUPERLU_LIB superlu)
+  find_path(SUPERLU_INC "slu_ddefs.h" PATH_SUFFIXES include/superlu)
+  if(SUPERLU_LIB AND SUPERLU_INC)
+    Message(STATUS "Compiler supports SuperLU.")
+    set(HAVE_SUPERLU TRUE)
+    target_link_libraries(${BIL_EXE} ${SUPERLU_LIB})
+  else()
+    Message(STATUS "Compiler doesn't support SuperLU.")
+  endif()
+endif()
+
+
+configure_file(${BIL_PATH}/BilConfig.h.in 
+               ${BIL_PATH}/BilConfig.h)
+
+
 include(FeatureSummary)
 feature_summary(INCLUDE_QUIET_PACKAGES DESCRIPTION "Found packages:" WHAT ALL)
 
@@ -153,6 +290,11 @@ feature_summary(INCLUDE_QUIET_PACKAGES DESCRIPTION "Found packages:" WHAT ALL)
 target_link_options(${BIL_EXE}
   PUBLIC "-O3 -g -gdwarf-3"
 )
+
+
+# add the automatically determined parts of the RPATH which point to
+# directories outside the build tree to the install RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 install(TARGETS ${BIL_EXE}
   DESTINATION ${BIL_INSTALL_FULL_BINDIR}
