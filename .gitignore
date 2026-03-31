@@ -46,3 +46,14 @@ __pycache__
 
 # Specific files
 ._sync_*
+
+# Julia specific files
+*.jl
+*.ipynb
+*.ipynb_checkpoints
+
+# Other files
+todo.txt
+
+CLAUDE/
+CLAUDE.md
