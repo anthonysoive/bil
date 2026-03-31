@@ -73,17 +73,17 @@ endif()
 find_program(DOXYGEN doxygen)
 if(DOXYGEN)
   set(BIL_OXYGEN_FILE bil-doxy)
-  
+
   #[[
   file(COPY Doxyfile.def DESTINATION ${BIL_OXYGEN_DIR}/${BIL_OXYGEN_FILE})
-  file(APPEND ${BIL_OXYGEN_FILE} 
+  file(APPEND ${BIL_OXYGEN_FILE}
     "PROJECT_NAME     = Bil\n
      PROJECT_NUMBER   = ${BIL_VERSION}\n
      OUTPUT_DIRECTORY = ${BIL_OXYGEN_DIR}\n
      INPUT            = ${BIL_PATH}/src\n
      HTML_OUTPUT      = ${BIL_OXYGEN_DIR}/${BIL_DOC}.doxy")
   ]]
-  
+
   add_custom_command(OUTPUT ${BIL_DOC}.doxy
     COMMAND ${CMAKE_COMMAND} -E remove -f ${BIL_OXYGEN_FILE}
     COMMAND ${CMAKE_COMMAND} -E copy Doxyfile.def ${BIL_OXYGEN_FILE}
@@ -95,6 +95,27 @@ if(DOXYGEN)
     COMMAND ${DOXYGEN} ${BIL_OXYGEN_FILE}
     WORKING_DIRECTORY ${BIL_OXYGEN_DIR})
   add_custom_target(doxy DEPENDS ${BIL_DOC}.doxy)
+endif()
+
+find_program(SPHINX_BUILD sphinx-build)
+if(SPHINX_BUILD)
+  set(BIL_SPHINX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sphinx)
+  set(BIL_SPHINX_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/sphinx)
+
+  add_custom_target(sphinx
+    DEPENDS doxy
+    COMMAND ${SPHINX_BUILD} -b html
+            -D breathe_projects.Bil=${BIL_OXYGEN_DIR}/xml
+            ${BIL_SPHINX_DIR}
+            ${BIL_SPHINX_BUILD_DIR}/html
+    COMMENT "Building Sphinx HTML documentation"
+    VERBATIM)
+
+  add_dependencies(doc sphinx)
+
+  install(DIRECTORY ${BIL_SPHINX_BUILD_DIR}/html/
+    DESTINATION ${BIL_INSTALL_FULL_DOCDIR}/html
+    OPTIONAL)
 endif()
 
 	
