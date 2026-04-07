@@ -26,14 +26,8 @@ book:
 
   chapters:
     - index.qmd
-
-    - part: "Lancement d'un calcul"
-      chapters:
-        - lancer_calcul.qmd
-
-    - part: "Écriture d'un modèle"
-      chapters:
-        - fonctionnement_bil.md
+    - lancer_calcul.qmd
+    - fonctionnement_bil.md
 
     - part: "Exemples — Écoulement"
       chapters:
