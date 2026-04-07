@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>27&nbsp; Modèle Shen — Carbonatation du béton au CO₂ supercritique – Bil</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./usoil_model.html" rel="next">
+<link href="./Yuan1_model.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-23fd4533d2f2b834c87e926c7060fcb1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-ddf985e630d529526cf0a290dcd10a29.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-23fd4533d2f2b834c87e926c7060fcb1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e30f798487214bd1bc8412a3dcfaebc7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-f5b556d071665e9458de864191fbc25a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-e30f798487214bd1bc8412a3dcfaebc7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Bil</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+    <a href="https://github.com/dangla/bil" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./DWS1_model.html">Transferts couplés</a></li><li class="breadcrumb-item"><a href="./Shen_model.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Bil — Documentation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Framework</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fonctionnement_bil.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Architecture et fonctionnement de Bil</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Modèles d’écoulement</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Modèle M1 — Équation de Richards (Écoulement liquide 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Modèle M2 — Écoulement Diphasique L/G (Liquide-Gaz)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M5_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Modèle M5 — Transferts couplés eau–air en milieu poreux non saturé (isotherme 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M10-1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Modèle M10 — Équation de Richards : drainage d’une colonne de billes sous gravité (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M10-2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Modèle M10 — Équation de Richards : drainage d’une colonne de billes sous gravité (2D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Richards-2d.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Richards-2d — Drainage d’une colonne de billes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Modèles mécaniques</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Elast0_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modèle Elast0 — Élasticité Linéaire Isotope (Géométrie Axisymétrique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Elasd_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Modèle Elasd — Élasticité avec Endommagement Isotrope (Quasi-statique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Plast_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Modèle Plast — Élasto-plasticité avec critère de Drucker-Prager (ou Cam-Clay)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./BBM_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Modèle BBM — Barcelona Basic Model pour sols non saturés (2D axisymétrique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Poroplast_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modèle Poroplast — Poroélastoplasticité avec Écrouissage (Forage en Milieu Poreux Saturé)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Poromécanique</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M7_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M7-1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité non saturée de Biot · Cas test M7-1 : Barrage de Ternay</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Modèles de gel</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Frostaco_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Modèle Frostaco — Action du gel dans le béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Frostaco3d_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Durabilité &amp; Chimie</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Fick_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modèle Fick — Seconde loi de Fick (Diffusion de soluté)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Duracem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Modèle Duracem — Durabilité des matériaux cimentaires : carbonatation et ingression de chlorures (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chloricem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Modèle Chloricem — Durabilité des matériaux cimentaires : pénétration des chlorures (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfaco_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Modèle Sulfaco — Attaque Sulfatique Interne/Externe du Béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfuricem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Modèle Sulfuricem — Attaque à l’acide sulfurique des matériaux cimentaires</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfaconew_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Modèle Sulfaconew — Refactorisation C++ du modèle Sulfaco avec l’interface MaterialPointMethod</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SulfacoESA3d_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Modèle SulfacoESA3d — Attaque Sulfatique Externe avec Endommagement Mécanique 3D</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Transferts couplés</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./DWS1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Modèle DWS1 — Séchage et Mouillage avec Sel (isotherme 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Yuan1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Modèle Yuan1 — Attaque au Sulfure d’Hydrogène (H₂S) du béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Shen_model.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usoil_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Modèle usoil — Mécanique des Sols Non-Saturés (2019)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Modèles spécialisés</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./MechaMic_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Modèle MechaMic — FEM² Multiscale Mechanics (2017)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Implémentations Julia</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M2_VoronoiFVM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">M2 — Écoulement diphasique liquide-gaz 1D : portage Bil → Julia/VoronoiFVM</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sur cette page</h2>
+   
+  <ul>
+  <li><a href="#table-des-matières" id="toc-table-des-matières" class="nav-link active" data-scroll-target="#table-des-matières"><span class="header-section-number">27.1</span> Table des matières</a></li>
+  <li><a href="#contexte-et-objectif" id="toc-contexte-et-objectif" class="nav-link" data-scroll-target="#contexte-et-objectif"><span class="header-section-number">27.2</span> 1. Contexte et objectif</a></li>
+  <li><a href="#hypothèses" id="toc-hypothèses" class="nav-link" data-scroll-target="#hypothèses"><span class="header-section-number">27.3</span> 2. Hypothèses</a></li>
+  <li><a href="#variables-et-notation" id="toc-variables-et-notation" class="nav-link" data-scroll-target="#variables-et-notation"><span class="header-section-number">27.4</span> 3. Variables et notation</a>
+  <ul class="collapse">
+  <li><a href="#inconnues-primaires" id="toc-inconnues-primaires" class="nav-link" data-scroll-target="#inconnues-primaires"><span class="header-section-number">27.4.1</span> Inconnues primaires</a></li>
+  <li><a href="#équations-résolues" id="toc-équations-résolues" class="nav-link" data-scroll-target="#équations-résolues"><span class="header-section-number">27.4.2</span> Équations résolues</a></li>
+  <li><a href="#variables-secondaires-calculées" id="toc-variables-secondaires-calculées" class="nav-link" data-scroll-target="#variables-secondaires-calculées"><span class="header-section-number">27.4.3</span> Variables secondaires calculées</a></li>
+  </ul></li>
+  <li><a href="#modèle-mathématique" id="toc-modèle-mathématique" class="nav-link" data-scroll-target="#modèle-mathématique"><span class="header-section-number">27.5</span> 4. Modèle mathématique</a>
+  <ul class="collapse">
+  <li><a href="#équations-de-conservation-bilans-élémentaires" id="toc-équations-de-conservation-bilans-élémentaires" class="nav-link" data-scroll-target="#équations-de-conservation-bilans-élémentaires"><span class="header-section-number">27.5.1</span> 4.1 Équations de conservation (bilans élémentaires)</a></li>
+  <li><a href="#chimie-de-la-solution-aqueuse" id="toc-chimie-de-la-solution-aqueuse" class="nav-link" data-scroll-target="#chimie-de-la-solution-aqueuse"><span class="header-section-number">27.5.2</span> 4.2 Chimie de la solution aqueuse</a></li>
+  <li><a href="#réactions-solideliquide-dissolutionprécipitation" id="toc-réactions-solideliquide-dissolutionprécipitation" class="nav-link" data-scroll-target="#réactions-solideliquide-dissolutionprécipitation"><span class="header-section-number">27.5.3</span> 4.3 Réactions solide–liquide : dissolution/précipitation</a></li>
+  <li><a href="#transport-advection-diffusion-migration-électrique" id="toc-transport-advection-diffusion-migration-électrique" class="nav-link" data-scroll-target="#transport-advection-diffusion-migration-électrique"><span class="header-section-number">27.5.4</span> 4.4 Transport : advection + diffusion + migration électrique</a></li>
+  <li><a href="#phase-gazeuse-et-solubilité-du-co₂" id="toc-phase-gazeuse-et-solubilité-du-co₂" class="nav-link" data-scroll-target="#phase-gazeuse-et-solubilité-du-co₂"><span class="header-section-number">27.5.5</span> 4.5 Phase gazeuse et solubilité du CO₂</a></li>
+  <li><a href="#évolution-de-la-porosité" id="toc-évolution-de-la-porosité" class="nav-link" data-scroll-target="#évolution-de-la-porosité"><span class="header-section-number">27.5.6</span> 4.6 Évolution de la porosité</a></li>
+  </ul></li>
+  <li><a href="#conditions-aux-limites-et-initiales" id="toc-conditions-aux-limites-et-initiales" class="nav-link" data-scroll-target="#conditions-aux-limites-et-initiales"><span class="header-section-number">27.6</span> 5. Conditions aux limites et initiales</a>
+  <ul class="collapse">
+  <li><a href="#état-initial-initialization" id="toc-état-initial-initialization" class="nav-link" data-scroll-target="#état-initial-initialization"><span class="header-section-number">27.6.1</span> État initial (Initialization)</a></li>
+  <li><a href="#conditions-aux-limites-boundary-conditions" id="toc-conditions-aux-limites-boundary-conditions" class="nav-link" data-scroll-target="#conditions-aux-limites-boundary-conditions"><span class="header-section-number">27.6.2</span> Conditions aux limites (<code>Boundary Conditions</code>)</a></li>
+  </ul></li>
+  <li><a href="#cas-test-expérience-de-duguid-baseshen" id="toc-cas-test-expérience-de-duguid-baseshen" class="nav-link" data-scroll-target="#cas-test-expérience-de-duguid-baseshen"><span class="header-section-number">27.7</span> 6. Cas test : Expérience de Duguid (<code>base/Shen/</code>)</a>
+  <ul class="collapse">
+  <li><a href="#géométrie-et-maillage" id="toc-géométrie-et-maillage" class="nav-link" data-scroll-target="#géométrie-et-maillage"><span class="header-section-number">27.7.1</span> Géométrie et maillage</a></li>
+  <li><a href="#protocole-expérimental-simulé" id="toc-protocole-expérimental-simulé" class="nav-link" data-scroll-target="#protocole-expérimental-simulé"><span class="header-section-number">27.7.2</span> Protocole expérimental simulé</a></li>
+  <li><a href="#résultats-attendus" id="toc-résultats-attendus" class="nav-link" data-scroll-target="#résultats-attendus"><span class="header-section-number">27.7.3</span> Résultats attendus</a></li>
+  </ul></li>
+  <li><a href="#paramétrage-matériel-du-modèle" id="toc-paramétrage-matériel-du-modèle" class="nav-link" data-scroll-target="#paramétrage-matériel-du-modèle"><span class="header-section-number">27.8</span> 7. Paramétrage matériel du modèle</a></li>
+  <li><a href="#description-pas-à-pas-des-fichiers-dentrée" id="toc-description-pas-à-pas-des-fichiers-dentrée" class="nav-link" data-scroll-target="#description-pas-à-pas-des-fichiers-dentrée"><span class="header-section-number">27.9</span> 8. Description pas-à-pas des fichiers d’entrée</a>
+  <ul class="collapse">
+  <li><a href="#fichier-de-pilotage-baseshenshen" id="toc-fichier-de-pilotage-baseshenshen" class="nav-link" data-scroll-target="#fichier-de-pilotage-baseshenshen"><span class="header-section-number">27.9.1</span> 8.1 Fichier de pilotage <code>base/Shen/Shen</code></a></li>
+  </ul></li>
+  <li><a href="#références-bibliographiques" id="toc-références-bibliographiques" class="nav-link" data-scroll-target="#références-bibliographiques"><span class="header-section-number">27.10</span> 9. Références bibliographiques</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/dangla/bil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./DWS1_model.html">Transferts couplés</a></li><li class="breadcrumb-item"><a href="./Shen_model.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p><strong>Fichiers sources :</strong> <code>src/Models/ModelFiles/Shen.c</code> · <code>base/Shen/Shen</code></p>
+<p><strong>Auteur du modèle :</strong> Shen (d’après l’expérience de Duguid, 2006) <strong>Titre interne BIL :</strong> <code>"Carbonation of CBM with scCO2 (2012)"</code></p>
+</blockquote>
+<hr>
+<section id="table-des-matières" class="level2" data-number="27.1">
+<h2 data-number="27.1" class="anchored" data-anchor-id="table-des-matières"><span class="header-section-number">27.1</span> Table des matières</h2>
+<ol type="1">
+<li><a href="#1-contexte-et-objectif">Contexte et objectif</a></li>
+<li><a href="#2-hypothèses">Hypothèses</a></li>
+<li><a href="#3-variables-et-notation">Variables et notation</a></li>
+<li><a href="#4-modèle-mathématique">Modèle mathématique</a>
+<ul>
+<li>4.1 <a href="#41-équations-de-conservation-bilans-élémentaires">Équations de conservation (bilans élémentaires)</a></li>
+<li>4.2 <a href="#42-chimie-de-la-solution-aqueuse">Chimie de la solution aqueuse</a></li>
+<li>4.3 <a href="#43-réactions-solideligquide--dissolutionprécipitation">Réactions solide–liquide : dissolution/précipitation</a></li>
+<li>4.4 <a href="#44-transport--advection--diffusion--migration-électrique">Transport : advection + diffusion + migration électrique</a></li>
+<li>4.5 <a href="#45-phase-gazeuse-et-solubilité-du-co₂">Phase gazeuse et solubilité du CO₂</a></li>
+<li>4.6 <a href="#46-évolution-de-la-porosité">Évolution de la porosité</a></li>
+</ul></li>
+<li><a href="#5-conditions-aux-limites-et-initiales">Conditions aux limites et initiales</a></li>
+<li><a href="#6-cas-test--expérience-de-duguid-baseshen">Cas test : Expérience de Duguid (<code>base/Shen/</code>)</a></li>
+<li><a href="#7-paramétrage-matériel-du-modèle">Paramétrage matériel du modèle</a></li>
+<li><a href="#8-description-pas-à-pas-des-fichiers-dentrée">Description pas-à-pas des fichiers d’entrée</a></li>
+<li><a href="#9-références-bibliographiques">Références bibliographiques</a></li>
+</ol>
+<hr>
+</section>
+<section id="contexte-et-objectif" class="level2" data-number="27.2">
+<h2 data-number="27.2" class="anchored" data-anchor-id="contexte-et-objectif"><span class="header-section-number">27.2</span> 1. Contexte et objectif</h2>
+<p>Le modèle <strong>Shen</strong> simule la <strong>carbonatation d’une matrice cimentaire (CBM — Cement-Based Material) par du CO₂ supercritique (scCO₂)</strong>. Ce phénomène est central pour l’évaluation de l’intégrité à long terme des puits de forage cimentés utilisés dans les sites de <strong>stockage géologique du CO₂</strong> (CCS — Carbon Capture and Storage).</p>
+<p>Le scénario physique reproduit l’expérience de laboratoire de Duguid (2006) : un écoulement de scCO₂ est forcé à travers un carotte de grès à ciment, provoquant une cascade de réactions chimiques qui dissolvent les hydrates de ciment (portlandite CH, silicates de calcium hydratés CSH) et précipitent de la calcite (CC). Ces transformations modifient la porosité et, in fine, la perméabilité du ciment.</p>
+<pre class="mermaid"><code>graph TD
+    A["Injection de scCO₂&lt;br&gt;(pression impose en x=0)"] --&gt; B("Transport diphasique&lt;br&gt;Darcy gaz + liquide")
+    B --&gt; C["CO₂ se dissout&lt;br&gt;dans l'eau poreuse"]
+    C --&gt; D("Acidification de la solution&lt;br&gt;pH ↓, c_CO2 ↑")
+    D --&gt; E["Dissolution de CH&lt;br&gt;(portlandite)"]
+    D --&gt; F["Dissolution de CSH"]
+    E --&gt; G("Précipitation de CC&lt;br&gt;(calcite)")
+    F --&gt; G
+    G --&gt; H["Modification de la porosité ϕ&lt;br&gt;(colmatage ou ouverture)"]
+    H --&gt; B</code></pre>
+<hr>
+</section>
+<section id="hypothèses" class="level2" data-number="27.3">
+<h2 data-number="27.3" class="anchored" data-anchor-id="hypothèses"><span class="header-section-number">27.3</span> 2. Hypothèses</h2>
+<ol type="1">
+<li><strong>Géométrie 1D axiale</strong> : La carotte de grès est discrétisée comme un segment de 3,75 cm (<span class="math inline">\(0\)</span> à <span class="math inline">\(0.0375\)</span> m). L’invasion du CO₂ se propage de la face gauche (injection) vers la droite.</li>
+<li><strong>Milieu poreux biphasique</strong> : La porosité contient simultanément une phase liquide aqueuse (eau chargée en ions) et une phase gazeuse (CO₂ supercritique pur ou mélange CO₂-H₂O). Le degré de saturation liquide <span class="math inline">\(S_l\)</span> dépend de la pression capillaire.</li>
+<li><strong>CO₂ supercritique traité comme un gaz pur</strong> : La densité et la viscosité du CO₂ sont calculées via les équations d’état de Redlich-Kwong (densité) et de Fenghour (viscosité), tabulées sous forme de courbes en fonction de la pression <span class="math inline">\(P_{CO_2}\)</span>.</li>
+<li><strong>Équilibre chimique local</strong> : La solution aqueuse est supposée à l’équilibre thermodynamique local à chaque pas de temps. Les concentrations des espèces secondaires sont déduites algébriquement des inconnues primaires.</li>
+<li><strong>Cinétique de dissolution/précipitation finie</strong> : La dissolution de CH et la précipitation de CC suivent une cinétique du premier ordre contrôlée par les temps caractéristiques <span class="math inline">\(T_{CH}\)</span> et <span class="math inline">\(T_{CC}\)</span>.</li>
+<li><strong>Électroneutralité</strong> : La charge électrique totale de la solution est nulle, ce qui fournit l’équation supplémentaire pour déterminer la concentration en OH⁻ (et donc le pH).</li>
+<li><strong>Température constante</strong> : <span class="math inline">\(T = 293\,\text{K}\)</span> (20 °C). Toutes les constantes d’équilibre, coefficients de diffusion et viscosités sont calculés à cette température.</li>
+</ol>
+<hr>
+</section>
+<section id="variables-et-notation" class="level2" data-number="27.4">
+<h2 data-number="27.4" class="anchored" data-anchor-id="variables-et-notation"><span class="header-section-number">27.4</span> 3. Variables et notation</h2>
+<p>Le modèle résout <strong>7 équations</strong> (NEQ = 7) avec <strong>7 inconnues primaires</strong> par nœud.</p>
+<section id="inconnues-primaires" class="level3" data-number="27.4.1">
+<h3 data-number="27.4.1" class="anchored" data-anchor-id="inconnues-primaires"><span class="header-section-number">27.4.1</span> Inconnues primaires</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 44%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symbole BIL</th>
+<th>Signification</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>logp_co2</code></td>
+<td><span class="math inline">\(\log_{10}(P_g)\)</span> — pression (log) du gaz CO₂</td>
+<td>Continue</td>
+</tr>
+<tr class="even">
+<td><code>psi</code></td>
+<td><span class="math inline">\(\psi\)</span> — potentiel électrique de la solution</td>
+<td>Continue</td>
+</tr>
+<tr class="odd">
+<td><code>z_ca</code></td>
+<td><span class="math inline">\(z_{Ca,s}\)</span> — quantité de Ca en phase solide (normalisée)</td>
+<td>Continue</td>
+</tr>
+<tr class="even">
+<td><code>z_si</code></td>
+<td><span class="math inline">\(z_{Si,s}\)</span> — quantité de Si en phase solide (normalisée)</td>
+<td>Continue</td>
+</tr>
+<tr class="odd">
+<td><code>c_k</code></td>
+<td><span class="math inline">\(c_K\)</span> — concentration en K⁺</td>
+<td>Continue</td>
+</tr>
+<tr class="even">
+<td><code>c_cl</code></td>
+<td><span class="math inline">\(c_{Cl}\)</span> — concentration en Cl⁻</td>
+<td>Continue</td>
+</tr>
+<tr class="odd">
+<td><code>p_l</code></td>
+<td><span class="math inline">\(P_l\)</span> — pression de la phase liquide</td>
+<td>Continue</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>La pression de gaz est résolue en espace logarithmique (<code>LOG_U</code>) pour améliorer la convergence numérique sur plusieurs décades de pression. La pression liquide est résolue directement (<code>NOLOG_U</code>).</p>
+</blockquote>
+</section>
+<section id="équations-résolues" class="level3" data-number="27.4.2">
+<h3 data-number="27.4.2" class="anchored" data-anchor-id="équations-résolues"><span class="header-section-number">27.4.2</span> Équations résolues</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Index</th>
+<th>Nom</th>
+<th>Signification physique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>E_C</code></td>
+<td><code>carbone</code></td>
+<td>Conservation du carbone (C)</td>
+</tr>
+<tr class="even">
+<td><code>E_q</code></td>
+<td><code>charge</code></td>
+<td>Conservation de la charge électrique</td>
+</tr>
+<tr class="odd">
+<td><code>E_Ca</code></td>
+<td><code>calcium</code></td>
+<td>Conservation du calcium (Ca)</td>
+</tr>
+<tr class="even">
+<td><code>E_Si</code></td>
+<td><code>silicium</code></td>
+<td>Conservation du silicium (Si)</td>
+</tr>
+<tr class="odd">
+<td><code>E_K</code></td>
+<td><code>potassium</code></td>
+<td>Conservation du potassium (K)</td>
+</tr>
+<tr class="even">
+<td><code>E_Cl</code></td>
+<td><code>chlorine</code></td>
+<td>Conservation du chlore (Cl)</td>
+</tr>
+<tr class="odd">
+<td><code>E_mass</code></td>
+<td><code>mass</code></td>
+<td>Conservation de la masse totale (eau + gaz)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variables-secondaires-calculées" class="level3" data-number="27.4.3">
+<h3 data-number="27.4.3" class="anchored" data-anchor-id="variables-secondaires-calculées"><span class="header-section-number">27.4.3</span> Variables secondaires calculées</h3>
+<p>À partir des 7 inconnues, le modèle déduit algébriquement : - Concentrations aqueuses de toutes les espèces : <span class="math inline">\(c_{OH}\)</span>, <span class="math inline">\(c_H\)</span>, <span class="math inline">\(c_{CO_2}\)</span>, <span class="math inline">\(c_{HCO_3^-}\)</span>, <span class="math inline">\(c_{CO_3^{2-}}\)</span>, <span class="math inline">\(c_{Ca^{2+}}\)</span>, <span class="math inline">\(c_{CaHCO_3^+}\)</span>, <span class="math inline">\(c_{H_3SiO_4^-}\)</span>, <span class="math inline">\(c_{H_4SiO_4}\)</span>, <span class="math inline">\(c_{H_2SiO_4^{2-}}\)</span>, <span class="math inline">\(c_{CaH_3SiO_4^+}\)</span>, <span class="math inline">\(c_{CaH_2SiO_4}\)</span>, <span class="math inline">\(c_{CaCO_3^{aq}}\)</span>, <span class="math inline">\(c_{CaOH^+}\)</span>, <span class="math inline">\(c_{H_2O}\)</span> - Contenu des phases solides : <span class="math inline">\(n_{CH}\)</span> (portlandite), <span class="math inline">\(n_{CC}\)</span> (calcite), <span class="math inline">\(n_{Si,s}\)</span> (Si dans les CSH) - Porosité <span class="math inline">\(\phi\)</span>, saturations <span class="math inline">\(S_l\)</span>, <span class="math inline">\(S_g\)</span> - Densités de phase <span class="math inline">\(\rho_l\)</span>, <span class="math inline">\(\rho_g\)</span></p>
+<hr>
+</section>
+</section>
+<section id="modèle-mathématique" class="level2" data-number="27.5">
+<h2 data-number="27.5" class="anchored" data-anchor-id="modèle-mathématique"><span class="header-section-number">27.5</span> 4. Modèle mathématique</h2>
+<section id="équations-de-conservation-bilans-élémentaires" class="level3" data-number="27.5.1">
+<h3 data-number="27.5.1" class="anchored" data-anchor-id="équations-de-conservation-bilans-élémentaires"><span class="header-section-number">27.5.1</span> 4.1 Équations de conservation (bilans élémentaires)</h3>
+<p>Pour chaque élément chimique <span class="math inline">\(\alpha \in \{C, Ca, Si, K, Cl\}\)</span>, la conservation s’écrit :</p>
+<p><span class="math display">\[\frac{\partial N_\alpha}{\partial t} + \nabla \cdot \mathbf{W}_\alpha = 0\]</span></p>
+<p>où <span class="math inline">\(N_\alpha\)</span> est la quantité totale (liquide + gaz + solide) par unité de volume de milieu poreux et <span class="math inline">\(\mathbf{W}_\alpha\)</span> est le flux total de l’élément <span class="math inline">\(\alpha\)</span>.</p>
+<p>La <strong>conservation de charge</strong> (électroneutralité locale) :</p>
+<p><span class="math display">\[\frac{\partial N_q}{\partial t} + \nabla \cdot \mathbf{W}_q = 0\]</span></p>
+<p>La <strong>conservation de la masse totale</strong> (eau + CO₂ gaz) :</p>
+<p><span class="math display">\[\frac{\partial M}{\partial t} + \nabla \cdot \mathbf{W}_M = 0\]</span></p>
+<p>avec <span class="math inline">\(M = S_g \phi \rho_g + S_l \phi \rho_l + m_s\)</span> (masse totale de fluide et de solide par unité de volume poreux).</p>
+</section>
+<section id="chimie-de-la-solution-aqueuse" class="level3" data-number="27.5.2">
+<h3 data-number="27.5.2" class="anchored" data-anchor-id="chimie-de-la-solution-aqueuse"><span class="header-section-number">27.5.2</span> 4.2 Chimie de la solution aqueuse</h3>
+<p>Les concentrations des espèces aqueuses secondaires sont calculées à partir des constantes d’équilibre thermodynamiques (dépendantes de la température <span class="math inline">\(T\)</span>) :</p>
+<p><span class="math display">\[K_{h_2o} = c_H \cdot c_{OH}\]</span> <span class="math display">\[K_{hco_3} = \frac{c_{HCO_3^-} \cdot c_H}{c_{CO_2}}\]</span> <span class="math display">\[K_{co_3} = \frac{c_{CO_3^{2-}} \cdot c_H}{c_{HCO_3^-}}\]</span> <span class="math display">\[K_{h_3sio_4} = \frac{c_{H_3SiO_4^-} \cdot c_H}{c_{H_4SiO_4}}\]</span></p>
+<p>La <strong>neutralité électrique</strong> fournit <span class="math inline">\(c_{OH}\)</span> :</p>
+<p><span class="math display">\[\sum_i z_i \, c_i = 0\]</span></p>
+<p>où <span class="math inline">\(z_i\)</span> est la charge de l’ion <span class="math inline">\(i\)</span>. C’est une équation algébrique résolue numériquement (polynôme d’ordre 4 en <span class="math inline">\(c_{OH}\)</span>) à chaque pas de temps.</p>
+</section>
+<section id="réactions-solideliquide-dissolutionprécipitation" class="level3" data-number="27.5.3">
+<h3 data-number="27.5.3" class="anchored" data-anchor-id="réactions-solideliquide-dissolutionprécipitation"><span class="header-section-number">27.5.3</span> 4.3 Réactions solide–liquide : dissolution/précipitation</h3>
+<p><strong>Portlandite (CH = Ca(OH)₂)</strong> : se dissout si <span class="math inline">\(z_{CO_2} &gt; 1\)</span> (CO₂ en sursaturation), précipite si <span class="math inline">\(z_{CO_2} &lt; 1\)</span>. La cinétique est du premier ordre :</p>
+<p><span class="math display">\[n_{CH}(t + dt) = n_{CH}(t) \cdot (z_{CO_2})^{-dt/T_{CH}}\]</span></p>
+<p><strong>Calcite (CC = CaCO₃)</strong> : se précipite lorsque CH se dissout. La cinétique suit :</p>
+<p><span class="math display">\[n_{CC}(t + dt) = n_{CC}(t) \cdot (z_{CO_2})^{+dt/T_{CC}}\]</span></p>
+<p>avec <span class="math inline">\(T_{CH}\)</span> et <span class="math inline">\(T_{CC}\)</span> les temps caractéristiques de dissolution/précipitation (en secondes).</p>
+<p><strong>CSH (Silicates de Calcium Hydratés)</strong> : leur composition (rapport C/S = <span class="math inline">\(x_{CSH}\)</span>, rapport H/S = <span class="math inline">\(z_{CSH}\)</span>, volume molaire <span class="math inline">\(V_{CSH}\)</span>) dépend du degré de saturation <span class="math inline">\(S_{CH}\)</span> (état de saturation en CH). Ces propriétés sont lues depuis la courbe <code>csh4p</code> (modèle CSH4Poles).</p>
+<p><strong>Gel de silice amorphe (SH)</strong> : se forme lors de la décalcification des CSH. Son degré de saturation <span class="math inline">\(S_{SH}\)</span> est calculé depuis les courbes CSH4Poles.</p>
+</section>
+<section id="transport-advection-diffusion-migration-électrique" class="level3" data-number="27.5.4">
+<h3 data-number="27.5.4" class="anchored" data-anchor-id="transport-advection-diffusion-migration-électrique"><span class="header-section-number">27.5.4</span> 4.4 Transport : advection + diffusion + migration électrique</h3>
+<p>Pour chaque espèce aqueuse <span class="math inline">\(i\)</span>, le flux total combine trois mécanismes :</p>
+<p><span class="math display">\[\mathbf{W}_i = \underbrace{-D_i \, \tau_l(\phi, S_l) \, \nabla c_i}_{\text{Diffusion}} \underbrace{- D_i \, \tau_l \, \frac{F z_i}{RT} c_i \nabla \psi}_{\text{Migration électrique}} \underbrace{+ c_i \, k_l(\phi, S_l) \, (-\nabla P_l + \rho_l \mathbf{g})}_{\text{Advection Darcy}}\]</span></p>
+<p>La <strong>perméabilité à la phase liquide</strong> : <span class="math display">\[k_l = \frac{k_{int,l}}{\mu_l} \cdot k_{rl}(P_c) \cdot \left(\frac{\phi}{\phi_0}\right)^3 \left(\frac{1-\phi_0}{1-\phi}\right)^2\]</span></p>
+<p>La <strong>perméabilité au gaz</strong> : <span class="math display">\[k_g = \frac{k_{int,g}}{\mu_{CO_2}(P_g)} \cdot k_{rg}(P_c) \cdot \left(\frac{\phi}{\phi_0}\right)^3 \left(\frac{1-\phi_0}{1-\phi}\right)^2\]</span></p>
+<p>La <strong>tortuosité pour la diffusion liquide</strong> (Millington-Quirk modifié) : <span class="math display">\[\tau_l(\phi, S_l) = \min\!\left(\frac{\phi}{0.25}, 1\right) \cdot \frac{0.00029 \, e^{9.95\phi}}{1 + 625\,(1-S_l)^4}\]</span></p>
+</section>
+<section id="phase-gazeuse-et-solubilité-du-co₂" class="level3" data-number="27.5.5">
+<h3 data-number="27.5.5" class="anchored" data-anchor-id="phase-gazeuse-et-solubilité-du-co₂"><span class="header-section-number">27.5.5</span> 4.5 Phase gazeuse et solubilité du CO₂</h3>
+<p>La densité molaire du CO₂ supercritique est calculée par l’<strong>équation de Redlich-Kwong</strong> (tabulée dans le fichier <code>density_co2</code>). La viscosité est calculée via la corrélation de <strong>Fenghour</strong> (tabulée dans <code>viscosity_co2</code>).</p>
+<p>La <strong>solubilité du CO₂ dans l’eau</strong> à la pression <span class="math inline">\(P_g\)</span> et température <span class="math inline">\(T\)</span> (loi de Henry modifiée avec fugacité) :</p>
+<p><span class="math display">\[c_{CO_2}^{liq} = \text{solubilityCO2}(P_g, P_l, T)\]</span></p>
+<p>La <strong>fraction molaire de H₂O dans la phase gazeuse</strong> : <span class="math display">\[y_{H_2O} = \frac{P_{sat}(T) \cdot \phi_{H_2O}^{sat}}{P_g \cdot \phi_{H_2O}}\]</span></p>
+<p>avec <span class="math inline">\(\phi_{H_2O}\)</span> le coefficient de fugacité de H₂O dans le mélange CO₂-H₂O.</p>
+</section>
+<section id="évolution-de-la-porosité" class="level3" data-number="27.5.6">
+<h3 data-number="27.5.6" class="anchored" data-anchor-id="évolution-de-la-porosité"><span class="header-section-number">27.5.6</span> 4.6 Évolution de la porosité</h3>
+<p>La porosité évolue dynamiquement par le changement de volume des solides :</p>
+<p><span class="math display">\[\phi = \phi_0 + V_{s,0} - V_s\]</span></p>
+<p><span class="math display">\[V_s = V_{CH} \cdot n_{CH} + V_{CC} \cdot n_{CC} + V_{CSH}(S_{CH}) \cdot n_{Si,s}\]</span></p>
+<p>avec <span class="math inline">\(V_{CH} = 33 \times 10^{-3}\)</span> dm³/mol et <span class="math inline">\(V_{CC} = 37 \times 10^{-3}\)</span> dm³/mol. La dissolution de CH (volume libéré) et la précipitation de CC (volume comblé) se compensent partiellement : la <strong>dissolution nette crée de la porosité</strong> tandis que la <strong>précipitation de calcite comble les pores</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="conditions-aux-limites-et-initiales" class="level2" data-number="27.6">
+<h2 data-number="27.6" class="anchored" data-anchor-id="conditions-aux-limites-et-initiales"><span class="header-section-number">27.6</span> 5. Conditions aux limites et initiales</h2>
+<section id="état-initial-initialization" class="level3" data-number="27.6.1">
+<h3 data-number="27.6.1" class="anchored" data-anchor-id="état-initial-initialization"><span class="header-section-number">27.6.1</span> État initial (Initialization)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 32%">
+<col style="width: 20%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Inconnue</th>
+<th>Valeur initiale</th>
+<th>Champ BIL</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>logp_co2</code></td>
+<td><code>Champ 1</code> → <span class="math inline">\(10^1 = 10\)</span> Pa (transformée via exp)</td>
+<td>affine <code>Val = 1.</code></td>
+<td>Pression CO₂ initiale basse</td>
+</tr>
+<tr class="even">
+<td><code>psi</code></td>
+<td><code>Champ 0</code> → <span class="math inline">\(0\)</span></td>
+<td>affine <code>Val = 0.</code></td>
+<td>Potentiel électrique nul</td>
+</tr>
+<tr class="odd">
+<td><code>z_si</code></td>
+<td><code>Champ 6</code> → <span class="math inline">\(-2\)</span></td>
+<td>affine <code>Val = -2.</code></td>
+<td>CSH partiellement décalcifiés</td>
+</tr>
+<tr class="even">
+<td><code>z_ca</code></td>
+<td><code>Champ 2</code> → <span class="math inline">\(0\)</span></td>
+<td>affine <code>Val = 0.</code></td>
+<td>Solide calci-riche initial</td>
+</tr>
+<tr class="odd">
+<td><code>c_k</code></td>
+<td><code>Champ 5</code> → <span class="math inline">\(0.5\)</span> mol/dm³</td>
+<td>affine <code>Val = 0.5</code></td>
+<td>Potassium dissous</td>
+</tr>
+<tr class="even">
+<td><code>c_cl</code></td>
+<td><code>Champ 5</code> → <span class="math inline">\(0.5\)</span> mol/dm³</td>
+<td>affine <code>Val = 0.5</code></td>
+<td>Chlorure dissous</td>
+</tr>
+<tr class="odd">
+<td><code>p_l</code></td>
+<td><code>Champ 8</code> → <span class="math inline">\(0.5\)</span> Pa</td>
+<td>affine <code>Val = 0.5</code></td>
+<td>Pression liquide initiale</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="conditions-aux-limites-boundary-conditions" class="level3" data-number="27.6.2">
+<h3 data-number="27.6.2" class="anchored" data-anchor-id="conditions-aux-limites-boundary-conditions"><span class="header-section-number">27.6.2</span> Conditions aux limites (<code>Boundary Conditions</code>)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 21%">
+<col style="width: 23%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Frontière</th>
+<th>Inconnue</th>
+<th>Condition</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Reg 3</code> (face d’injection, <span class="math inline">\(x=0\)</span>)</td>
+<td><code>psi</code></td>
+<td><span class="math inline">\(\psi = 0\)</span> (Fonc 0 constante)</td>
+<td>Potentiel électrique de référence</td>
+</tr>
+<tr class="even">
+<td><code>Reg 3</code> (face d’injection)</td>
+<td><code>logp_co2</code></td>
+<td>Imposée via Fonc 1 (profil décroissant de <span class="math inline">\(10^1\)</span> à <span class="math inline">\(-0.5\)</span>)</td>
+<td>Montée en pression du CO₂</td>
+</tr>
+<tr class="odd">
+<td><code>Reg 3</code> (face d’injection)</td>
+<td><code>p_l</code></td>
+<td>Imposée via Fonc 0</td>
+<td>Pression liquide à la face</td>
+</tr>
+<tr class="even">
+<td><code>Reg 2</code> (toute la zone)</td>
+<td><code>c_k</code></td>
+<td>Imposée via Champ 9 = <span class="math inline">\(0.5\)</span> mol/dm³, Fonc 0</td>
+<td>Concentration en K constante</td>
+</tr>
+<tr class="odd">
+<td><code>Reg 2</code> (toute la zone)</td>
+<td><code>c_cl</code></td>
+<td>Imposée via Champ 9 = <span class="math inline">\(0.5\)</span> mol/dm³, Fonc 0</td>
+<td>Concentration en Cl constante</td>
+</tr>
+<tr class="even">
+<td><code>Reg 3</code> (face d’injection)</td>
+<td><code>z_ca</code></td>
+<td>Imposée via Champ 4 = <span class="math inline">\(1\)</span>, Fonc 4 (rampe de <span class="math inline">\(-2\)</span> à <span class="math inline">\(1\)</span>)</td>
+<td>Imposition du front de calcite</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="cas-test-expérience-de-duguid-baseshen" class="level2" data-number="27.7">
+<h2 data-number="27.7" class="anchored" data-anchor-id="cas-test-expérience-de-duguid-baseshen"><span class="header-section-number">27.7</span> 6. Cas test : Expérience de Duguid (<code>base/Shen/</code>)</h2>
+<section id="géométrie-et-maillage" class="level3" data-number="27.7.1">
+<h3 data-number="27.7.1" class="anchored" data-anchor-id="géométrie-et-maillage"><span class="header-section-number">27.7.1</span> Géométrie et maillage</h3>
+<p>Le domaine est un <strong>segment 1D de longueur <span class="math inline">\(L = 0.0375\)</span> m</strong> (3,75 cm), discrétisé avec <strong>50 éléments</strong> de taille régulière <span class="math inline">\(\Delta x = 7.5 \times 10^{-4}\)</span> m.</p>
+<pre><code>x = 0 (injection CO₂)  ←——————————————————→  x = 0.0375 m (face libre)
+Reg 3 (CL imposées)                                Reg 2</code></pre>
+</section>
+<section id="protocole-expérimental-simulé" class="level3" data-number="27.7.2">
+<h3 data-number="27.7.2" class="anchored" data-anchor-id="protocole-expérimental-simulé"><span class="header-section-number">27.7.2</span> Protocole expérimental simulé</h3>
+<p>L’expérience de Duguid injecte du CO₂ supercritique dans une carotte de grès ciméntée sous pression de confinement. La pression du CO₂ est progressivement montée en face d’injection, forçant son invasion dans la porosité du ciment.</p>
+<ul>
+<li><strong><span class="math inline">\(t = 0\)</span> à <span class="math inline">\(86\,400\)</span> s (1 jour)</strong> : Phase transitoire d’établissement du front CO₂.</li>
+<li><strong><span class="math inline">\(t = 86\,400\)</span> à <span class="math inline">\(864\,000\)</span> s (10 jours)</strong> : Progression du front de carbonatation.</li>
+<li><strong><span class="math inline">\(t = 864\,000\)</span> à <span class="math inline">\(2\,592\,000\)</span> s (30 jours)</strong> : Stabilisation et possible rebouchage par la calcite.</li>
+</ul>
+</section>
+<section id="résultats-attendus" class="level3" data-number="27.7.3">
+<h3 data-number="27.7.3" class="anchored" data-anchor-id="résultats-attendus"><span class="header-section-number">27.7.3</span> Résultats attendus</h3>
+<p>Le scénario produit un <strong>front de carbonatation</strong> qui avance de la face d’injection vers le fond :</p>
+<ol type="1">
+<li><strong>Zone carbonatée</strong> (près de <span class="math inline">\(x = 0\)</span>) : La portlandite est totalement dissoute (<span class="math inline">\(n_{CH} \approx 0\)</span>), les CSH décalcifiés sont transformés en gel de silice. La calcite précipitée comble une partie de la porosité. Le pH chute de ~12 à ~6.</li>
+<li><strong>Zone de transition</strong> : Coexistence des phases solides en cours de transformation, gradient important de <span class="math inline">\(c_{CO_2}\)</span> et de pH.</li>
+<li><strong>Zone saine</strong> (près de <span class="math inline">\(x = L\)</span>) : Ciment intact (<span class="math inline">\(n_{CH}\)</span> élevé, pH &gt; 12, pas de calcite).</li>
+</ol>
+<p>La <strong>porosité</strong> oscille selon le bilan volumique : - La dissolution de CH libère du volume → <span class="math inline">\(\phi\)</span> augmente. - La précipitation de CC occupe du volume → <span class="math inline">\(\phi\)</span> diminue localement. - Le résultat net peut mener à un <strong>colmatage partiel</strong> (perméabilité réduite) si la précipitation de calcite domine.</p>
+<hr>
+</section>
+</section>
+<section id="paramétrage-matériel-du-modèle" class="level2" data-number="27.8">
+<h2 data-number="27.8" class="anchored" data-anchor-id="paramétrage-matériel-du-modèle"><span class="header-section-number">27.8</span> 7. Paramétrage matériel du modèle</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 53%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paramètre</th>
+<th>Valeur dans <code>base/Shen/Shen</code></th>
+<th>Rôle physique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>porosite</code></td>
+<td>0.4</td>
+<td>Porosité initiale du grès cimenté</td>
+</tr>
+<tr class="even">
+<td><code>N_CH</code></td>
+<td>5.16 mol/dm³</td>
+<td>Contenu initial en portlandite (référence pour <span class="math inline">\(n_{Ca,s}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td><code>N_Si</code></td>
+<td>3.9 mol/dm³</td>
+<td>Contenu initial en Si dans les CSH (référence pour <span class="math inline">\(n_{Si,s}\)</span>)</td>
+</tr>
+<tr class="even">
+<td><code>T_CH</code></td>
+<td><span class="math inline">\(4 \times 10^5\)</span> s</td>
+<td>Temps caractéristique de dissolution de CH (<span class="math inline">\(\approx 4.6\)</span> jours)</td>
+</tr>
+<tr class="odd">
+<td><code>k_intl</code></td>
+<td><span class="math inline">\(2 \times 10^{-17}\)</span> m²</td>
+<td>Perméabilité intrinsèque à la phase liquide</td>
+</tr>
+<tr class="even">
+<td><code>k_intg</code></td>
+<td><span class="math inline">\(1.4 \times 10^{-16}\)</span> m²</td>
+<td>Perméabilité intrinsèque à la phase gazeuse (CO₂)</td>
+</tr>
+<tr class="odd">
+<td><code>temperature</code></td>
+<td>293 K</td>
+<td>Température de l’expérience (<span class="math inline">\(\approx 20\)</span> °C)</td>
+</tr>
+<tr class="even">
+<td><code>Curves = CN_courbe</code></td>
+<td>Fichier tabulé 4 col.</td>
+<td>Courbes de capillarité : <span class="math inline">\(S_l(P_c)\)</span>, <span class="math inline">\(k_{rl}(P_c)\)</span>, <span class="math inline">\(k_{rg}(P_c)\)</span></td>
+</tr>
+<tr class="odd">
+<td><code>Curves_log = csh4p</code></td>
+<td>Fichier tabulé 5 col.</td>
+<td>Propriétés des CSH : rapport C/S, H/S, volume molaire, <span class="math inline">\(q_{SH}\)</span>, <span class="math inline">\(X_S\)</span></td>
+</tr>
+<tr class="even">
+<td><code>Curves = density_co2</code></td>
+<td>Fichier tabulé (Redlich-Kwong)</td>
+<td>Densité molaire du CO₂ : <span class="math inline">\(\rho_{CO_2}(P, T=293\,\text{K})\)</span></td>
+</tr>
+<tr class="odd">
+<td><code>Curves = viscosity_co2</code></td>
+<td>Fichier tabulé (Fenghour)</td>
+<td>Viscosité dynamique du CO₂ : <span class="math inline">\(\mu_{CO_2}(P, T=293\,\text{K})\)</span></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="description-pas-à-pas-des-fichiers-dentrée" class="level2" data-number="27.9">
+<h2 data-number="27.9" class="anchored" data-anchor-id="description-pas-à-pas-des-fichiers-dentrée"><span class="header-section-number">27.9</span> 8. Description pas-à-pas des fichiers d’entrée</h2>
+<section id="fichier-de-pilotage-baseshenshen" class="level3" data-number="27.9.1">
+<h3 data-number="27.9.1" class="anchored" data-anchor-id="fichier-de-pilotage-baseshenshen"><span class="header-section-number">27.9.1</span> 8.1 Fichier de pilotage <code>base/Shen/Shen</code></h3>
+<section id="bloc-geometry" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-geometry">Bloc <code>Geometry</code></h4>
+<pre><code>Geometry
+1 axis</code></pre>
+<p>Simulation monodimensionnelle (<code>1</code>) en géométrie axiale. BIL interprète le problème comme un problème de transport selon un axe unique.</p>
+</section>
+<section id="bloc-mesh" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-mesh">Bloc <code>Mesh</code></h4>
+<pre><code>Mesh
+4 0 0 0.0375 0.0375
+1.e-3
+1 50 1
+1 1 1</code></pre>
+<ul>
+<li><code>4 0 0 0.0375 0.0375</code> : Maillage de type 4 (segment), de <span class="math inline">\(x=0\)</span> à <span class="math inline">\(x=0.0375\)</span> m, sur la même épaisseur (section transversale virtuelle de 1 dm²).</li>
+<li><code>1.e-3</code> : Tolérance géométrique du mailleur.</li>
+<li><code>1 50 1</code> : 1 couche d’éléments, 50 éléments sur la longueur, 1 couche en épaisseur.</li>
+<li><code>1 1 1</code> : Indices des régions géométriques (Reg 1 = base, Reg 2 = volume, Reg 3 = face d’injection).</li>
+</ul>
+</section>
+<section id="bloc-material" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-material">Bloc <code>Material</code></h4>
+<pre><code>Model = Shen
+porosite = 0.4
+N_CH     = 5.16
+N_Si     = 3.9
+T_CH     = 4.e5
+k_intl    = 2.e-17
+k_intg    = 1.4e-16
+temperature = 293.
+Curves = CN_courbe
+Curves_log = csh4p  q_CH = Range{...}  X_S = CSH4Poles(1){...}
+Curves = density_co2    P_co2 = Range{...}  Rho_co2 = Redlich-Kwong_CO2(1){...}
+Curves = viscosity_co2  P_co2 = Range{...}  Mu_co2 = Fenghour_CO2(1){...}</code></pre>
+<ul>
+<li><code>Model = Shen</code> : Sélection du modèle physique dans BIL.</li>
+<li>Les paramètres scalaires (<code>porosite</code>, <code>N_CH</code>, etc.) sont lus par la fonction <code>pm()</code> du modèle.</li>
+<li><code>Curves = CN_courbe</code> : Charge la table de 7000 points à 4 colonnes : <span class="math inline">\(P_c\)</span> (Pa), <span class="math inline">\(S_l\)</span>, <span class="math inline">\(k_{rl}\)</span>, <span class="math inline">\(k_{rg}\)</span>. Utilisée pour interpoler le degré de saturation et les perméabilités relatives en fonction de la pression capillaire.</li>
+<li><code>Curves_log = csh4p</code> : Charge la table CSH4Poles (5 colonnes) en abscisse logarithmique. Les colonnes sont : <span class="math inline">\(q_{CH}\)</span> (activité ionique de CH), <span class="math inline">\(X_S\)</span> (rapport Si), <span class="math inline">\(z\)</span> (rapport H/S), <span class="math inline">\(V\)</span> (volume molaire), <span class="math inline">\(q_{SH}\)</span>. Construite avec le modèle thermodynamique CSH4Poles à T=293 K, avec les paramètres <span class="math inline">\(y_{Tob1}=2.4\)</span>, <span class="math inline">\(y_{Tob2}=1.8\)</span>, <span class="math inline">\(y_{Jen}=0.9\)</span>, <span class="math inline">\(z_S=0\)</span>.</li>
+<li><code>Curves = density_co2</code> : Table Redlich-Kwong sur <span class="math inline">\([0, 60\,\text{MPa}]\)</span> avec 1001 points. Colonne 1 = <span class="math inline">\(P_{CO_2}\)</span> (Pa), colonne 2 = <span class="math inline">\(\rho_{CO_2}\)</span> (mol/dm³) à 293 K.</li>
+<li><code>Curves = viscosity_co2</code> : Table Fenghour sur <span class="math inline">\([0, 60\,\text{MPa}]\)</span> avec 1001 points. Colonne 1 = <span class="math inline">\(P_{CO_2}\)</span> (Pa), colonne 2 = <span class="math inline">\(\mu_{CO_2}\)</span> (Pa·s) à 293 K.</li>
+</ul>
+</section>
+<section id="bloc-fields" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-fields">Bloc <code>Fields</code></h4>
+<pre><code>Fields
+9
+Type = affine Val = -10.   Grad = 0. Point = 0.   # Champ 0: logp_co2 = -10 (p_g ≈ 0)
+Type = affine Val = 1.     Grad = 0. Point = 0.   # Champ 1: logp_co2 = 1 (p_g = 10 Pa)
+Type = affine Val = 0.     Grad = 0. Point = 0.   # Champ 2: z_ca = 0
+Type = affine Val = 1.     Grad = 0. Point = 0.   # Champ 3: valeur 1
+Type = affine Val = 0.5    Grad = 0. Point = 0.   # Champ 4: z_ca = 1 (CL injection)
+Type = affine Val = 1.     Grad = 0. Point = 0.   # Champ 5: c_k = c_cl = 0.5 mol/dm³
+Type = affine Val = -2.    Grad = 0. Point = 0.   # Champ 6: z_si = -2
+Type = affine Val = 100000. Grad = 0. Point = 0.  # Champ 7: 10^5 Pa
+Type = affine Val = 0.5    Grad = 0. Point = 0.   # Champ 8: p_l = 0.5 Pa</code></pre>
+<p>Tous les champs sont <strong>affines</strong> (constants ici, gradient nul). BIL les interprète comme <span class="math inline">\(\text{valeur}(x) = \text{Val} + \text{Grad} \cdot (x - \text{Point})\)</span>.</p>
+</section>
+<section id="bloc-initialization" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-initialization">Bloc <code>Initialization</code></h4>
+<pre><code>Initialization
+7
+Reg = 2 Inc = logp_co2  Champ = 1    → logp_co2 = 1.0 (P_g = 10 Pa) sur tout le domaine
+Reg = 2 Inc = psi       Champ = 0    → psi = 0. (potentiel nul)
+Reg = 2 Inc = z_si     Champ = 6    → z_si = -2. (CSH décalcifiés)
+Reg = 2 Inc = z_ca    Champ = 2    → z_ca = 0. (solide en état initial)
+Reg = 2 Inc = c_k       Champ = 5    → c_k = 0.5 mol/dm³
+Reg = 2 Inc = c_cl      Champ = 5    → c_cl = 0.5 mol/dm³
+Reg = 2 Inc = p_l    Champ = 8    → p_l = 0.5 Pa</code></pre>
+<p><code>Reg = 2</code> désigne l’ensemble du domaine volumique (l’intérieur de la carotte).</p>
+</section>
+<section id="bloc-functions" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-functions">Bloc <code>Functions</code></h4>
+<pre><code>Functions
+4
+N = 2 F(0) = 1.        F(7200) = -0.5           # Fonc 1: logp_co2 à la face injectante (montée rapide)
+N = 5 F(0) = 1.  F(2400000) = 1. F(3200000) = -0.4 F(4000000) = -0.8 F(8400000) = -0.9  # Fonc 2: pression gas multiphasique
+N = 3 F(0) = -2. F(8540000) = -1. F(8640000) = 1   # Fonc 3: z_ca CL (rampe de -2 à 1)
+N = 2 F(0) = 1.        F(7200) = -20.           # Fonc 4: z_ca injection rapide</code></pre>
+<p>Chaque fonction est une interpolation linéaire par morceaux dans le temps (en secondes). Par exemple, <code>Fonc 1</code> impose <span class="math inline">\(\log p_{CO_2}\)</span> à la face d’injection : il part de la valeur <code>Val * Fonc(t)</code> du champ. À <span class="math inline">\(t = 0\)</span>, le facteur vaut <span class="math inline">\(1\)</span> (pression = <span class="math inline">\(10^1\)</span> Pa), puis évolue linéairement jusqu’à <span class="math inline">\(-0.5\)</span> à <span class="math inline">\(t = 7200\)</span> s (2 heures), faisant monter la pression.</p>
+</section>
+<section id="bloc-boundary-conditions" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-boundary-conditions">Bloc <code>Boundary Conditions</code></h4>
+<pre><code>Boundary Conditions
+6
+Reg = 3 Inc = psi      Champ = 0 Fonc = 0   → psi = 0 * 0 = 0 (référence de potentiel)
+Reg = 3 Inc = logp_co2 Champ = 1 Fonc = 1   → pression CO₂ imposée selon Fonc 1
+Reg = 3 Inc = p_l      Champ = 8 Fonc = 0   → p_l = 0 * 0 = 0
+Reg = 2 Inc = c_k       Champ = 9 Fonc = 0   → c_k maintenu à 0.5
+Reg = 2 Inc = c_cl      Champ = 9 Fonc = 0   → c_cl maintenu à 0.5
+Reg = 3 Inc = z_ca     Champ = 4 Fonc = 4   → z_ca imposition selon Fonc 4 (rampe)</code></pre>
+<p><code>Reg = 3</code> est la frontière gauche (<span class="math inline">\(x = 0\)</span>), face d’injection. <code>Fonc = 0</code> correspond à la 1ère fonction (d’index 0) qui est ici constante (ou signifie que la valeur est le champ seul). Plusieurs conditions en <code>Reg = 2</code> imposent des concentrations volumiques aux potassium et chlorure.</p>
+</section>
+<section id="bloc-dates" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-dates">Bloc <code>Dates</code></h4>
+<pre><code>Dates
+4
+0. 86400 864000 2592000</code></pre>
+<p>4 instants de sortie demandés : <span class="math inline">\(t = 0\)</span>, <span class="math inline">\(1\)</span> jour (<span class="math inline">\(86\,400\)</span> s), <span class="math inline">\(10\)</span> jours (<span class="math inline">\(864\,000\)</span> s), <span class="math inline">\(30\)</span> jours (<span class="math inline">\(2\,592\,000\)</span> s). Les fichiers <code>Shen.t0</code> à <code>Shen.t3</code> correspondent à ces 4 sorties.</p>
+</section>
+<section id="bloc-objective-variations" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-objective-variations">Bloc <code>Objective Variations</code></h4>
+<pre><code>Objective Variations
+logp_co2 = 0.1
+z_si     = 1.e-1
+z_ca     = 1.e-1
+psi      = 0.1
+c_k      = 0.1
+c_cl     = 0.1
+p_l      = 10000.</code></pre>
+<p>Définit la variation relative maximale tolérée par inconnue <strong>pour le contrôle adaptatif du pas de temps</strong>. BIL augmente <span class="math inline">\(\Delta t\)</span> si toutes les variations sont inférieures à ces seuils, et le diminue sinon. <code>p_l = 10000.</code> Pa de variation autorisée par pas de temps reflète le fait que la pression liquide peut varier fortement en début de simulation.</p>
+</section>
+<section id="bloc-iterative-process" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-iterative-process">Bloc <code>Iterative Process</code></h4>
+<pre><code>Iterative Process
+Iteration = 10
+Tolerance = 1.e-4
+Repetition = 0</code></pre>
+<p>Newton-Raphson : maximum 10 itérations par pas de temps, tolérance sur le résidu normalisé de <span class="math inline">\(10^{-4}\)</span>, sans répétition de pas de temps en cas de non-convergence.</p>
+</section>
+<section id="bloc-time-steps" class="level4">
+<h4 class="anchored" data-anchor-id="bloc-time-steps">Bloc <code>Time Steps</code></h4>
+<pre><code>Time Steps
+Dtini = 1.e1
+Dtmax = 1.e5</code></pre>
+<ul>
+<li><code>Dtini = 10 s</code> : Pas de temps initial très petit, car les fronts chimiques sont raides au démarrage.</li>
+<li><code>Dtmax = 100 000 s</code> (<span class="math inline">\(\approx 27.8\)</span> heures) : Pas de temps maximum autorisé.</li>
+</ul>
+<hr>
+</section>
+</section>
+</section>
+<section id="références-bibliographiques" class="level2" data-number="27.10">
+<h2 data-number="27.10" class="anchored" data-anchor-id="références-bibliographiques"><span class="header-section-number">27.10</span> 9. Références bibliographiques</h2>
+<ul>
+<li><p><strong>Duguid, A.</strong> (2006). The effect of CO₂ on the integrity of well cements. <em>Princeton University PhD Thesis</em>. — Expérience de référence simulée dans ce cas test : injection de scCO₂ dans une carotte de grès ciméntée.</p></li>
+<li><p><strong>Shen, J., Dangla, P., Thiery, M.</strong> (2013). Reactive transport modeling of CO₂ through cementitious materials under CO₂ geological storage conditions. <em>International Journal of Greenhouse Gas Control</em>, 18, 75–87. — Article de référence pour le modèle numérique implémenté dans <code>Shen.c</code>.</p></li>
+<li><p><strong>Redlich, O., &amp; Kwong, J. N. S.</strong> (1949). On the thermodynamics of solutions. V. An equation of state. <em>Chemical Reviews</em>, 44(1), 233–244. — Équation d’état pour la densité du CO₂ supercritique.</p></li>
+<li><p><strong>Fenghour, A., Wakeham, W. A., &amp; Vesovic, V.</strong> (1998). The viscosity of carbon dioxide. <em>Journal of Physical and Chemical Reference Data</em>, 27(1), 31–44. — Corrélation pour la viscosité du CO₂ supercritique.</p></li>
+<li><p><strong>Jennings, H. M.</strong> (2000). A model for the microstructure of calcium silicate hydrate in cement paste. <em>Cement and Concrete Research</em>, 30(1), 101–116. — Base du modèle CSH4Poles utilisé pour décrire la composition des CSH en fonction de leur état de saturation.</p></li>
+<li><p><strong>Coussy, O.</strong> (2004). <em>Poromechanics</em>. John Wiley &amp; Sons. — Cadre théorique général pour la modélisation des milieux poreux multiphasiques.</p></li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Yuan1_model.html" class="pagination-link" aria-label="Modèle Yuan1 — Attaque au Sulfure d'Hydrogène (H₂S) du béton">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Modèle Yuan1 — Attaque au Sulfure d’Hydrogène (H₂S) du béton</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./usoil_model.html" class="pagination-link" aria-label="Modèle usoil — Mécanique des Sols Non-Saturés (2019)">
+        <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Modèle usoil — Mécanique des Sols Non-Saturés (2019)</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Fichiers sources :**</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`src/Models/ModelFiles/Shen.c`</span><span class="at"> · </span><span class="in">`base/Shen/Shen`</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Auteur du modèle :** Shen (d'après l'expérience de Duguid, 2006)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Titre interne BIL :** </span><span class="in">`"Carbonation of CBM with scCO2 (2012)"`</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Table des matières</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="co">[</span><span class="ot">Contexte et objectif</span><span class="co">](#1-contexte-et-objectif)</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="co">[</span><span class="ot">Hypothèses</span><span class="co">](#2-hypothèses)</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span><span class="co">[</span><span class="ot">Variables et notation</span><span class="co">](#3-variables-et-notation)</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span><span class="co">[</span><span class="ot">Modèle mathématique</span><span class="co">](#4-modèle-mathématique)</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.1 <span class="co">[</span><span class="ot">Équations de conservation (bilans élémentaires)</span><span class="co">](#41-équations-de-conservation-bilans-élémentaires)</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.2 <span class="co">[</span><span class="ot">Chimie de la solution aqueuse</span><span class="co">](#42-chimie-de-la-solution-aqueuse)</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.3 <span class="co">[</span><span class="ot">Réactions solide–liquide : dissolution/précipitation</span><span class="co">](#43-réactions-solideligquide--dissolutionprécipitation)</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.4 <span class="co">[</span><span class="ot">Transport : advection + diffusion + migration électrique</span><span class="co">](#44-transport--advection--diffusion--migration-électrique)</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.5 <span class="co">[</span><span class="ot">Phase gazeuse et solubilité du CO₂</span><span class="co">](#45-phase-gazeuse-et-solubilité-du-co₂)</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.6 <span class="co">[</span><span class="ot">Évolution de la porosité</span><span class="co">](#46-évolution-de-la-porosité)</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span><span class="co">[</span><span class="ot">Conditions aux limites et initiales</span><span class="co">](#5-conditions-aux-limites-et-initiales)</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span><span class="co">[</span><span class="ot">Cas test : Expérience de Duguid (`base/Shen/`)</span><span class="co">](#6-cas-test--expérience-de-duguid-baseshen)</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span><span class="co">[</span><span class="ot">Paramétrage matériel du modèle</span><span class="co">](#7-paramétrage-matériel-du-modèle)</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span><span class="co">[</span><span class="ot">Description pas-à-pas des fichiers d'entrée</span><span class="co">](#8-description-pas-à-pas-des-fichiers-dentrée)</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span><span class="co">[</span><span class="ot">Références bibliographiques</span><span class="co">](#9-références-bibliographiques)</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Contexte et objectif</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>Le modèle **Shen** simule la **carbonatation d'une matrice cimentaire (CBM — Cement-Based Material) par du CO₂ supercritique (scCO₂)**. Ce phénomène est central pour l'évaluation de l'intégrité à long terme des puits de forage cimentés utilisés dans les sites de **stockage géologique du CO₂** (CCS — Carbon Capture and Storage).</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>Le scénario physique reproduit l'expérience de laboratoire de Duguid (2006) : un écoulement de scCO₂ est forcé à travers un carotte de grès à ciment, provoquant une cascade de réactions chimiques qui dissolvent les hydrates de ciment (portlandite CH, silicates de calcium hydratés CSH) et précipitent de la calcite (CC). Ces transformations modifient la porosité et, in fine, la perméabilité du ciment.</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a><span class="in">```mermaid</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>graph TD</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>    A[<span class="ot">"</span><span class="st">Injection de scCO₂&lt;br&gt;(pression impose en x=0)</span><span class="ot">"</span>] --&gt; B(<span class="ot">"</span><span class="st">Transport diphasique&lt;br&gt;Darcy gaz + liquide</span><span class="ot">"</span>)</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    B --&gt; C[<span class="ot">"</span><span class="st">CO₂ se dissout&lt;br&gt;dans l'eau poreuse</span><span class="ot">"</span>]</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>    C --&gt; D(<span class="ot">"</span><span class="st">Acidification de la solution&lt;br&gt;pH ↓, c_CO2 ↑</span><span class="ot">"</span>)</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    D --&gt; E[<span class="ot">"</span><span class="st">Dissolution de CH&lt;br&gt;(portlandite)</span><span class="ot">"</span>]</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    D --&gt; F[<span class="ot">"</span><span class="st">Dissolution de CSH</span><span class="ot">"</span>]</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>    E --&gt; G(<span class="ot">"</span><span class="st">Précipitation de CC&lt;br&gt;(calcite)</span><span class="ot">"</span>)</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    F --&gt; G</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    G --&gt; H[<span class="ot">"</span><span class="st">Modification de la porosité ϕ&lt;br&gt;(colmatage ou ouverture)</span><span class="ot">"</span>]</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>    H --&gt; B</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Hypothèses</span></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Géométrie 1D axiale** : La carotte de grès est discrétisée comme un segment de 3,75 cm ($0$ à $0.0375$ m). L'invasion du CO₂ se propage de la face gauche (injection) vers la droite.</span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Milieu poreux biphasique** : La porosité contient simultanément une phase liquide aqueuse (eau chargée en ions) et une phase gazeuse (CO₂ supercritique pur ou mélange CO₂-H₂O). Le degré de saturation liquide $S_l$ dépend de la pression capillaire.</span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**CO₂ supercritique traité comme un gaz pur** : La densité et la viscosité du CO₂ sont calculées via les équations d'état de Redlich-Kwong (densité) et de Fenghour (viscosité), tabulées sous forme de courbes en fonction de la pression $P_{CO_2}$.</span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Équilibre chimique local** : La solution aqueuse est supposée à l'équilibre thermodynamique local à chaque pas de temps. Les concentrations des espèces secondaires sont déduites algébriquement des inconnues primaires.</span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Cinétique de dissolution/précipitation finie** : La dissolution de CH et la précipitation de CC suivent une cinétique du premier ordre contrôlée par les temps caractéristiques $T_{CH}$ et $T_{CC}$.</span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**Électroneutralité** : La charge électrique totale de la solution est nulle, ce qui fournit l'équation supplémentaire pour déterminer la concentration en OH⁻ (et donc le pH).</span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**Température constante** : $T = 293\,\text{K}$ (20 °C). Toutes les constantes d'équilibre, coefficients de diffusion et viscosités sont calculés à cette température.</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Variables et notation</span></span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a>Le modèle résout **7 équations** (NEQ = 7) avec **7 inconnues primaires** par nœud.</span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a><span class="fu">### Inconnues primaires</span></span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Symbole BIL <span class="pp">|</span> Signification <span class="pp">|</span> Type <span class="pp">|</span></span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------------|---------------|------|</span></span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`logp_co2`</span> <span class="pp">|</span> $\log_{10}(P_g)$ — pression (log) du gaz CO₂ <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`psi`</span> <span class="pp">|</span> $\psi$ — potentiel électrique de la solution <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`z_ca`</span> <span class="pp">|</span> $z_{Ca,s}$ — quantité de Ca en phase solide (normalisée) <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`z_si`</span> <span class="pp">|</span> $z_{Si,s}$ — quantité de Si en phase solide (normalisée) <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`c_k`</span> <span class="pp">|</span> $c_K$ — concentration en K⁺ <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`c_cl`</span> <span class="pp">|</span> $c_{Cl}$ — concentration en Cl⁻ <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`p_l`</span> <span class="pp">|</span> $P_l$ — pression de la phase liquide <span class="pp">|</span> Continue <span class="pp">|</span></span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; La pression de gaz est résolue en espace logarithmique (</span><span class="in">`LOG_U`</span><span class="at">) pour améliorer la convergence numérique sur plusieurs décades de pression. La pression liquide est résolue directement (</span><span class="in">`NOLOG_U`</span><span class="at">).</span></span>
+<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a><span class="fu">### Équations résolues</span></span>
+<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Index <span class="pp">|</span> Nom <span class="pp">|</span> Signification physique <span class="pp">|</span></span>
+<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|-----|------------------------|</span></span>
+<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_C`</span> <span class="pp">|</span> <span class="in">`carbone`</span> <span class="pp">|</span> Conservation du carbone (C) <span class="pp">|</span></span>
+<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_q`</span> <span class="pp">|</span> <span class="in">`charge`</span> <span class="pp">|</span> Conservation de la charge électrique <span class="pp">|</span></span>
+<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_Ca`</span> <span class="pp">|</span> <span class="in">`calcium`</span> <span class="pp">|</span> Conservation du calcium (Ca) <span class="pp">|</span></span>
+<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_Si`</span> <span class="pp">|</span> <span class="in">`silicium`</span> <span class="pp">|</span> Conservation du silicium (Si) <span class="pp">|</span></span>
+<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_K`</span> <span class="pp">|</span> <span class="in">`potassium`</span> <span class="pp">|</span> Conservation du potassium (K) <span class="pp">|</span></span>
+<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_Cl`</span> <span class="pp">|</span> <span class="in">`chlorine`</span> <span class="pp">|</span> Conservation du chlore (Cl) <span class="pp">|</span></span>
+<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`E_mass`</span> <span class="pp">|</span> <span class="in">`mass`</span> <span class="pp">|</span> Conservation de la masse totale (eau + gaz) <span class="pp">|</span></span>
+<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a><span class="fu">### Variables secondaires calculées</span></span>
+<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a>À partir des 7 inconnues, le modèle déduit algébriquement :</span>
+<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Concentrations aqueuses de toutes les espèces : $c_{OH}$, $c_H$, $c_{CO_2}$, $c_{HCO_3^-}$, $c_{CO_3^{2-}}$, $c_{Ca^{2+}}$, $c_{CaHCO_3^+}$, $c_{H_3SiO_4^-}$, $c_{H_4SiO_4}$, $c_{H_2SiO_4^{2-}}$, $c_{CaH_3SiO_4^+}$, $c_{CaH_2SiO_4}$, $c_{CaCO_3^{aq}}$, $c_{CaOH^+}$, $c_{H_2O}$</span>
+<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Contenu des phases solides : $n_{CH}$ (portlandite), $n_{CC}$ (calcite), $n_{Si,s}$ (Si dans les CSH)</span>
+<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Porosité $\phi$, saturations $S_l$, $S_g$</span>
+<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Densités de phase $\rho_l$, $\rho_g$</span>
+<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Modèle mathématique</span></span>
+<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.1 Équations de conservation (bilans élémentaires)</span></span>
+<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a>Pour chaque élément chimique $\alpha \in <span class="sc">\{</span>C, Ca, Si, K, Cl<span class="sc">\}</span>$, la conservation s'écrit :</span>
+<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial N_\alpha}{\partial t} + \nabla \cdot \mathbf{W}_\alpha = 0$$</span>
+<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a>où $N_\alpha$ est la quantité totale (liquide + gaz + solide) par unité de volume de milieu poreux et $\mathbf{W}_\alpha$ est le flux total de l'élément $\alpha$.</span>
+<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a>La **conservation de charge** (électroneutralité locale) :</span>
+<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial N_q}{\partial t} + \nabla \cdot \mathbf{W}_q = 0$$</span>
+<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>La **conservation de la masse totale** (eau + CO₂ gaz) :</span>
+<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial M}{\partial t} + \nabla \cdot \mathbf{W}_M = 0$$</span>
+<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a>avec $M = S_g \phi \rho_g + S_l \phi \rho_l + m_s$ (masse totale de fluide et de solide par unité de volume poreux).</span>
+<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.2 Chimie de la solution aqueuse</span></span>
+<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a>Les concentrations des espèces aqueuses secondaires sont calculées à partir des constantes d'équilibre thermodynamiques (dépendantes de la température $T$) :</span>
+<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a>$$K_{h_2o} = c_H \cdot c_{OH}$$</span>
+<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a>$$K_{hco_3} = \frac{c_{HCO_3^-} \cdot c_H}{c_{CO_2}}$$</span>
+<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a>$$K_{co_3} = \frac{c_{CO_3^{2-}} \cdot c_H}{c_{HCO_3^-}}$$</span>
+<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a>$$K_{h_3sio_4} = \frac{c_{H_3SiO_4^-} \cdot c_H}{c_{H_4SiO_4}}$$</span>
+<span id="cb14-132"><a href="#cb14-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a>La **neutralité électrique** fournit $c_{OH}$ :</span>
+<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-135"><a href="#cb14-135" aria-hidden="true" tabindex="-1"></a>$$\sum_i z_i \, c_i = 0$$</span>
+<span id="cb14-136"><a href="#cb14-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a>où $z_i$ est la charge de l'ion $i$. C'est une équation algébrique résolue numériquement (polynôme d'ordre 4 en $c_{OH}$) à chaque pas de temps.</span>
+<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.3 Réactions solide–liquide : dissolution/précipitation</span></span>
+<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-141"><a href="#cb14-141" aria-hidden="true" tabindex="-1"></a>**Portlandite (CH = Ca(OH)₂)** : se dissout si $z_{CO_2} &gt; 1$ (CO₂ en sursaturation), précipite si $z_{CO_2} &lt; 1$. La cinétique est du premier ordre :</span>
+<span id="cb14-142"><a href="#cb14-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a>$$n_{CH}(t + dt) = n_{CH}(t) \cdot (z_{CO_2})^{-dt/T_{CH}}$$</span>
+<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a>**Calcite (CC = CaCO₃)** : se précipite lorsque CH se dissout. La cinétique suit :</span>
+<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a>$$n_{CC}(t + dt) = n_{CC}(t) \cdot (z_{CO_2})^{+dt/T_{CC}}$$</span>
+<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a>avec $T_{CH}$ et $T_{CC}$ les temps caractéristiques de dissolution/précipitation (en secondes).</span>
+<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-151"><a href="#cb14-151" aria-hidden="true" tabindex="-1"></a>**CSH (Silicates de Calcium Hydratés)** : leur composition (rapport C/S = $x_{CSH}$, rapport H/S = $z_{CSH}$, volume molaire $V_{CSH}$) dépend du degré de saturation $S_{CH}$ (état de saturation en CH). Ces propriétés sont lues depuis la courbe <span class="in">`csh4p`</span> (modèle CSH4Poles).</span>
+<span id="cb14-152"><a href="#cb14-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-153"><a href="#cb14-153" aria-hidden="true" tabindex="-1"></a>**Gel de silice amorphe (SH)** : se forme lors de la décalcification des CSH. Son degré de saturation $S_{SH}$ est calculé depuis les courbes CSH4Poles.</span>
+<span id="cb14-154"><a href="#cb14-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.4 Transport : advection + diffusion + migration électrique</span></span>
+<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a>Pour chaque espèce aqueuse $i$, le flux total combine trois mécanismes :</span>
+<span id="cb14-158"><a href="#cb14-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-159"><a href="#cb14-159" aria-hidden="true" tabindex="-1"></a>$$\mathbf{W}_i = \underbrace{-D_i \, \tau_l(\phi, S_l) \, \nabla c_i}_{\text{Diffusion}} \underbrace{- D_i \, \tau_l \, \frac{F z_i}{RT} c_i \nabla \psi}_{\text{Migration électrique}} \underbrace{+ c_i \, k_l(\phi, S_l) \, (-\nabla P_l + \rho_l \mathbf{g})}_{\text{Advection Darcy}}$$</span>
+<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a>La **perméabilité à la phase liquide** :</span>
+<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a>$$k_l = \frac{k_{int,l}}{\mu_l} \cdot k_{rl}(P_c) \cdot \left(\frac{\phi}{\phi_0}\right)^3 \left(\frac{1-\phi_0}{1-\phi}\right)^2$$</span>
+<span id="cb14-163"><a href="#cb14-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-164"><a href="#cb14-164" aria-hidden="true" tabindex="-1"></a>La **perméabilité au gaz** :</span>
+<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a>$$k_g = \frac{k_{int,g}}{\mu_{CO_2}(P_g)} \cdot k_{rg}(P_c) \cdot \left(\frac{\phi}{\phi_0}\right)^3 \left(\frac{1-\phi_0}{1-\phi}\right)^2$$</span>
+<span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a>La **tortuosité pour la diffusion liquide** (Millington-Quirk modifié) :</span>
+<span id="cb14-168"><a href="#cb14-168" aria-hidden="true" tabindex="-1"></a>$$\tau_l(\phi, S_l) = \min<span class="sc">\!</span>\left(\frac{\phi}{0.25}, 1\right) \cdot \frac{0.00029 \, e^{9.95\phi}}{1 + 625\,(1-S_l)^4}$$</span>
+<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.5 Phase gazeuse et solubilité du CO₂</span></span>
+<span id="cb14-171"><a href="#cb14-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-172"><a href="#cb14-172" aria-hidden="true" tabindex="-1"></a>La densité molaire du CO₂ supercritique est calculée par l'**équation de Redlich-Kwong** (tabulée dans le fichier `density_co2`). La viscosité est calculée via la corrélation de **Fenghour** (tabulée dans <span class="in">`viscosity_co2`</span>).</span>
+<span id="cb14-173"><a href="#cb14-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-174"><a href="#cb14-174" aria-hidden="true" tabindex="-1"></a>La **solubilité du CO₂ dans l'eau** à la pression $P_g$ et température $T$ (loi de Henry modifiée avec fugacité) :</span>
+<span id="cb14-175"><a href="#cb14-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a>$$c_{CO_2}^{liq} = \text{solubilityCO2}(P_g, P_l, T)$$</span>
+<span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a>La **fraction molaire de H₂O dans la phase gazeuse** :</span>
+<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a>$$y_{H_2O} = \frac{P_{sat}(T) \cdot \phi_{H_2O}^{sat}}{P_g \cdot \phi_{H_2O}}$$</span>
+<span id="cb14-180"><a href="#cb14-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a>avec $\phi_{H_2O}$ le coefficient de fugacité de H₂O dans le mélange CO₂-H₂O.</span>
+<span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-183"><a href="#cb14-183" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.6 Évolution de la porosité</span></span>
+<span id="cb14-184"><a href="#cb14-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-185"><a href="#cb14-185" aria-hidden="true" tabindex="-1"></a>La porosité évolue dynamiquement par le changement de volume des solides :</span>
+<span id="cb14-186"><a href="#cb14-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-187"><a href="#cb14-187" aria-hidden="true" tabindex="-1"></a>$$\phi = \phi_0 + V_{s,0} - V_s$$</span>
+<span id="cb14-188"><a href="#cb14-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-189"><a href="#cb14-189" aria-hidden="true" tabindex="-1"></a>$$V_s = V_{CH} \cdot n_{CH} + V_{CC} \cdot n_{CC} + V_{CSH}(S_{CH}) \cdot n_{Si,s}$$</span>
+<span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-191"><a href="#cb14-191" aria-hidden="true" tabindex="-1"></a>avec $V_{CH} = 33 \times 10^{-3}$ dm³/mol et $V_{CC} = 37 \times 10^{-3}$ dm³/mol. La dissolution de CH (volume libéré) et la précipitation de CC (volume comblé) se compensent partiellement : la **dissolution nette crée de la porosité** tandis que la **précipitation de calcite comble les pores**.</span>
+<span id="cb14-192"><a href="#cb14-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Conditions aux limites et initiales</span></span>
+<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a><span class="fu">### État initial (Initialization)</span></span>
+<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Inconnue <span class="pp">|</span> Valeur initiale <span class="pp">|</span> Champ BIL <span class="pp">|</span> Signification <span class="pp">|</span></span>
+<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a><span class="pp">|----------|-----------------|-----------|---------------|</span></span>
+<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`logp_co2`</span> <span class="pp">|</span> <span class="in">`Champ 1`</span> → $10^1 = 10$ Pa (transformée via exp) <span class="pp">|</span> affine <span class="in">`Val = 1.`</span> <span class="pp">|</span> Pression CO₂ initiale basse <span class="pp">|</span></span>
+<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`psi`</span> <span class="pp">|</span> <span class="in">`Champ 0`</span> → $0$ <span class="pp">|</span> affine <span class="in">`Val = 0.`</span> <span class="pp">|</span> Potentiel électrique nul <span class="pp">|</span></span>
+<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`z_si`</span> <span class="pp">|</span> <span class="in">`Champ 6`</span> → $-2$ <span class="pp">|</span> affine <span class="in">`Val = -2.`</span> <span class="pp">|</span> CSH partiellement décalcifiés <span class="pp">|</span></span>
+<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`z_ca`</span> <span class="pp">|</span> <span class="in">`Champ 2`</span> → $0$ <span class="pp">|</span> affine <span class="in">`Val = 0.`</span> <span class="pp">|</span> Solide calci-riche initial <span class="pp">|</span></span>
+<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`c_k`</span> <span class="pp">|</span> <span class="in">`Champ 5`</span> → $0.5$ mol/dm³ <span class="pp">|</span> affine <span class="in">`Val = 0.5`</span> <span class="pp">|</span> Potassium dissous <span class="pp">|</span></span>
+<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`c_cl`</span> <span class="pp">|</span> <span class="in">`Champ 5`</span> → $0.5$ mol/dm³ <span class="pp">|</span> affine <span class="in">`Val = 0.5`</span> <span class="pp">|</span> Chlorure dissous <span class="pp">|</span></span>
+<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`p_l`</span> <span class="pp">|</span> <span class="in">`Champ 8`</span> → $0.5$ Pa <span class="pp">|</span> affine <span class="in">`Val = 0.5`</span> <span class="pp">|</span> Pression liquide initiale <span class="pp">|</span></span>
+<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### Conditions aux limites (`Boundary Conditions`)</span></span>
+<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Frontière <span class="pp">|</span> Inconnue <span class="pp">|</span> Condition <span class="pp">|</span> Signification <span class="pp">|</span></span>
+<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a><span class="pp">|-----------|----------|-----------|---------------|</span></span>
+<span id="cb14-213"><a href="#cb14-213" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Reg 3`</span> (face d'injection, $x=0$) <span class="pp">|</span> <span class="in">`psi`</span> <span class="pp">|</span> $\psi = 0$ (Fonc 0 constante) <span class="pp">|</span> Potentiel électrique de référence <span class="pp">|</span></span>
+<span id="cb14-214"><a href="#cb14-214" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Reg 3`</span> (face d'injection) <span class="pp">|</span> <span class="in">`logp_co2`</span> <span class="pp">|</span> Imposée via Fonc 1 (profil décroissant de $10^1$ à $-0.5$) <span class="pp">|</span> Montée en pression du CO₂ <span class="pp">|</span></span>
+<span id="cb14-215"><a href="#cb14-215" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Reg 3`</span> (face d'injection) <span class="pp">|</span> <span class="in">`p_l`</span> <span class="pp">|</span> Imposée via Fonc 0 <span class="pp">|</span> Pression liquide à la face <span class="pp">|</span></span>
+<span id="cb14-216"><a href="#cb14-216" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Reg 2`</span> (toute la zone) <span class="pp">|</span> <span class="in">`c_k`</span> <span class="pp">|</span> Imposée via Champ 9 = $0.5$ mol/dm³, Fonc 0 <span class="pp">|</span> Concentration en K constante <span class="pp">|</span></span>
+<span id="cb14-217"><a href="#cb14-217" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Reg 2`</span> (toute la zone) <span class="pp">|</span> <span class="in">`c_cl`</span> <span class="pp">|</span> Imposée via Champ 9 = $0.5$ mol/dm³, Fonc 0 <span class="pp">|</span> Concentration en Cl constante <span class="pp">|</span></span>
+<span id="cb14-218"><a href="#cb14-218" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Reg 3`</span> (face d'injection) <span class="pp">|</span> <span class="in">`z_ca`</span> <span class="pp">|</span> Imposée via Champ 4 = $1$, Fonc 4 (rampe de $-2$ à $1$) <span class="pp">|</span> Imposition du front de calcite <span class="pp">|</span></span>
+<span id="cb14-219"><a href="#cb14-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-220"><a href="#cb14-220" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-221"><a href="#cb14-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-222"><a href="#cb14-222" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6. Cas test : Expérience de Duguid (`base/Shen/`)</span></span>
+<span id="cb14-223"><a href="#cb14-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-224"><a href="#cb14-224" aria-hidden="true" tabindex="-1"></a><span class="fu">### Géométrie et maillage</span></span>
+<span id="cb14-225"><a href="#cb14-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-226"><a href="#cb14-226" aria-hidden="true" tabindex="-1"></a>Le domaine est un **segment 1D de longueur $L = 0.0375$ m** (3,75 cm), discrétisé avec **50 éléments** de taille régulière $\Delta x = 7.5 \times 10^{-4}$ m.</span>
+<span id="cb14-227"><a href="#cb14-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-228"><a href="#cb14-228" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-229"><a href="#cb14-229" aria-hidden="true" tabindex="-1"></a><span class="in">x = 0 (injection CO₂)  ←——————————————————→  x = 0.0375 m (face libre)</span></span>
+<span id="cb14-230"><a href="#cb14-230" aria-hidden="true" tabindex="-1"></a><span class="in">Reg 3 (CL imposées)                                Reg 2</span></span>
+<span id="cb14-231"><a href="#cb14-231" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-232"><a href="#cb14-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-233"><a href="#cb14-233" aria-hidden="true" tabindex="-1"></a><span class="fu">### Protocole expérimental simulé</span></span>
+<span id="cb14-234"><a href="#cb14-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-235"><a href="#cb14-235" aria-hidden="true" tabindex="-1"></a>L'expérience de Duguid injecte du CO₂ supercritique dans une carotte de grès ciméntée sous pression de confinement. La pression du CO₂ est progressivement montée en face d'injection, forçant son invasion dans la porosité du ciment.</span>
+<span id="cb14-236"><a href="#cb14-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-237"><a href="#cb14-237" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$t = 0$ à $86\,400$ s (1 jour)** : Phase transitoire d'établissement du front CO₂.</span>
+<span id="cb14-238"><a href="#cb14-238" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$t = 86\,400$ à $864\,000$ s (10 jours)** : Progression du front de carbonatation.</span>
+<span id="cb14-239"><a href="#cb14-239" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$t = 864\,000$ à $2\,592\,000$ s (30 jours)** : Stabilisation et possible rebouchage par la calcite.</span>
+<span id="cb14-240"><a href="#cb14-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-241"><a href="#cb14-241" aria-hidden="true" tabindex="-1"></a><span class="fu">### Résultats attendus</span></span>
+<span id="cb14-242"><a href="#cb14-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-243"><a href="#cb14-243" aria-hidden="true" tabindex="-1"></a>Le scénario produit un **front de carbonatation** qui avance de la face d'injection vers le fond :</span>
+<span id="cb14-244"><a href="#cb14-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-245"><a href="#cb14-245" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Zone carbonatée** (près de $x = 0$) : La portlandite est totalement dissoute ($n_{CH} \approx 0$), les CSH décalcifiés sont transformés en gel de silice. La calcite précipitée comble une partie de la porosité. Le pH chute de ~12 à ~6.</span>
+<span id="cb14-246"><a href="#cb14-246" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Zone de transition** : Coexistence des phases solides en cours de transformation, gradient important de $c_{CO_2}$ et de pH.</span>
+<span id="cb14-247"><a href="#cb14-247" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Zone saine** (près de $x = L$) : Ciment intact ($n_{CH}$ élevé, pH &gt; 12, pas de calcite).</span>
+<span id="cb14-248"><a href="#cb14-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-249"><a href="#cb14-249" aria-hidden="true" tabindex="-1"></a>La **porosité** oscille selon le bilan volumique :</span>
+<span id="cb14-250"><a href="#cb14-250" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La dissolution de CH libère du volume → $\phi$ augmente.</span>
+<span id="cb14-251"><a href="#cb14-251" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La précipitation de CC occupe du volume → $\phi$ diminue localement.</span>
+<span id="cb14-252"><a href="#cb14-252" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Le résultat net peut mener à un **colmatage partiel** (perméabilité réduite) si la précipitation de calcite domine.</span>
+<span id="cb14-253"><a href="#cb14-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-254"><a href="#cb14-254" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-255"><a href="#cb14-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-256"><a href="#cb14-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7. Paramétrage matériel du modèle</span></span>
+<span id="cb14-257"><a href="#cb14-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-258"><a href="#cb14-258" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paramètre <span class="pp">|</span> Valeur dans <span class="in">`base/Shen/Shen`</span> <span class="pp">|</span> Rôle physique <span class="pp">|</span></span>
+<span id="cb14-259"><a href="#cb14-259" aria-hidden="true" tabindex="-1"></a><span class="pp">|-----------|------------------------------|---------------|</span></span>
+<span id="cb14-260"><a href="#cb14-260" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`porosite`</span> <span class="pp">|</span> 0.4 <span class="pp">|</span> Porosité initiale du grès cimenté <span class="pp">|</span></span>
+<span id="cb14-261"><a href="#cb14-261" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`N_CH`</span> <span class="pp">|</span> 5.16 mol/dm³ <span class="pp">|</span> Contenu initial en portlandite (référence pour $n_{Ca,s}$) <span class="pp">|</span></span>
+<span id="cb14-262"><a href="#cb14-262" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`N_Si`</span> <span class="pp">|</span> 3.9 mol/dm³ <span class="pp">|</span> Contenu initial en Si dans les CSH (référence pour $n_{Si,s}$) <span class="pp">|</span></span>
+<span id="cb14-263"><a href="#cb14-263" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`T_CH`</span> <span class="pp">|</span> $4 \times 10^5$ s <span class="pp">|</span> Temps caractéristique de dissolution de CH ($\approx 4.6$ jours) <span class="pp">|</span></span>
+<span id="cb14-264"><a href="#cb14-264" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`k_intl`</span> <span class="pp">|</span> $2 \times 10^{-17}$ m² <span class="pp">|</span> Perméabilité intrinsèque à la phase liquide <span class="pp">|</span></span>
+<span id="cb14-265"><a href="#cb14-265" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`k_intg`</span> <span class="pp">|</span> $1.4 \times 10^{-16}$ m² <span class="pp">|</span> Perméabilité intrinsèque à la phase gazeuse (CO₂) <span class="pp">|</span></span>
+<span id="cb14-266"><a href="#cb14-266" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`temperature`</span> <span class="pp">|</span> 293 K <span class="pp">|</span> Température de l'expérience ($\approx 20$ °C) <span class="pp">|</span></span>
+<span id="cb14-267"><a href="#cb14-267" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Curves = CN_courbe`</span> <span class="pp">|</span> Fichier tabulé 4 col. <span class="pp">|</span> Courbes de capillarité : $S_l(P_c)$, $k_{rl}(P_c)$, $k_{rg}(P_c)$ <span class="pp">|</span></span>
+<span id="cb14-268"><a href="#cb14-268" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Curves_log = csh4p`</span> <span class="pp">|</span> Fichier tabulé 5 col. <span class="pp">|</span> Propriétés des CSH : rapport C/S, H/S, volume molaire, $q_{SH}$, $X_S$ <span class="pp">|</span></span>
+<span id="cb14-269"><a href="#cb14-269" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Curves = density_co2`</span> <span class="pp">|</span> Fichier tabulé (Redlich-Kwong) <span class="pp">|</span> Densité molaire du CO₂ : $\rho_{CO_2}(P, T=293\,\text{K})$ <span class="pp">|</span></span>
+<span id="cb14-270"><a href="#cb14-270" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`Curves = viscosity_co2`</span> <span class="pp">|</span> Fichier tabulé (Fenghour) <span class="pp">|</span> Viscosité dynamique du CO₂ : $\mu_{CO_2}(P, T=293\,\text{K})$ <span class="pp">|</span></span>
+<span id="cb14-271"><a href="#cb14-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-272"><a href="#cb14-272" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-273"><a href="#cb14-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-274"><a href="#cb14-274" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8. Description pas-à-pas des fichiers d'entrée</span></span>
+<span id="cb14-275"><a href="#cb14-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-276"><a href="#cb14-276" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1 Fichier de pilotage `base/Shen/Shen`</span></span>
+<span id="cb14-277"><a href="#cb14-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-278"><a href="#cb14-278" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Geometry`</span></span>
+<span id="cb14-279"><a href="#cb14-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-280"><a href="#cb14-280" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-281"><a href="#cb14-281" aria-hidden="true" tabindex="-1"></a><span class="in">Geometry</span></span>
+<span id="cb14-282"><a href="#cb14-282" aria-hidden="true" tabindex="-1"></a><span class="in">1 axis</span></span>
+<span id="cb14-283"><a href="#cb14-283" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-284"><a href="#cb14-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-285"><a href="#cb14-285" aria-hidden="true" tabindex="-1"></a>Simulation monodimensionnelle (<span class="in">`1`</span>) en géométrie axiale. BIL interprète le problème comme un problème de transport selon un axe unique.</span>
+<span id="cb14-286"><a href="#cb14-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-287"><a href="#cb14-287" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Mesh`</span></span>
+<span id="cb14-288"><a href="#cb14-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-289"><a href="#cb14-289" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-290"><a href="#cb14-290" aria-hidden="true" tabindex="-1"></a><span class="in">Mesh</span></span>
+<span id="cb14-291"><a href="#cb14-291" aria-hidden="true" tabindex="-1"></a><span class="in">4 0 0 0.0375 0.0375</span></span>
+<span id="cb14-292"><a href="#cb14-292" aria-hidden="true" tabindex="-1"></a><span class="in">1.e-3</span></span>
+<span id="cb14-293"><a href="#cb14-293" aria-hidden="true" tabindex="-1"></a><span class="in">1 50 1</span></span>
+<span id="cb14-294"><a href="#cb14-294" aria-hidden="true" tabindex="-1"></a><span class="in">1 1 1</span></span>
+<span id="cb14-295"><a href="#cb14-295" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-296"><a href="#cb14-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-297"><a href="#cb14-297" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`4 0 0 0.0375 0.0375`</span> : Maillage de type 4 (segment), de $x=0$ à $x=0.0375$ m, sur la même épaisseur (section transversale virtuelle de 1 dm²).</span>
+<span id="cb14-298"><a href="#cb14-298" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`1.e-3`</span> : Tolérance géométrique du mailleur.</span>
+<span id="cb14-299"><a href="#cb14-299" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`1 50 1`</span> : 1 couche d'éléments, 50 éléments sur la longueur, 1 couche en épaisseur.</span>
+<span id="cb14-300"><a href="#cb14-300" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`1 1 1`</span> : Indices des régions géométriques (Reg 1 = base, Reg 2 = volume, Reg 3 = face d'injection).</span>
+<span id="cb14-301"><a href="#cb14-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-302"><a href="#cb14-302" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Material`</span></span>
+<span id="cb14-303"><a href="#cb14-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-304"><a href="#cb14-304" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-305"><a href="#cb14-305" aria-hidden="true" tabindex="-1"></a><span class="in">Model = Shen</span></span>
+<span id="cb14-306"><a href="#cb14-306" aria-hidden="true" tabindex="-1"></a><span class="in">porosite = 0.4</span></span>
+<span id="cb14-307"><a href="#cb14-307" aria-hidden="true" tabindex="-1"></a><span class="in">N_CH     = 5.16</span></span>
+<span id="cb14-308"><a href="#cb14-308" aria-hidden="true" tabindex="-1"></a><span class="in">N_Si     = 3.9</span></span>
+<span id="cb14-309"><a href="#cb14-309" aria-hidden="true" tabindex="-1"></a><span class="in">T_CH     = 4.e5</span></span>
+<span id="cb14-310"><a href="#cb14-310" aria-hidden="true" tabindex="-1"></a><span class="in">k_intl    = 2.e-17</span></span>
+<span id="cb14-311"><a href="#cb14-311" aria-hidden="true" tabindex="-1"></a><span class="in">k_intg    = 1.4e-16</span></span>
+<span id="cb14-312"><a href="#cb14-312" aria-hidden="true" tabindex="-1"></a><span class="in">temperature = 293.</span></span>
+<span id="cb14-313"><a href="#cb14-313" aria-hidden="true" tabindex="-1"></a><span class="in">Curves = CN_courbe</span></span>
+<span id="cb14-314"><a href="#cb14-314" aria-hidden="true" tabindex="-1"></a><span class="in">Curves_log = csh4p  q_CH = Range{...}  X_S = CSH4Poles(1){...}</span></span>
+<span id="cb14-315"><a href="#cb14-315" aria-hidden="true" tabindex="-1"></a><span class="in">Curves = density_co2    P_co2 = Range{...}  Rho_co2 = Redlich-Kwong_CO2(1){...}</span></span>
+<span id="cb14-316"><a href="#cb14-316" aria-hidden="true" tabindex="-1"></a><span class="in">Curves = viscosity_co2  P_co2 = Range{...}  Mu_co2 = Fenghour_CO2(1){...}</span></span>
+<span id="cb14-317"><a href="#cb14-317" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-318"><a href="#cb14-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-319"><a href="#cb14-319" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Model = Shen`</span> : Sélection du modèle physique dans BIL.</span>
+<span id="cb14-320"><a href="#cb14-320" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Les paramètres scalaires (<span class="in">`porosite`</span>, <span class="in">`N_CH`</span>, etc.) sont lus par la fonction <span class="in">`pm()`</span> du modèle.</span>
+<span id="cb14-321"><a href="#cb14-321" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Curves = CN_courbe`</span> : Charge la table de 7000 points à 4 colonnes : $P_c$ (Pa), $S_l$, $k_{rl}$, $k_{rg}$. Utilisée pour interpoler le degré de saturation et les perméabilités relatives en fonction de la pression capillaire.</span>
+<span id="cb14-322"><a href="#cb14-322" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Curves_log = csh4p`</span> : Charge la table CSH4Poles (5 colonnes) en abscisse logarithmique. Les colonnes sont : $q_{CH}$ (activité ionique de CH), $X_S$ (rapport Si), $z$ (rapport H/S), $V$ (volume molaire), $q_{SH}$. Construite avec le modèle thermodynamique CSH4Poles à T=293 K, avec les paramètres $y_{Tob1}=2.4$, $y_{Tob2}=1.8$, $y_{Jen}=0.9$, $z_S=0$.</span>
+<span id="cb14-323"><a href="#cb14-323" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Curves = density_co2`</span> : Table Redlich-Kwong sur $<span class="co">[</span><span class="ot">0, 60\,\text{MPa}</span><span class="co">]</span>$ avec 1001 points. Colonne 1 = $P_{CO_2}$ (Pa), colonne 2 = $\rho_{CO_2}$ (mol/dm³) à 293 K.</span>
+<span id="cb14-324"><a href="#cb14-324" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Curves = viscosity_co2`</span> : Table Fenghour sur $<span class="co">[</span><span class="ot">0, 60\,\text{MPa}</span><span class="co">]</span>$ avec 1001 points. Colonne 1 = $P_{CO_2}$ (Pa), colonne 2 = $\mu_{CO_2}$ (Pa·s) à 293 K.</span>
+<span id="cb14-325"><a href="#cb14-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-326"><a href="#cb14-326" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Fields`</span></span>
+<span id="cb14-327"><a href="#cb14-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-328"><a href="#cb14-328" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-329"><a href="#cb14-329" aria-hidden="true" tabindex="-1"></a><span class="in">Fields</span></span>
+<span id="cb14-330"><a href="#cb14-330" aria-hidden="true" tabindex="-1"></a><span class="in">9</span></span>
+<span id="cb14-331"><a href="#cb14-331" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = -10.   Grad = 0. Point = 0.   # Champ 0: logp_co2 = -10 (p_g ≈ 0)</span></span>
+<span id="cb14-332"><a href="#cb14-332" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 1.     Grad = 0. Point = 0.   # Champ 1: logp_co2 = 1 (p_g = 10 Pa)</span></span>
+<span id="cb14-333"><a href="#cb14-333" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 0.     Grad = 0. Point = 0.   # Champ 2: z_ca = 0</span></span>
+<span id="cb14-334"><a href="#cb14-334" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 1.     Grad = 0. Point = 0.   # Champ 3: valeur 1</span></span>
+<span id="cb14-335"><a href="#cb14-335" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 0.5    Grad = 0. Point = 0.   # Champ 4: z_ca = 1 (CL injection)</span></span>
+<span id="cb14-336"><a href="#cb14-336" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 1.     Grad = 0. Point = 0.   # Champ 5: c_k = c_cl = 0.5 mol/dm³</span></span>
+<span id="cb14-337"><a href="#cb14-337" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = -2.    Grad = 0. Point = 0.   # Champ 6: z_si = -2</span></span>
+<span id="cb14-338"><a href="#cb14-338" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 100000. Grad = 0. Point = 0.  # Champ 7: 10^5 Pa</span></span>
+<span id="cb14-339"><a href="#cb14-339" aria-hidden="true" tabindex="-1"></a><span class="in">Type = affine Val = 0.5    Grad = 0. Point = 0.   # Champ 8: p_l = 0.5 Pa</span></span>
+<span id="cb14-340"><a href="#cb14-340" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-341"><a href="#cb14-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-342"><a href="#cb14-342" aria-hidden="true" tabindex="-1"></a>Tous les champs sont **affines** (constants ici, gradient nul). BIL les interprète comme $\text{valeur}(x) = \text{Val} + \text{Grad} \cdot (x - \text{Point})$.</span>
+<span id="cb14-343"><a href="#cb14-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-344"><a href="#cb14-344" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Initialization`</span></span>
+<span id="cb14-345"><a href="#cb14-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-346"><a href="#cb14-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-347"><a href="#cb14-347" aria-hidden="true" tabindex="-1"></a><span class="in">Initialization</span></span>
+<span id="cb14-348"><a href="#cb14-348" aria-hidden="true" tabindex="-1"></a><span class="in">7</span></span>
+<span id="cb14-349"><a href="#cb14-349" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = logp_co2  Champ = 1    → logp_co2 = 1.0 (P_g = 10 Pa) sur tout le domaine</span></span>
+<span id="cb14-350"><a href="#cb14-350" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = psi       Champ = 0    → psi = 0. (potentiel nul)</span></span>
+<span id="cb14-351"><a href="#cb14-351" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = z_si     Champ = 6    → z_si = -2. (CSH décalcifiés)</span></span>
+<span id="cb14-352"><a href="#cb14-352" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = z_ca    Champ = 2    → z_ca = 0. (solide en état initial)</span></span>
+<span id="cb14-353"><a href="#cb14-353" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = c_k       Champ = 5    → c_k = 0.5 mol/dm³</span></span>
+<span id="cb14-354"><a href="#cb14-354" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = c_cl      Champ = 5    → c_cl = 0.5 mol/dm³</span></span>
+<span id="cb14-355"><a href="#cb14-355" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = p_l    Champ = 8    → p_l = 0.5 Pa</span></span>
+<span id="cb14-356"><a href="#cb14-356" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-357"><a href="#cb14-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-358"><a href="#cb14-358" aria-hidden="true" tabindex="-1"></a><span class="in">`Reg = 2`</span> désigne l'ensemble du domaine volumique (l'intérieur de la carotte).</span>
+<span id="cb14-359"><a href="#cb14-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-360"><a href="#cb14-360" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Functions`</span></span>
+<span id="cb14-361"><a href="#cb14-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-362"><a href="#cb14-362" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-363"><a href="#cb14-363" aria-hidden="true" tabindex="-1"></a><span class="in">Functions</span></span>
+<span id="cb14-364"><a href="#cb14-364" aria-hidden="true" tabindex="-1"></a><span class="in">4</span></span>
+<span id="cb14-365"><a href="#cb14-365" aria-hidden="true" tabindex="-1"></a><span class="in">N = 2 F(0) = 1.        F(7200) = -0.5           # Fonc 1: logp_co2 à la face injectante (montée rapide)</span></span>
+<span id="cb14-366"><a href="#cb14-366" aria-hidden="true" tabindex="-1"></a><span class="in">N = 5 F(0) = 1.  F(2400000) = 1. F(3200000) = -0.4 F(4000000) = -0.8 F(8400000) = -0.9  # Fonc 2: pression gas multiphasique</span></span>
+<span id="cb14-367"><a href="#cb14-367" aria-hidden="true" tabindex="-1"></a><span class="in">N = 3 F(0) = -2. F(8540000) = -1. F(8640000) = 1   # Fonc 3: z_ca CL (rampe de -2 à 1)</span></span>
+<span id="cb14-368"><a href="#cb14-368" aria-hidden="true" tabindex="-1"></a><span class="in">N = 2 F(0) = 1.        F(7200) = -20.           # Fonc 4: z_ca injection rapide</span></span>
+<span id="cb14-369"><a href="#cb14-369" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-370"><a href="#cb14-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-371"><a href="#cb14-371" aria-hidden="true" tabindex="-1"></a>Chaque fonction est une interpolation linéaire par morceaux dans le temps (en secondes). Par exemple, <span class="in">`Fonc 1`</span> impose $\log p_{CO_2}$ à la face d'injection : il part de la valeur <span class="in">`Val * Fonc(t)`</span> du champ. À $t = 0$, le facteur vaut $1$ (pression = $10^1$ Pa), puis évolue linéairement jusqu'à $-0.5$ à $t = 7200$ s (2 heures), faisant monter la pression.</span>
+<span id="cb14-372"><a href="#cb14-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-373"><a href="#cb14-373" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Boundary Conditions`</span></span>
+<span id="cb14-374"><a href="#cb14-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-375"><a href="#cb14-375" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-376"><a href="#cb14-376" aria-hidden="true" tabindex="-1"></a><span class="in">Boundary Conditions</span></span>
+<span id="cb14-377"><a href="#cb14-377" aria-hidden="true" tabindex="-1"></a><span class="in">6</span></span>
+<span id="cb14-378"><a href="#cb14-378" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 3 Inc = psi      Champ = 0 Fonc = 0   → psi = 0 * 0 = 0 (référence de potentiel)</span></span>
+<span id="cb14-379"><a href="#cb14-379" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 3 Inc = logp_co2 Champ = 1 Fonc = 1   → pression CO₂ imposée selon Fonc 1</span></span>
+<span id="cb14-380"><a href="#cb14-380" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 3 Inc = p_l      Champ = 8 Fonc = 0   → p_l = 0 * 0 = 0</span></span>
+<span id="cb14-381"><a href="#cb14-381" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = c_k       Champ = 9 Fonc = 0   → c_k maintenu à 0.5</span></span>
+<span id="cb14-382"><a href="#cb14-382" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 2 Inc = c_cl      Champ = 9 Fonc = 0   → c_cl maintenu à 0.5</span></span>
+<span id="cb14-383"><a href="#cb14-383" aria-hidden="true" tabindex="-1"></a><span class="in">Reg = 3 Inc = z_ca     Champ = 4 Fonc = 4   → z_ca imposition selon Fonc 4 (rampe)</span></span>
+<span id="cb14-384"><a href="#cb14-384" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-385"><a href="#cb14-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-386"><a href="#cb14-386" aria-hidden="true" tabindex="-1"></a><span class="in">`Reg = 3`</span> est la frontière gauche ($x = 0$), face d'injection. <span class="in">`Fonc = 0`</span> correspond à la 1ère fonction (d'index 0) qui est ici constante (ou signifie que la valeur est le champ seul). Plusieurs conditions en <span class="in">`Reg = 2`</span> imposent des concentrations volumiques aux potassium et chlorure.</span>
+<span id="cb14-387"><a href="#cb14-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-388"><a href="#cb14-388" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Dates`</span></span>
+<span id="cb14-389"><a href="#cb14-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-390"><a href="#cb14-390" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-391"><a href="#cb14-391" aria-hidden="true" tabindex="-1"></a><span class="in">Dates</span></span>
+<span id="cb14-392"><a href="#cb14-392" aria-hidden="true" tabindex="-1"></a><span class="in">4</span></span>
+<span id="cb14-393"><a href="#cb14-393" aria-hidden="true" tabindex="-1"></a><span class="in">0. 86400 864000 2592000</span></span>
+<span id="cb14-394"><a href="#cb14-394" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-395"><a href="#cb14-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-396"><a href="#cb14-396" aria-hidden="true" tabindex="-1"></a>4 instants de sortie demandés : $t = 0$, $1$ jour ($86\,400$ s), $10$ jours ($864\,000$ s), $30$ jours ($2\,592\,000$ s). Les fichiers <span class="in">`Shen.t0`</span> à <span class="in">`Shen.t3`</span> correspondent à ces 4 sorties.</span>
+<span id="cb14-397"><a href="#cb14-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-398"><a href="#cb14-398" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Objective Variations`</span></span>
+<span id="cb14-399"><a href="#cb14-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-400"><a href="#cb14-400" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-401"><a href="#cb14-401" aria-hidden="true" tabindex="-1"></a><span class="in">Objective Variations</span></span>
+<span id="cb14-402"><a href="#cb14-402" aria-hidden="true" tabindex="-1"></a><span class="in">logp_co2 = 0.1</span></span>
+<span id="cb14-403"><a href="#cb14-403" aria-hidden="true" tabindex="-1"></a><span class="in">z_si     = 1.e-1</span></span>
+<span id="cb14-404"><a href="#cb14-404" aria-hidden="true" tabindex="-1"></a><span class="in">z_ca     = 1.e-1</span></span>
+<span id="cb14-405"><a href="#cb14-405" aria-hidden="true" tabindex="-1"></a><span class="in">psi      = 0.1</span></span>
+<span id="cb14-406"><a href="#cb14-406" aria-hidden="true" tabindex="-1"></a><span class="in">c_k      = 0.1</span></span>
+<span id="cb14-407"><a href="#cb14-407" aria-hidden="true" tabindex="-1"></a><span class="in">c_cl     = 0.1</span></span>
+<span id="cb14-408"><a href="#cb14-408" aria-hidden="true" tabindex="-1"></a><span class="in">p_l      = 10000.</span></span>
+<span id="cb14-409"><a href="#cb14-409" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-410"><a href="#cb14-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-411"><a href="#cb14-411" aria-hidden="true" tabindex="-1"></a>Définit la variation relative maximale tolérée par inconnue **pour le contrôle adaptatif du pas de temps**. BIL augmente $\Delta t$ si toutes les variations sont inférieures à ces seuils, et le diminue sinon. <span class="in">`p_l = 10000.`</span> Pa de variation autorisée par pas de temps reflète le fait que la pression liquide peut varier fortement en début de simulation.</span>
+<span id="cb14-412"><a href="#cb14-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-413"><a href="#cb14-413" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Iterative Process`</span></span>
+<span id="cb14-414"><a href="#cb14-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-415"><a href="#cb14-415" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-416"><a href="#cb14-416" aria-hidden="true" tabindex="-1"></a><span class="in">Iterative Process</span></span>
+<span id="cb14-417"><a href="#cb14-417" aria-hidden="true" tabindex="-1"></a><span class="in">Iteration = 10</span></span>
+<span id="cb14-418"><a href="#cb14-418" aria-hidden="true" tabindex="-1"></a><span class="in">Tolerance = 1.e-4</span></span>
+<span id="cb14-419"><a href="#cb14-419" aria-hidden="true" tabindex="-1"></a><span class="in">Repetition = 0</span></span>
+<span id="cb14-420"><a href="#cb14-420" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-421"><a href="#cb14-421" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-422"><a href="#cb14-422" aria-hidden="true" tabindex="-1"></a>Newton-Raphson : maximum 10 itérations par pas de temps, tolérance sur le résidu normalisé de $10^{-4}$, sans répétition de pas de temps en cas de non-convergence.</span>
+<span id="cb14-423"><a href="#cb14-423" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-424"><a href="#cb14-424" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Bloc `Time Steps`</span></span>
+<span id="cb14-425"><a href="#cb14-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-426"><a href="#cb14-426" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-427"><a href="#cb14-427" aria-hidden="true" tabindex="-1"></a><span class="in">Time Steps</span></span>
+<span id="cb14-428"><a href="#cb14-428" aria-hidden="true" tabindex="-1"></a><span class="in">Dtini = 1.e1</span></span>
+<span id="cb14-429"><a href="#cb14-429" aria-hidden="true" tabindex="-1"></a><span class="in">Dtmax = 1.e5</span></span>
+<span id="cb14-430"><a href="#cb14-430" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-431"><a href="#cb14-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-432"><a href="#cb14-432" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Dtini = 10 s`</span> : Pas de temps initial très petit, car les fronts chimiques sont raides au démarrage.</span>
+<span id="cb14-433"><a href="#cb14-433" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`Dtmax = 100 000 s`</span> ($\approx 27.8$ heures) : Pas de temps maximum autorisé.</span>
+<span id="cb14-434"><a href="#cb14-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-435"><a href="#cb14-435" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-436"><a href="#cb14-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-437"><a href="#cb14-437" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9. Références bibliographiques</span></span>
+<span id="cb14-438"><a href="#cb14-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-439"><a href="#cb14-439" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Duguid, A.** (2006). The effect of CO₂ on the integrity of well cements. *Princeton University PhD Thesis*. — Expérience de référence simulée dans ce cas test : injection de scCO₂ dans une carotte de grès ciméntée.</span>
+<span id="cb14-440"><a href="#cb14-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-441"><a href="#cb14-441" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Shen, J., Dangla, P., Thiery, M.** (2013). Reactive transport modeling of CO₂ through cementitious materials under CO₂ geological storage conditions. *International Journal of Greenhouse Gas Control*, 18, 75–87. — Article de référence pour le modèle numérique implémenté dans <span class="in">`Shen.c`</span>.</span>
+<span id="cb14-442"><a href="#cb14-442" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-443"><a href="#cb14-443" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Redlich, O., &amp; Kwong, J. N. S.** (1949). On the thermodynamics of solutions. V. An equation of state. *Chemical Reviews*, 44(1), 233–244. — Équation d'état pour la densité du CO₂ supercritique.</span>
+<span id="cb14-444"><a href="#cb14-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-445"><a href="#cb14-445" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fenghour, A., Wakeham, W. A., &amp; Vesovic, V.** (1998). The viscosity of carbon dioxide. *Journal of Physical and Chemical Reference Data*, 27(1), 31–44. — Corrélation pour la viscosité du CO₂ supercritique.</span>
+<span id="cb14-446"><a href="#cb14-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-447"><a href="#cb14-447" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Jennings, H. M.** (2000). A model for the microstructure of calcium silicate hydrate in cement paste. *Cement and Concrete Research*, 30(1), 101–116. — Base du modèle CSH4Poles utilisé pour décrire la composition des CSH en fonction de leur état de saturation.</span>
+<span id="cb14-448"><a href="#cb14-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-449"><a href="#cb14-449" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Coussy, O.** (2004). *Poromechanics*. John Wiley &amp; Sons. — Cadre théorique général pour la modélisation des milieux poreux multiphasiques.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Bil — Bibliothèque d’Ingénierie numérique et de Lois de comportement</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/dangla/bil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Généré avec <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>15&nbsp; Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot) – Bil</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./M7-1_model.html" rel="next">
+<link href="./Poroplast_model.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-23fd4533d2f2b834c87e926c7060fcb1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-ddf985e630d529526cf0a290dcd10a29.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-23fd4533d2f2b834c87e926c7060fcb1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e30f798487214bd1bc8412a3dcfaebc7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-f5b556d071665e9458de864191fbc25a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-e30f798487214bd1bc8412a3dcfaebc7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Bil</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+    <a href="https://github.com/dangla/bil" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./M7_model.html">Exemples — Poromécanique</a></li><li class="breadcrumb-item"><a href="./M7_model.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Bil — Documentation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Lancement d’un calcul</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lancer_calcul.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lancer un calcul avec Bil</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Écriture d’un modèle</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fonctionnement_bil.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture et fonctionnement de Bil</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Écoulement</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Modèle M1 — Équation de Richards (Écoulement liquide 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Modèle M2 — Écoulement Diphasique L/G (Liquide-Gaz)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M5_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Modèle M5 — Transferts couplés eau–air en milieu poreux non saturé (isotherme 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M10-1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Modèle M10 — Équation de Richards : drainage d’une colonne de billes sous gravité (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M10-2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Modèle M10 — Équation de Richards : drainage d’une colonne de billes sous gravité (2D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Richards-2d.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Richards-2d — Drainage d’une colonne de billes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Mécanique</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Elast0_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Modèle Elast0 — Élasticité Linéaire Isotope (Géométrie Axisymétrique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Elasd_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Modèle Elasd — Élasticité avec Endommagement Isotrope (Quasi-statique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Plast_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Modèle Plast — Élasto-plasticité avec critère de Drucker-Prager (ou Cam-Clay)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./BBM_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modèle BBM — Barcelona Basic Model pour sols non saturés (2D axisymétrique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Poroplast_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modèle Poroplast — Poroélastoplasticité avec Écrouissage (Forage en Milieu Poreux Saturé)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exemples — Poromécanique</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M7_model.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M7-1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité non saturée de Biot · Cas test M7-1 : Barrage de Ternay</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Gel</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Frostaco_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Modèle Frostaco — Action du gel dans le béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Frostaco3d_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Durabilité &amp; Chimie</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Fick_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Modèle Fick — Seconde loi de Fick (Diffusion de soluté)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Duracem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Modèle Duracem — Durabilité des matériaux cimentaires : carbonatation et ingression de chlorures (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chloricem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Modèle Chloricem — Durabilité des matériaux cimentaires : pénétration des chlorures (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfaco_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Modèle Sulfaco — Attaque Sulfatique Interne/Externe du Béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfuricem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Modèle Sulfuricem — Attaque à l’acide sulfurique des matériaux cimentaires</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfaconew_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Modèle Sulfaconew — Refactorisation C++ du modèle Sulfaco avec l’interface MaterialPointMethod</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SulfacoESA3d_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Modèle SulfacoESA3d — Attaque Sulfatique Externe avec Endommagement Mécanique 3D</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Transferts couplés</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./DWS1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Modèle DWS1 — Séchage et Mouillage avec Sel (isotherme 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Yuan1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Modèle Yuan1 — Attaque au Sulfure d’Hydrogène (H₂S) du béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Shen_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usoil_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Modèle usoil — Mécanique des Sols Non-Saturés (2019)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Spécialisés</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./MechaMic_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Modèle MechaMic — FEM² Multiscale Mechanics (2017)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M2_VoronoiFVM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">M2 — Écoulement diphasique liquide-gaz 1D : portage Bil → Julia/VoronoiFVM</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sur cette page</h2>
+   
+  <ul>
+  <li><a href="#table-des-matières" id="toc-table-des-matières" class="nav-link active" data-scroll-target="#table-des-matières"><span class="header-section-number">15.1</span> Table des matières</a></li>
+  <li><a href="#contexte-et-objectif" id="toc-contexte-et-objectif" class="nav-link" data-scroll-target="#contexte-et-objectif"><span class="header-section-number">15.2</span> 1. Contexte et objectif</a></li>
+  <li><a href="#hypothèses" id="toc-hypothèses" class="nav-link" data-scroll-target="#hypothèses"><span class="header-section-number">15.3</span> 2. Hypothèses</a></li>
+  <li><a href="#variables-et-notation" id="toc-variables-et-notation" class="nav-link" data-scroll-target="#variables-et-notation"><span class="header-section-number">15.4</span> 3. Variables et notation</a>
+  <ul class="collapse">
+  <li><a href="#inconnues-primaires" id="toc-inconnues-primaires" class="nav-link" data-scroll-target="#inconnues-primaires"><span class="header-section-number">15.4.1</span> Inconnues primaires</a></li>
+  <li><a href="#variables-de-comportement" id="toc-variables-de-comportement" class="nav-link" data-scroll-target="#variables-de-comportement"><span class="header-section-number">15.4.2</span> Variables de comportement</a></li>
+  </ul></li>
+  <li><a href="#modèle-mathématique" id="toc-modèle-mathématique" class="nav-link" data-scroll-target="#modèle-mathématique"><span class="header-section-number">15.5</span> 4. Modèle mathématique</a>
+  <ul class="collapse">
+  <li><a href="#équations-déquilibre-et-de-conservation" id="toc-équations-déquilibre-et-de-conservation" class="nav-link" data-scroll-target="#équations-déquilibre-et-de-conservation"><span class="header-section-number">15.5.1</span> 4.1 Équations d’équilibre et de conservation</a></li>
+  <li><a href="#lois-de-comportement-poroélastique" id="toc-lois-de-comportement-poroélastique" class="nav-link" data-scroll-target="#lois-de-comportement-poroélastique"><span class="header-section-number">15.5.2</span> 4.2 Lois de comportement poroélastique</a></li>
+  </ul></li>
+  <li><a href="#conditions-aux-limites-et-initiales" id="toc-conditions-aux-limites-et-initiales" class="nav-link" data-scroll-target="#conditions-aux-limites-et-initiales"><span class="header-section-number">15.6</span> 5. Conditions aux limites et initiales</a></li>
+  <li><a href="#cas-test-consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7" id="toc-cas-test-consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7" class="nav-link" data-scroll-target="#cas-test-consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7"><span class="header-section-number">15.7</span> 6. Cas test : Consolidation de Terzaghi d’une couche de sol (<code>test_examples/M7/</code>)</a>
+  <ul class="collapse">
+  <li><a href="#résultats-de-la-simulation" id="toc-résultats-de-la-simulation" class="nav-link" data-scroll-target="#résultats-de-la-simulation"><span class="header-section-number">15.7.1</span> Résultats de la simulation</a></li>
+  </ul></li>
+  <li><a href="#paramétrage-matériel-du-modèle" id="toc-paramétrage-matériel-du-modèle" class="nav-link" data-scroll-target="#paramétrage-matériel-du-modèle"><span class="header-section-number">15.8</span> 7. Paramétrage matériel du modèle</a></li>
+  <li><a href="#description-pas-à-pas-des-fichiers" id="toc-description-pas-à-pas-des-fichiers" class="nav-link" data-scroll-target="#description-pas-à-pas-des-fichiers"><span class="header-section-number">15.9</span> 8. Description pas-à-pas des fichiers</a>
+  <ul class="collapse">
+  <li><a href="#fichier-de-pilotage-test_examplesm7m7" id="toc-fichier-de-pilotage-test_examplesm7m7" class="nav-link" data-scroll-target="#fichier-de-pilotage-test_examplesm7m7"><span class="header-section-number">15.9.1</span> 8.1 Fichier de pilotage <code>test_examples/M7/M7</code></a></li>
+  <li><a href="#modélisation-interne-srcmodelsmodelfilesm7.c" id="toc-modélisation-interne-srcmodelsmodelfilesm7.c" class="nav-link" data-scroll-target="#modélisation-interne-srcmodelsmodelfilesm7.c"><span class="header-section-number">15.9.2</span> 8.2 Modélisation interne <code>src/Models/ModelFiles/M7.c</code></a></li>
+  </ul></li>
+  <li><a href="#références-bibliographiques" id="toc-références-bibliographiques" class="nav-link" data-scroll-target="#références-bibliographiques"><span class="header-section-number">15.10</span> 9. Références bibliographiques</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/dangla/bil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./M7_model.html">Exemples — Poromécanique</a></li><li class="breadcrumb-item"><a href="./M7_model.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p><strong>Fichiers sources :</strong> <code>src/Models/ModelFiles/M7.c</code> · <code>test_examples/M7/M7</code></p>
+<p><strong>Auteurs du modèle :</strong> P. Dangla (Université Gustave Eiffel)</p>
+</blockquote>
+<hr>
+<section id="table-des-matières" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="table-des-matières"><span class="header-section-number">15.1</span> Table des matières</h2>
+<ol type="1">
+<li><a href="#1-contexte-et-objectif">Contexte et objectif</a></li>
+<li><a href="#2-hypothèses">Hypothèses</a></li>
+<li><a href="#3-variables-et-notation">Variables et notation</a></li>
+<li><a href="#4-modèle-mathématique">Modèle mathématique</a>
+<ul>
+<li>4.1 <a href="#41-équations-déquilibre-et-de-conservation">Équations d’équilibre et de conservation</a></li>
+<li>4.2 <a href="#42-lois-de-comportement-poroélastique">Lois de comportement poroélastique</a></li>
+</ul></li>
+<li><a href="#5-conditions-aux-limites-et-initiales">Conditions aux limites et initiales</a></li>
+<li><a href="#6-cas-test--consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7">Cas test : Consolidation de Terzaghi d’une couche de sol (<code>test_examples/M7</code>)</a></li>
+<li><a href="#7-paramétrage-matériel-du-modèle">Paramétrage matériel du modèle</a></li>
+<li><a href="#8-description-pas-à-pas-des-fichiers">Description pas-à-pas des fichiers</a></li>
+<li><a href="#9-références-bibliographiques">Références bibliographiques</a></li>
+</ol>
+<hr>
+</section>
+<section id="contexte-et-objectif" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="contexte-et-objectif"><span class="header-section-number">15.2</span> 1. Contexte et objectif</h2>
+<p>Le modèle <strong>M7</strong> résout les équations couplées de la <strong>poroélasticité de Biot</strong>. Il combine la mécanique des milieux continus (déformation du squelette solide) avec l’hydraulique souterraine (écoulement de fluide, typiquement d’eau, régi par la loi de Darcy). Il s’agit d’un modèle fondamental en géomécanique, utilisé pour calculer le <strong>tassement des sols</strong> (consolidation au cours du temps) sous le poids des ouvrages (fondations, remblais), ainsi que la dissipation de la pression interstitielle associée.</p>
+<p>L’implémentation “Saturated/Unsaturated” de BIL étend la théorie classique de Biot pour prendre en compte les états non-saturés, où la présence d’air diminue la perméabilité à l’eau et module la notion de “contrainte effective” via une pression de pores équivalente <span class="math inline">\(\pi\)</span>.</p>
+<pre class="mermaid"><code>graph TD
+    A["Charge mécanique externe&lt;br&gt;et Poids Propre"] --&gt; B("Équilibre Mécanique&lt;br&gt;Div(σ) + f = 0")
+    E("Pression fluide p_l") --&gt;|Poussée sur le squelette&lt;br&gt;(Couplage de Biot 'b')| B
+    B --&gt;|Déformation volumique&lt;br&gt;tr(ε)| C["Variation de la Porosité ϕ&lt;br&gt;(Stockage)"]
+    C --&gt; D("Conservation de l'eau&lt;br&gt;dm_l/dt + Div(W_l) = 0")
+    E --&gt;|Gradients de pression| D
+    D --&gt; E</code></pre>
+<hr>
+</section>
+<section id="hypothèses" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="hypothèses"><span class="header-section-number">15.3</span> 2. Hypothèses</h2>
+<ol type="1">
+<li><strong>Généralisation Biphasique/Uniphasique</strong> : Modèle prévu pour être utilisé en mode saturé direct (air inexistant, <span class="math inline">\(S_l = 1\)</span>) ou non-saturé (pression de gaz <span class="math inline">\(p_g\)</span> supposée purement atmosphérique et atmosphère instantanément équilibrée).</li>
+<li><strong>Squelette élastique linéaire isotrope</strong> : Le comportement mécanique intrinsèque de la matrice solide vide obéit à la loi de Hooke (Module d’Young <span class="math inline">\(E\)</span>, Poisson <span class="math inline">\(\nu\)</span>).</li>
+<li><strong>Validité des relations de Biot</strong> : Le tenseur des contraintes totales se décompose en contraintes effectives et pression interstitielle équivalente via le coefficient de Biot <span class="math inline">\(b\)</span>.</li>
+<li><strong>Cinématique des petites déformations</strong> : L’advection du squelette solide (parois poreuses) n’est pas suivie dans le référentiel d’Euler.</li>
+</ol>
+<hr>
+</section>
+<section id="variables-et-notation" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="variables-et-notation"><span class="header-section-number">15.4</span> 3. Variables et notation</h2>
+<p>Modèle hydro-mécanique couplé, supportant <span class="math inline">\(1 + \text{Dimension}\)</span> équations (une pour l’hydraulique, et un vecteur pour la mécanique).</p>
+<section id="inconnues-primaires" class="level3" data-number="15.4.1">
+<h3 data-number="15.4.1" class="anchored" data-anchor-id="inconnues-primaires"><span class="header-section-number">15.4.1</span> Inconnues primaires</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Symbole</th>
+<th>Signification</th>
+<th>Interne BIL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(p_l\)</span></td>
+<td>Pression du liquide</td>
+<td><code>p_l</code></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{u}\)</span></td>
+<td>Vecteur des déplacements solides</td>
+<td><code>u_1, u_2, u_3</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variables-de-comportement" class="level3" data-number="15.4.2">
+<h3 data-number="15.4.2" class="anchored" data-anchor-id="variables-de-comportement"><span class="header-section-number">15.4.2</span> Variables de comportement</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 62%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symbole</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\boldsymbol{\varepsilon}\)</span></td>
+<td>Tenseur des déformations linéarisé <span class="math inline">\(\frac{1}{2}(\nabla \mathbf{u} + \nabla^T \mathbf{u})\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\boldsymbol{\sigma}\)</span></td>
+<td>Tenseur des contraintes totales</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\pi\)</span> ou <span class="math inline">\(p_p\)</span></td>
+<td>Pression équivalente des pores (intervenant pour un sol non-saturé)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\phi\)</span></td>
+<td>Porosité instantanée du milieu (modifiée par la déformation)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="modèle-mathématique" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="modèle-mathématique"><span class="header-section-number">15.5</span> 4. Modèle mathématique</h2>
+<p>La résolution repose sur un principe semi-implicite de minimisation des résidus nodaux par méthode Newton-Raphson.</p>
+<section id="équations-déquilibre-et-de-conservation" class="level3" data-number="15.5.1">
+<h3 data-number="15.5.1" class="anchored" data-anchor-id="équations-déquilibre-et-de-conservation"><span class="header-section-number">15.5.1</span> 4.1 Équations d’équilibre et de conservation</h3>
+<ol type="1">
+<li><p><strong>Bilan des quantités de mouvement</strong> (stationnaire) : <span class="math display">\[\nabla \cdot \boldsymbol{\sigma} + (\rho_s + m_l) \mathbf{g} = \mathbf{0}\]</span> <em>(L’inertie dynamique est nulle, il s’agit d’une quasi-statique. La force volumique intègre la masse sèche du sol <span class="math inline">\(\rho_s\)</span> et la masse de l’eau interstitielle <span class="math inline">\(m_l\)</span>).</em></p></li>
+<li><p><strong>Équation de diffusion hydraulique</strong> (masse de l’eau) :<br>
+<span class="math display">\[\frac{\partial m_l}{\partial t} + \nabla \cdot \mathbf{W}_l = 0\]</span></p></li>
+</ol>
+</section>
+<section id="lois-de-comportement-poroélastique" class="level3" data-number="15.5.2">
+<h3 data-number="15.5.2" class="anchored" data-anchor-id="lois-de-comportement-poroélastique"><span class="header-section-number">15.5.2</span> 4.2 Lois de comportement poroélastique</h3>
+<ul>
+<li><p><strong>Loi de Hooke / Biot sur les contraintes</strong> : <span class="math display">\[\boldsymbol{\sigma} = \boldsymbol{\sigma}_0 + \lambda \, \text{Tr}(\boldsymbol{\varepsilon}) \mathbf{I} + 2\mu \boldsymbol{\varepsilon} - b \, (p_p - p_{p0}) \mathbf{I}\]</span> <em>(Où <span class="math inline">\(\lambda\)</span> et <span class="math inline">\(\mu\)</span> sont les paramètres de Lamé du milieu solide, et <span class="math inline">\(b\)</span> le coefficient constant de Biot couplant la contribution de la pression).</em></p></li>
+<li><p><strong>Évolution de la porosité</strong> : <span class="math display">\[\phi = \phi_0 + b \, \text{Tr}(\boldsymbol{\varepsilon}) + N \, (p_p - p_{p0})\]</span> <em>(<span class="math inline">\(N \ge 0\)</span> paramètre optionnel représentant la compressibilité intrinsèque des pores).</em></p></li>
+<li><p><strong>Flux et accumulation</strong> : <span class="math display">\[\mathbf{W}_l = - \frac{\rho_l k_{\text{int}} k_{rl}(p_c)}{\mu_l} \nabla \left( p_{l} \right) + \frac{\rho^2_l k_{\text{int}} k_{rl}}{\mu_l} \mathbf{g}\]</span> <span class="math display">\[m_l = \rho_l \, \phi \, S_l(p_c)\]</span></p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="conditions-aux-limites-et-initiales" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="conditions-aux-limites-et-initiales"><span class="header-section-number">15.6</span> 5. Conditions aux limites et initiales</h2>
+<p>Les CL englobent les deux phénomènes physiques :</p>
+<ul>
+<li>Mécanique (<code>Reg X Inc = u_y Champ = z</code>) : Permet typiquement de créer des frontières bloquées (substratum rocheux rigide, rouleaux aux frontières).</li>
+<li>Mécanique (Force) (<code>Load Equation = meca_1 = force</code>) : Représente directement un effort imposé (ex: remblai posé sur le sol).</li>
+<li>Hydraulique : Surfaces drainantes (<span class="math inline">\(p_l = P_{atmos}\)</span>) ou bien faces imperméables (Aucune prescription, donc flux implicitement nul via Newman).</li>
+</ul>
+<hr>
+</section>
+<section id="cas-test-consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="cas-test-consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7"><span class="header-section-number">15.7</span> 6. Cas test : Consolidation de Terzaghi d’une couche de sol (<code>test_examples/M7/</code>)</h2>
+<p>Ce cas académique est celui du phénomène unidimensionnel de la <strong>Consolidation de Terzaghi</strong>. Nous prenons une colonne 1D de sol saturé sur <span class="math inline">\(H=1\text{m}\)</span> (coordonnées entre <span class="math inline">\(z=-1\)</span> et <span class="math inline">\(z=0\)</span>). - En <span class="math inline">\(t=0\)</span>, une pression massique continue (charge de surface -1 Pa) est appliquée soudainement au sommet géométrique, qui lui-même est libre de drainer l’eau (<span class="math inline">\(p_l=0\)</span>). - La base ne bouge pas mécaniquement (<code>u=0</code> imposé au fond).</p>
+<section id="résultats-de-la-simulation" class="level3" data-number="15.7.1">
+<h3 data-number="15.7.1" class="anchored" data-anchor-id="résultats-de-la-simulation"><span class="header-section-number">15.7.1</span> Résultats de la simulation</h3>
+<p>Le sol, de faible perméabilité et gorgé d’eau très peu compressible, voit sa matrice se contracter immédiatement mais l’eau qui s’oppose au tassement capture instantanément 100% de l’effort : c’est le pic de <em>“surpression interstitielle”</em>. Ensuite l’eau se dissipe peu à peu vers la surface drainante en <span class="math inline">\(t = 0.01\)</span>, puis <span class="math inline">\(t = 0.1\)</span>. Ce transfert de la contrainte totale vers les grains du sol provoque son “tassement” (déformation <span class="math inline">\(\Delta u_z\)</span>).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="M7_results.png" class="img-fluid figure-img"></p>
+<figcaption>Consolidation de Terzaghi - Simulation M7</figcaption>
+</figure>
+</div>
+<p><em>(À gauche : Décroissance ou dissipation graduelle et isochrone de la pression fluide. À droite : L’accroissement progressif du tassement vertical des horizons géologiques au fil du drainage complet).</em></p>
+<hr>
+</section>
+</section>
+<section id="paramétrage-matériel-du-modèle" class="level2" data-number="15.8">
+<h2 data-number="15.8" class="anchored" data-anchor-id="paramétrage-matériel-du-modèle"><span class="header-section-number">15.8</span> 7. Paramétrage matériel du modèle</h2>
+<p>La physique du modèle croise des données mécaniques standards avec le modèle hydraulique :</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 44%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paramètre</th>
+<th>Cas du Fichier <code>M7</code></th>
+<th>Rôle Physique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>young</code>, <code>poisson</code></td>
+<td>0.83 , 0.25</td>
+<td>Représente la matrice gélatineuse rigide du comportement sec.</td>
+</tr>
+<tr class="even">
+<td><code>rho_s</code></td>
+<td>0</td>
+<td>Masse de grains annulée pour écarter le confinement propre.</td>
+</tr>
+<tr class="odd">
+<td><code>b</code></td>
+<td>1</td>
+<td>Coefficient de Biot (terzaghi = 1 souvent car incompressibilité intrinsèque des grains massifs).</td>
+</tr>
+<tr class="even">
+<td><code>N</code></td>
+<td>0</td>
+<td>Compressibilité du vide.</td>
+</tr>
+<tr class="odd">
+<td><code>sig0_xx</code></td>
+<td>0</td>
+<td>Contraintes totales macroscopiques préétablies in situ.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="description-pas-à-pas-des-fichiers" class="level2" data-number="15.9">
+<h2 data-number="15.9" class="anchored" data-anchor-id="description-pas-à-pas-des-fichiers"><span class="header-section-number">15.9</span> 8. Description pas-à-pas des fichiers</h2>
+<section id="fichier-de-pilotage-test_examplesm7m7" class="level3" data-number="15.9.1">
+<h3 data-number="15.9.1" class="anchored" data-anchor-id="fichier-de-pilotage-test_examplesm7m7"><span class="header-section-number">15.9.1</span> 8.1 Fichier de pilotage <code>test_examples/M7/M7</code></h3>
+<ol type="1">
+<li><strong>Géométrie &amp; Maillage</strong> : Exigences 1D (un segment) localisé entre <span class="math inline">\(z=-1\)</span> et <span class="math inline">\(z=0\)</span> (<code>4 -1 -1 0 0</code>). Le <code>1</code> d’épaisseur virtuelle maintient le cas volumique dans des volumes standards.</li>
+<li><strong>Propriétés initiales</strong> : <code>p_l0 = 0</code> dans le bloc matériel définit qu’on démarre en pression d’équilibre (isobare zéro, pas de gradient, repos complet).</li>
+<li><strong>Conditions aux limites (<code>Boundary Conditions</code>)</strong> :
+<ul>
+<li><code>Reg 1 Inc = u_1</code> : Le fond (<span class="math inline">\(z=-1\)</span>) est figé. Déplacement nul.</li>
+<li><code>Reg 3 Inc = p_l</code> : Le sommet (<span class="math inline">\(z=0\)</span>) est une surface de suintement pur (<span class="math inline">\(p=0\)</span>, atmosphérique).</li>
+</ul></li>
+<li><strong>Chargements (<code>Loads</code>)</strong> :
+<ul>
+<li><code>Reg 3 Equation = meca_1 Type = force Champ = 1</code> avec le <code>Fields 1</code> défini à <code>Value = -1</code>. Ceci insère une charge orientée vers les x-négatifs (-1) applicable à tout les éléments de bord de la région 3.</li>
+</ul></li>
+<li><strong>Critères et temps (<code>Dates</code>, <code>Iterative Process</code>)</strong> : Tolérance serrée <code>1.e-6</code> car les efforts génèrent initialement de gros chocs pour les solveurs non linaires. Dates imposées arbitrairement à <code>0.01</code> puis <code>0.1</code>.</li>
+</ol>
+</section>
+<section id="modélisation-interne-srcmodelsmodelfilesm7.c" class="level3" data-number="15.9.2">
+<h3 data-number="15.9.2" class="anchored" data-anchor-id="modélisation-interne-srcmodelsmodelfilesm7.c"><span class="header-section-number">15.9.2</span> 8.2 Modélisation interne <code>src/Models/ModelFiles/M7.c</code></h3>
+<ol type="1">
+<li><strong><code>ComputeInitialState</code> (Ligne 201)</strong> : Appelle les méthodes propres aux éléments Finis (<code>FEM.h</code> au lieu de <code>FVM.h</code> pour garantir le tracking mécanique nodal et non surfacique d’interface). Calcule les constantes de base (<code>lamé</code>, module de cisaillement).</li>
+<li><strong>Calcul de la contrainte <code>SIG</code> et de l’effort massique <code>F_MASS</code></strong> :
+<ul>
+<li>Effectue l’abstraction tensorielle (dérivée spatiale) des déplacements aux points de Gauss (<span class="math inline">\(p=0..N_{integ}\)</span>).</li>
+<li><code>sig[...] += lame*tre - b*(pp - pp0)</code> - Additionne de l’énergie de forme et soustrait le potentiel de Biot.</li>
+</ul></li>
+<li><strong>Assemblages de raideur <code>c7</code> et de transport <code>k7</code></strong> : Prépare analytiquement, sur les cellules de la matrice d’intégration (<code>kp</code> et <code>kc</code>), l’influence relative entre la variable d’eau <code>I_p_l</code> et les composantes cinématiques de <code>I_u</code>.</li>
+<li><strong><code>ComputeResidu</code></strong> : Dresse le solde mécanique virtuel en exploitant <code>FEM_ComputeStrainWorkResidu</code> (Bilan des forces virtuelles face à la rigidité interne <span class="math inline">\(\int \boldsymbol{\sigma} \colon \nabla \delta \mathbf{u} \, d\Omega\)</span>). En E_liq c’est plutôt l’erreur sur la compression poreuse et le bilan des flux hydrauliques transitoires.</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="références-bibliographiques" class="level2" data-number="15.10">
+<h2 data-number="15.10" class="anchored" data-anchor-id="références-bibliographiques"><span class="header-section-number">15.10</span> 9. Références bibliographiques</h2>
+<ul>
+<li><strong>Biot, M. A.</strong> (1941). General theory of three-dimensional consolidation. <em>Journal of applied physics</em>, 12(2), 155-164. - C’est la fondation du couplage entre pression hydrique et déformation matricielle géré dans M7.</li>
+<li><strong>Coussy, O.</strong> (2004). <em>Poromechanics</em>. John Wiley &amp; Sons. - Fournit les développements rigoureux du tensoriel de comportement incluant l’introduction du paramètre de compressibilité <code>N</code> et la distinction avec la capillarité en non-saturé.</li>
+<li><strong>Terzaghi, K.</strong> (1943). <em>Theoretical soil mechanics</em>. - Le test <code>M7</code> démontre mathématiquement l’équation phénoménologique établie originellement en 1D par Terzaghi pour le comportement des argiles argileuses sous stress.</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Poroplast_model.html" class="pagination-link" aria-label="Modèle Poroplast — Poroélastoplasticité avec Écrouissage (Forage en Milieu Poreux Saturé)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modèle Poroplast — Poroélastoplasticité avec Écrouissage (Forage en Milieu Poreux Saturé)</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./M7-1_model.html" class="pagination-link" aria-label="Modèle M7 — Poroélasticité non saturée de Biot · Cas test M7-1 : Barrage de Ternay">
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité non saturée de Biot · Cas test M7-1 : Barrage de Ternay</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Fichiers sources :**</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`src/Models/ModelFiles/M7.c`</span><span class="at"> · </span><span class="in">`test_examples/M7/M7`</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Auteurs du modèle :** P. Dangla (Université Gustave Eiffel)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Table des matières</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="co">[</span><span class="ot">Contexte et objectif</span><span class="co">](#1-contexte-et-objectif)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="co">[</span><span class="ot">Hypothèses</span><span class="co">](#2-hypothèses)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span><span class="co">[</span><span class="ot">Variables et notation</span><span class="co">](#3-variables-et-notation)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span><span class="co">[</span><span class="ot">Modèle mathématique</span><span class="co">](#4-modèle-mathématique)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.1 <span class="co">[</span><span class="ot">Équations d'équilibre et de conservation</span><span class="co">](#41-équations-déquilibre-et-de-conservation)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.2 <span class="co">[</span><span class="ot">Lois de comportement poroélastique</span><span class="co">](#42-lois-de-comportement-poroélastique)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span><span class="co">[</span><span class="ot">Conditions aux limites et initiales</span><span class="co">](#5-conditions-aux-limites-et-initiales)</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span><span class="co">[</span><span class="ot">Cas test : Consolidation de Terzaghi d'une couche de sol (`test_examples/M7`)</span><span class="co">](#6-cas-test--consolidation-de-terzaghi-dune-couche-de-sol-test_examplesm7)</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span><span class="co">[</span><span class="ot">Paramétrage matériel du modèle</span><span class="co">](#7-paramétrage-matériel-du-modèle)</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span><span class="co">[</span><span class="ot">Description pas-à-pas des fichiers</span><span class="co">](#8-description-pas-à-pas-des-fichiers)</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span><span class="co">[</span><span class="ot">Références bibliographiques</span><span class="co">](#9-références-bibliographiques)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Contexte et objectif</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>Le modèle **M7** résout les équations couplées de la **poroélasticité de Biot**. Il combine la mécanique des milieux continus (déformation du squelette solide) avec l'hydraulique souterraine (écoulement de fluide, typiquement d'eau, régi par la loi de Darcy). Il s'agit d'un modèle fondamental en géomécanique, utilisé pour calculer le **tassement des sols** (consolidation au cours du temps) sous le poids des ouvrages (fondations, remblais), ainsi que la dissipation de la pression interstitielle associée.</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>L'implémentation "Saturated/Unsaturated" de BIL étend la théorie classique de Biot pour prendre en compte les états non-saturés, où la présence d'air diminue la perméabilité à l'eau et module la notion de "contrainte effective" via une pression de pores équivalente $\pi$.</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="in">```mermaid</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>graph TD</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    A[<span class="ot">"</span><span class="st">Charge mécanique externe&lt;br&gt;et Poids Propre</span><span class="ot">"</span>] --&gt; B(<span class="ot">"</span><span class="st">Équilibre Mécanique&lt;br&gt;Div(σ) + f = 0</span><span class="ot">"</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    E(<span class="ot">"</span><span class="st">Pression fluide p_l</span><span class="ot">"</span>) --&gt;|Poussée sur <span class="ot">le</span> squelette&lt;br&gt;(Couplage de Biot <span class="ot">'</span><span class="ss">b</span><span class="ot">'</span>)| B</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    B --&gt;|Déformation volumique&lt;br&gt;<span class="ot">tr</span>(ε)| C[<span class="ot">"</span><span class="st">Variation de la Porosité ϕ&lt;br&gt;(Stockage)</span><span class="ot">"</span>]</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    C --&gt; D(<span class="ot">"</span><span class="st">Conservation de l'eau&lt;br&gt;dm_l/dt + Div(W_l) = 0</span><span class="ot">"</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    E --&gt;|Gradients de pression| D</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    D --&gt; E</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Hypothèses</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Généralisation Biphasique/Uniphasique** : Modèle prévu pour être utilisé en mode saturé direct (air inexistant, $S_l = 1$) ou non-saturé (pression de gaz $p_g$ supposée purement atmosphérique et atmosphère instantanément équilibrée).</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Squelette élastique linéaire isotrope** : Le comportement mécanique intrinsèque de la matrice solide vide obéit à la loi de Hooke (Module d'Young $E$, Poisson $\nu$).</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Validité des relations de Biot** : Le tenseur des contraintes totales se décompose en contraintes effectives et pression interstitielle équivalente via le coefficient de Biot $b$.</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Cinématique des petites déformations** : L'advection du squelette solide (parois poreuses) n'est pas suivie dans le référentiel d'Euler.</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Variables et notation</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>Modèle hydro-mécanique couplé, supportant $1 + \text{Dimension}$ équations (une pour l'hydraulique, et un vecteur pour la mécanique).</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="fu">### Inconnues primaires</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Symbole <span class="pp">|</span> Signification <span class="pp">|</span> Interne BIL <span class="pp">|</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|---------------|-------------|</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $p_l$ <span class="pp">|</span> Pression du liquide <span class="pp">|</span> <span class="in">`p_l`</span>       <span class="pp">|</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\mathbf{u}$ <span class="pp">|</span> Vecteur des déplacements solides <span class="pp">|</span> <span class="in">`u_1, u_2, u_3`</span> <span class="pp">|</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="fu">### Variables de comportement</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Symbole <span class="pp">|</span> Signification <span class="pp">|</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|---------------|</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\boldsymbol{\varepsilon}$ <span class="pp">|</span> Tenseur des déformations linéarisé $\frac{1}{2}(\nabla \mathbf{u} + \nabla^T \mathbf{u})$ <span class="pp">|</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\boldsymbol{\sigma}$ <span class="pp">|</span> Tenseur des contraintes totales <span class="pp">|</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\pi$ ou $p_p$<span class="pp">|</span> Pression équivalente des pores (intervenant pour un sol non-saturé) <span class="pp">|</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\phi$<span class="pp">|</span> Porosité instantanée du milieu (modifiée par la déformation) <span class="pp">|</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Modèle mathématique</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>La résolution repose sur un principe semi-implicite de minimisation des résidus nodaux par méthode Newton-Raphson.</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.1 Équations d'équilibre et de conservation</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Bilan des quantités de mouvement** (stationnaire) :</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>   $$\nabla \cdot \boldsymbol{\sigma} + (\rho_s + m_l) \mathbf{g} = \mathbf{0}$$</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>   *(L'inertie dynamique est nulle, il s'agit d'une quasi-statique. La force volumique intègre la masse sèche du sol $\rho_s$ et la masse de l'eau interstitielle $m_l$).*</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Équation de diffusion hydraulique** (masse de l'eau) :  </span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>   $$\frac{\partial m_l}{\partial t} + \nabla \cdot \mathbf{W}_l = 0$$</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.2 Lois de comportement poroélastique</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Loi de Hooke / Biot sur les contraintes** :</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>  $$\boldsymbol{\sigma} = \boldsymbol{\sigma}_0 + \lambda \, \text{Tr}(\boldsymbol{\varepsilon}) \mathbf{I} + 2\mu \boldsymbol{\varepsilon} - b \, (p_p - p_{p0}) \mathbf{I}$$</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>  *(Où $\lambda$ et $\mu$ sont les paramètres de Lamé du milieu solide, et $b$ le coefficient constant de Biot couplant la contribution de la pression).*</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Évolution de la porosité** :</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>  $$\phi = \phi_0 + b \, \text{Tr}(\boldsymbol{\varepsilon}) + N \, (p_p - p_{p0})$$</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>  *($N \ge 0$ paramètre optionnel représentant la compressibilité intrinsèque des pores).*</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Flux et accumulation** :</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>  $$\mathbf{W}_l = - \frac{\rho_l k_{\text{int}} k_{rl}(p_c)}{\mu_l} \nabla \left( p_{l} \right) + \frac{\rho^2_l k_{\text{int}} k_{rl}}{\mu_l} \mathbf{g}$$</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>  $$m_l = \rho_l \, \phi \, S_l(p_c)$$</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Conditions aux limites et initiales</span></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>Les CL englobent les deux phénomènes physiques :</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Mécanique (<span class="in">`Reg X Inc = u_y Champ = z`</span>) : Permet typiquement de créer des frontières bloquées (substratum rocheux rigide, rouleaux aux frontières).</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Mécanique (Force) (<span class="in">`Load Equation = meca_1 = force`</span>) : Représente directement un effort imposé (ex: remblai posé sur le sol).</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Hydraulique : Surfaces drainantes ($p_l = P_{atmos}$) ou bien faces imperméables (Aucune prescription, donc flux implicitement nul via Newman).</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6. Cas test : Consolidation de Terzaghi d'une couche de sol (`test_examples/M7/`)</span></span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>Ce cas académique est celui du phénomène unidimensionnel de la **Consolidation de Terzaghi**.</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>Nous prenons une colonne 1D de sol saturé sur $H=1\text{m}$ (coordonnées entre $z=-1$ et $z=0$).</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>En $t=0$, une pression massique continue (charge de surface -1 Pa) est appliquée soudainement au sommet géométrique, qui lui-même est libre de drainer l'eau ($p_l=0$). </span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La base ne bouge pas mécaniquement (<span class="in">`u=0`</span> imposé au fond).  </span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="fu">### Résultats de la simulation</span></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>Le sol, de faible perméabilité et gorgé d'eau très peu compressible, voit sa matrice se contracter immédiatement mais l'eau qui s'oppose au tassement capture instantanément 100% de l'effort : c'est le pic de *"surpression interstitielle"*. Ensuite l'eau se dissipe peu à peu vers la surface drainante en $t = 0.01$, puis $t = 0.1$.</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>Ce transfert de la contrainte totale vers les grains du sol provoque son "tassement" (déformation $\Delta u_z$).</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a><span class="al">![Consolidation de Terzaghi - Simulation M7](M7_results.png)</span></span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>*(À gauche : Décroissance ou dissipation graduelle et isochrone de la pression fluide. À droite : L'accroissement progressif du tassement vertical des horizons géologiques au fil du drainage complet).*</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7. Paramétrage matériel du modèle</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>La physique du modèle croise des données mécaniques standards avec le modèle hydraulique :</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paramètre <span class="pp">|</span> Cas du Fichier <span class="in">`M7`</span> <span class="pp">|</span> Rôle Physique <span class="pp">|</span></span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a><span class="pp">|-----------|---------------------|---------------|</span></span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`young`</span>, <span class="in">`poisson`</span> <span class="pp">|</span> 0.83 , 0.25 <span class="pp">|</span> Représente la matrice gélatineuse rigide du comportement sec. <span class="pp">|</span></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`rho_s`</span> <span class="pp">|</span> 0 <span class="pp">|</span> Masse de grains annulée pour écarter le confinement propre. <span class="pp">|</span></span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`b`</span> <span class="pp">|</span> 1 <span class="pp">|</span> Coefficient de Biot (terzaghi = 1 souvent car incompressibilité intrinsèque des grains massifs). <span class="pp">|</span></span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`N`</span> <span class="pp">|</span> 0 <span class="pp">|</span> Compressibilité du vide. <span class="pp">|</span></span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sig0_xx`</span> <span class="pp">|</span> 0 <span class="pp">|</span> Contraintes totales macroscopiques préétablies in situ. <span class="pp">|</span></span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8. Description pas-à-pas des fichiers</span></span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1 Fichier de pilotage `test_examples/M7/M7`</span></span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Géométrie &amp; Maillage** : Exigences 1D (un segment) localisé entre $z=-1$ et $z=0$ (<span class="in">`4 -1 -1 0 0`</span>). Le <span class="in">`1`</span> d'épaisseur virtuelle maintient le cas volumique dans des volumes standards.</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Propriétés initiales** : </span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>   <span class="in">`p_l0 = 0`</span> dans le bloc matériel définit qu'on démarre en pression d'équilibre (isobare zéro, pas de gradient, repos complet).</span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Conditions aux limites (`Boundary Conditions`)** :</span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span><span class="in">`Reg 1 Inc = u_1`</span> : Le fond ($z=-1$) est figé. Déplacement nul.</span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span><span class="in">`Reg 3 Inc = p_l`</span> : Le sommet ($z=0$) est une surface de suintement pur ($p=0$, atmosphérique).</span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Chargements (`Loads`)** :</span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span><span class="in">`Reg 3 Equation = meca_1 Type = force Champ = 1`</span> avec le <span class="in">`Fields 1`</span> défini à <span class="in">`Value = -1`</span>. Ceci insère une charge orientée vers les x-négatifs (-1) applicable à tout les éléments de bord de la région 3.</span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Critères et temps (`Dates`, `Iterative Process`)** : Tolérance serrée <span class="in">`1.e-6`</span> car les efforts génèrent initialement de gros chocs pour les solveurs non linaires. Dates imposées arbitrairement à <span class="in">`0.01`</span> puis <span class="in">`0.1`</span>.</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.2 Modélisation interne `src/Models/ModelFiles/M7.c`</span></span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**`ComputeInitialState` (Ligne 201)** : </span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>   Appelle les méthodes propres aux éléments Finis (<span class="in">`FEM.h`</span> au lieu de <span class="in">`FVM.h`</span> pour garantir le tracking mécanique nodal et non surfacique d'interface). Calcule les constantes de base (<span class="in">`lamé`</span>, module de cisaillement). </span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Calcul de la contrainte `SIG` et de l'effort massique `F_MASS`** :</span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Effectue l'abstraction tensorielle (dérivée spatiale) des déplacements aux points de Gauss ($p=0..N_{integ}$).</span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span><span class="in">`sig[...] += lame*tre - b*(pp - pp0)`</span> - Additionne de l'énergie de forme et soustrait le potentiel de Biot.</span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Assemblages de raideur `c7` et de transport `k7`** :</span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a>   Prépare analytiquement, sur les cellules de la matrice d'intégration (<span class="in">`kp`</span> et <span class="in">`kc`</span>), l'influence relative entre la variable d'eau <span class="in">`I_p_l`</span> et les composantes cinématiques de <span class="in">`I_u`</span>.</span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**`ComputeResidu`** :</span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a>   Dresse le solde mécanique virtuel en exploitant <span class="in">`FEM_ComputeStrainWorkResidu`</span> (Bilan des forces virtuelles face à la rigidité interne $\int \boldsymbol{\sigma} \colon \nabla \delta \mathbf{u} \, d\Omega$). En E_liq c'est plutôt l'erreur sur la compression poreuse et le bilan des flux hydrauliques transitoires.</span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9. Références bibliographiques</span></span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Biot, M. A.** (1941). General theory of three-dimensional consolidation. *Journal of applied physics*, 12(2), 155-164. - C'est la fondation du couplage entre pression hydrique et déformation matricielle géré dans M7.</span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Coussy, O.** (2004). *Poromechanics*. John Wiley &amp; Sons. - Fournit les développements rigoureux du tensoriel de comportement incluant l'introduction du paramètre de compressibilité <span class="in">`N`</span> et la distinction avec la capillarité en non-saturé.</span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Terzaghi, K.** (1943). *Theoretical soil mechanics*. - Le test <span class="in">`M7`</span> démontre mathématiquement l'équation phénoménologique établie originellement en 1D par Terzaghi pour le comportement des argiles argileuses sous stress.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Bil — Bibliothèque d’Ingénierie numérique et de Lois de comportement</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/dangla/bil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Généré avec <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

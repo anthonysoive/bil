@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>18&nbsp; Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet) – Bil</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Fick_model.html" rel="next">
+<link href="./Frostaco_model.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-23fd4533d2f2b834c87e926c7060fcb1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-ddf985e630d529526cf0a290dcd10a29.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-23fd4533d2f2b834c87e926c7060fcb1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e30f798487214bd1bc8412a3dcfaebc7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-f5b556d071665e9458de864191fbc25a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-e30f798487214bd1bc8412a3dcfaebc7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Bil</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+    <a href="https://github.com/dangla/bil" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Frostaco_model.html">Exemples — Gel</a></li><li class="breadcrumb-item"><a href="./Frostaco3d_model.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Bil — Documentation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Lancement d’un calcul</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lancer_calcul.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lancer un calcul avec Bil</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Écriture d’un modèle</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fonctionnement_bil.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture et fonctionnement de Bil</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Écoulement</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Modèle M1 — Équation de Richards (Écoulement liquide 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Modèle M2 — Écoulement Diphasique L/G (Liquide-Gaz)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M5_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Modèle M5 — Transferts couplés eau–air en milieu poreux non saturé (isotherme 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M10-1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Modèle M10 — Équation de Richards : drainage d’une colonne de billes sous gravité (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M10-2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Modèle M10 — Équation de Richards : drainage d’une colonne de billes sous gravité (2D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Richards-2d.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Richards-2d — Drainage d’une colonne de billes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Mécanique</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Elast0_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Modèle Elast0 — Élasticité Linéaire Isotope (Géométrie Axisymétrique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Elasd_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Modèle Elasd — Élasticité avec Endommagement Isotrope (Quasi-statique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Plast_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Modèle Plast — Élasto-plasticité avec critère de Drucker-Prager (ou Cam-Clay)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./BBM_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modèle BBM — Barcelona Basic Model pour sols non saturés (2D axisymétrique)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Poroplast_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modèle Poroplast — Poroélastoplasticité avec Écrouissage (Forage en Milieu Poreux Saturé)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Poromécanique</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M7_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité Saturée/Non-Saturée (Consolidation de Biot)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M7-1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Modèle M7 — Poroélasticité non saturée de Biot · Cas test M7-1 : Barrage de Ternay</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exemples — Gel</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Frostaco_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Modèle Frostaco — Action du gel dans le béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Frostaco3d_model.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Durabilité &amp; Chimie</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Fick_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Modèle Fick — Seconde loi de Fick (Diffusion de soluté)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Duracem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Modèle Duracem — Durabilité des matériaux cimentaires : carbonatation et ingression de chlorures (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Chloricem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Modèle Chloricem — Durabilité des matériaux cimentaires : pénétration des chlorures (1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfaco_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Modèle Sulfaco — Attaque Sulfatique Interne/Externe du Béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfuricem_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Modèle Sulfuricem — Attaque à l’acide sulfurique des matériaux cimentaires</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sulfaconew_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Modèle Sulfaconew — Refactorisation C++ du modèle Sulfaco avec l’interface MaterialPointMethod</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SulfacoESA3d_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Modèle SulfacoESA3d — Attaque Sulfatique Externe avec Endommagement Mécanique 3D</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Transferts couplés</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./DWS1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Modèle DWS1 — Séchage et Mouillage avec Sel (isotherme 1D)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Yuan1_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Modèle Yuan1 — Attaque au Sulfure d’Hydrogène (H₂S) du béton</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Shen_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Modèle Shen — Carbonatation du béton au CO₂ supercritique</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usoil_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Modèle usoil — Mécanique des Sols Non-Saturés (2019)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Exemples — Spécialisés</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./MechaMic_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Modèle MechaMic — FEM² Multiscale Mechanics (2017)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./M2_VoronoiFVM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">M2 — Écoulement diphasique liquide-gaz 1D : portage Bil → Julia/VoronoiFVM</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sur cette page</h2>
+   
+  <ul>
+  <li><a href="#table-des-matières" id="toc-table-des-matières" class="nav-link active" data-scroll-target="#table-des-matières"><span class="header-section-number">18.1</span> Table des matières</a></li>
+  <li><a href="#contexte-et-objectif" id="toc-contexte-et-objectif" class="nav-link" data-scroll-target="#contexte-et-objectif"><span class="header-section-number">18.2</span> 1. Contexte et objectif</a></li>
+  <li><a href="#hypothèses" id="toc-hypothèses" class="nav-link" data-scroll-target="#hypothèses"><span class="header-section-number">18.3</span> 2. Hypothèses</a></li>
+  <li><a href="#variables-et-notation" id="toc-variables-et-notation" class="nav-link" data-scroll-target="#variables-et-notation"><span class="header-section-number">18.4</span> 3. Variables et notation</a>
+  <ul class="collapse">
+  <li><a href="#inconnues-primaires" id="toc-inconnues-primaires" class="nav-link" data-scroll-target="#inconnues-primaires"><span class="header-section-number">18.4.1</span> Inconnues primaires</a></li>
+  <li><a href="#variables-de-comportement" id="toc-variables-de-comportement" class="nav-link" data-scroll-target="#variables-de-comportement"><span class="header-section-number">18.4.2</span> Variables de comportement</a></li>
+  </ul></li>
+  <li><a href="#modèle-mathématique" id="toc-modèle-mathématique" class="nav-link" data-scroll-target="#modèle-mathématique"><span class="header-section-number">18.5</span> 4. Modèle mathématique</a>
+  <ul class="collapse">
+  <li><a href="#équations-de-conservation-et-équilibre-mécanique" id="toc-équations-de-conservation-et-équilibre-mécanique" class="nav-link" data-scroll-target="#équations-de-conservation-et-équilibre-mécanique"><span class="header-section-number">18.5.1</span> 4.1 Équations de conservation et équilibre mécanique</a></li>
+  <li><a href="#lois-de-flux" id="toc-lois-de-flux" class="nav-link" data-scroll-target="#lois-de-flux"><span class="header-section-number">18.5.2</span> 4.2 Lois de flux</a></li>
+  <li><a href="#équilibre-thermodynamique-glace-liquide" id="toc-équilibre-thermodynamique-glace-liquide" class="nav-link" data-scroll-target="#équilibre-thermodynamique-glace-liquide"><span class="header-section-number">18.5.3</span> 4.3 Équilibre thermodynamique glace-liquide</a></li>
+  </ul></li>
+  <li><a href="#conditions-aux-limites-et-initiales" id="toc-conditions-aux-limites-et-initiales" class="nav-link" data-scroll-target="#conditions-aux-limites-et-initiales"><span class="header-section-number">18.6</span> 5. Conditions aux limites et initiales</a></li>
+  <li><a href="#cas-test-congélation-géométrie-sphérique" id="toc-cas-test-congélation-géométrie-sphérique" class="nav-link" data-scroll-target="#cas-test-congélation-géométrie-sphérique"><span class="header-section-number">18.7</span> 6. Cas test : congélation géométrie sphérique</a>
+  <ul class="collapse">
+  <li><a href="#paramètres-de-simulation" id="toc-paramètres-de-simulation" class="nav-link" data-scroll-target="#paramètres-de-simulation"><span class="header-section-number">18.7.1</span> Paramètres de simulation</a></li>
+  <li><a href="#résultats-et-commentaires-physiques-du-test" id="toc-résultats-et-commentaires-physiques-du-test" class="nav-link" data-scroll-target="#résultats-et-commentaires-physiques-du-test"><span class="header-section-number">18.7.2</span> Résultats et commentaires physiques du test</a></li>
+  </ul></li>
+  <li><a href="#discrétisation-numérique" id="toc-discrétisation-numérique" class="nav-link" data-scroll-target="#discrétisation-numérique"><span class="header-section-number">18.8</span> 7. Discrétisation numérique</a></li>
+  <li><a href="#description-pas-à-pas-des-fichiers" id="toc-description-pas-à-pas-des-fichiers" class="nav-link" data-scroll-target="#description-pas-à-pas-des-fichiers"><span class="header-section-number">18.9</span> 8. Description pas-à-pas des fichiers</a>
+  <ul class="collapse">
+  <li><a href="#fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d" id="toc-fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d" class="nav-link" data-scroll-target="#fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d"><span class="header-section-number">18.9.1</span> 8.1 Fichier de pilotage <code>test_examples/Frostaco3d/Frostaco3d</code></a></li>
+  <li><a href="#fichier-modèle-srcmodelsmodelfilesfrostaco3d.c" id="toc-fichier-modèle-srcmodelsmodelfilesfrostaco3d.c" class="nav-link" data-scroll-target="#fichier-modèle-srcmodelsmodelfilesfrostaco3d.c"><span class="header-section-number">18.9.2</span> 8.2 Fichier modèle <code>src/Models/ModelFiles/Frostaco3d.c</code></a></li>
+  </ul></li>
+  <li><a href="#références-bibliographiques" id="toc-références-bibliographiques" class="nav-link" data-scroll-target="#références-bibliographiques"><span class="header-section-number">18.10</span> 9. Références bibliographiques</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/dangla/bil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Frostaco_model.html">Exemples — Gel</a></li><li class="breadcrumb-item"><a href="./Frostaco3d_model.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p><strong>Fichiers sources :</strong> <code>src/Models/ModelFiles/Frostaco3d.c</code> · <code>test_examples/Frostaco3d/Frostaco3d</code></p>
+<p><strong>Auteurs du modèle :</strong> Tahiri, P. Dangla (Université Gustave Eiffel)</p>
+</blockquote>
+<hr>
+<section id="table-des-matières" class="level2" data-number="18.1">
+<h2 data-number="18.1" class="anchored" data-anchor-id="table-des-matières"><span class="header-section-number">18.1</span> Table des matières</h2>
+<ol type="1">
+<li><a href="#1-contexte-et-objectif">Contexte et objectif</a></li>
+<li><a href="#2-hypothèses">Hypothèses</a></li>
+<li><a href="#3-variables-et-notation">Variables et notation</a></li>
+<li><a href="#4-modèle-mathématique">Modèle mathématique</a>
+<ul>
+<li>4.1 <a href="#41-équations-de-conservation-et-équilibre-mécanique">Équations de conservation et équilibre mécanique</a></li>
+<li>4.2 <a href="#42-lois-de-flux">Lois de flux</a></li>
+<li>4.3 <a href="#43-équilibre-thermodynamique-glace-liquide">Équilibre thermodynamique glace-liquide</a></li>
+</ul></li>
+<li><a href="#5-conditions-aux-limites-et-initiales">Conditions aux limites et initiales</a></li>
+<li><a href="#6-cas-test--congélation-géométrie-sphérique">Cas test : congélation géométrie sphérique (<code>test_examples/Frostaco3d/</code>)</a></li>
+<li><a href="#7-discrétisation-numérique">Discrétisation numérique</a></li>
+<li><a href="#8-description-pas-à-pas-des-fichiers">Description pas-à-pas des fichiers</a>
+<ul>
+<li>8.1 <a href="#81-fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d">Fichier de pilotage <code>test_examples/Frostaco3d/Frostaco3d</code></a></li>
+<li>8.2 <a href="#82-fichier-modèle-srcmodelsmodelfilesfrostaco3dc">Fichier modèle <code>src/Models/ModelFiles/Frostaco3d.c</code></a></li>
+</ul></li>
+<li><a href="#9-références-bibliographiques">Références bibliographiques</a></li>
+</ol>
+<hr>
+</section>
+<section id="contexte-et-objectif" class="level2" data-number="18.2">
+<h2 data-number="18.2" class="anchored" data-anchor-id="contexte-et-objectif"><span class="header-section-number">18.2</span> 1. Contexte et objectif</h2>
+<p>Le modèle <strong>Frostaco3d</strong> (Frost actions in 3D concrete) est une évolution multidimensionnelle du modèle Frostaco original. Contrairement à la version 1D qui gère les contraintes mécaniques en “post-traitement”, cette version intègre la résolution complète et couplée du champ tensoriel des <strong>déplacements mécaniques</strong> du squelette solide (parois poreuses) sous l’effet de l’expansion de la glace et de la cryoscuccion. Il conserve les transferts thermo-hydro-chimiques couplés avec activité d’un sel dissous (NaCl, CaCl₂).</p>
+<pre class="mermaid"><code>graph LR
+    A["Équilibre Thermodynamique&lt;br&gt;(Glace - Eau)"] --&gt;|Tension interne| B["Couplage Mécanique&lt;br&gt;(Frostaco3D)"]
+    C["Modèle Thermohydrique&lt;br&gt;Darcy + Fourier + Sel"] --&gt;|Dilation &amp; Pression| B
+    B --&gt; D["Résolution FEM aux Noeuds &lt;br&gt; des Déplacements (u,v,w)"]
+    D --&gt;|Perméabilité affectée| C</code></pre>
+<hr>
+</section>
+<section id="hypothèses" class="level2" data-number="18.3">
+<h2 data-number="18.3" class="anchored" data-anchor-id="hypothèses"><span class="header-section-number">18.3</span> 2. Hypothèses</h2>
+<ol type="1">
+<li><strong>Représentation tridimensionnelle spatiale</strong> (1D sphérique, 2D plan, ou 3D plein).</li>
+<li>Résolution active des <strong>déplacements solides</strong> et de l’équilibre mécanique selon la théorie de la poromécanique de Coussy.</li>
+<li>Le milieu est modélisé par une <strong>matrice élastique isotrope</strong>. Ses modules d’élasticité (Module d’Young <span class="math inline">\(E\)</span>, Coefficient de Poisson <span class="math inline">\(\nu\)</span>) peuvent être imposés, ou automatiquement déduis du schéma d’homogénéisation de <em>Mori-Tanaka</em> selon les propriétés en masse de la matrice fine.</li>
+<li>Transfert de la phase liquide régi par la loi de Darcy (sans transport interstitiel de la glace).</li>
+<li>Activité thermodynamique de l’eau affectée par le sel selon une loi simplifiée (dépression cryoscopique).</li>
+</ol>
+<hr>
+</section>
+<section id="variables-et-notation" class="level2" data-number="18.4">
+<h2 data-number="18.4" class="anchored" data-anchor-id="variables-et-notation"><span class="header-section-number">18.4</span> 3. Variables et notation</h2>
+<p>Le modèle supporte <span class="math inline">\(3 + \text{dim}\)</span> équations où <span class="math inline">\(\text{dim}\)</span> est la dimension de l’espace. En 3D, on a 6 variables primaires résolues en chaque nœud.</p>
+<section id="inconnues-primaires" class="level3" data-number="18.4.1">
+<h3 data-number="18.4.1" class="anchored" data-anchor-id="inconnues-primaires"><span class="header-section-number">18.4.1</span> Inconnues primaires</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 48%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symbole</th>
+<th>Signification</th>
+<th>Unité</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(u_1, u_2, u_3\)</span></td>
+<td>Vecteur de déplacement mécanique du squelette</td>
+<td>m</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(p_{l}\)</span> (ou <span class="math inline">\(p_{\max}\)</span>)</td>
+<td>Pression du liquide ou pression maximale</td>
+<td>Pa</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(c_s\)</span></td>
+<td>Concentration en sel dans la solution interstitielle</td>
+<td>mol/m³</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T\)</span></td>
+<td>Température</td>
+<td>K</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variables-de-comportement" class="level3" data-number="18.4.2">
+<h3 data-number="18.4.2" class="anchored" data-anchor-id="variables-de-comportement"><span class="header-section-number">18.4.2</span> Variables de comportement</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Symbole</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\sigma\)</span></td>
+<td>Tenseur des contraintes totales</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\varepsilon\)</span></td>
+<td>Tenseur des déformations (<span class="math inline">\(\nabla^s \mathbf{u}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(S_l, S_i\)</span></td>
+<td>Degrés de saturation liquide / glace</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="modèle-mathématique" class="level2" data-number="18.5">
+<h2 data-number="18.5" class="anchored" data-anchor-id="modèle-mathématique"><span class="header-section-number">18.5</span> 4. Modèle mathématique</h2>
+<section id="équations-de-conservation-et-équilibre-mécanique" class="level3" data-number="18.5.1">
+<h3 data-number="18.5.1" class="anchored" data-anchor-id="équations-de-conservation-et-équilibre-mécanique"><span class="header-section-number">18.5.1</span> 4.1 Équations de conservation et équilibre mécanique</h3>
+<p>Le modèle résout le système fortement couplé suivant :</p>
+<p><strong>1. Équilibre mécanique vectoriel</strong> : <span class="math display">\[\nabla \cdot \boldsymbol{\sigma} + \mathbf{f} = \mathbf{0}\]</span> avec <span class="math inline">\(\boldsymbol{\sigma} = \mathbf{C} : \boldsymbol{\varepsilon} - b (S_l p_l + S_i p_i) \mathbf{I} - 3K \alpha_s (T - T_0) \mathbf{I}\)</span>, où <span class="math inline">\(\mathbf{C}\)</span> est le tenseur de rigidité élastique. La présence de glace augmente la pression apparente subie par la matrice (poroélasticité).</p>
+<p><strong>2. Bilan de masse de l’eau totale</strong> : <span class="math display">\[\frac{\partial}{\partial t}(\phi S_l \rho_l + \phi S_i \rho_i) + \nabla \cdot \mathbf{W}_l = 0\]</span></p>
+<p><strong>3. Bilan de masse du sel</strong> : <span class="math display">\[\frac{\partial}{\partial t}(\phi S_l \rho_l c_s) + \nabla \cdot \mathbf{W}_{\text{sels}} = 0\]</span></p>
+<p><strong>4. Bilan d’entropie (Chaleur)</strong> : <span class="math display">\[\frac{\partial S_{\text{tot}}}{\partial t} + \nabla \cdot \left( \frac{\mathbf{q}}{T} + s_l \mathbf{W}_l \right) = 0\]</span></p>
+</section>
+<section id="lois-de-flux" class="level3" data-number="18.5.2">
+<h3 data-number="18.5.2" class="anchored" data-anchor-id="lois-de-flux"><span class="header-section-number">18.5.2</span> 4.2 Lois de flux</h3>
+<p>Elles sont vectorisées nativement pour la dimension 3 : - <span class="math inline">\(\mathbf{W}_l\)</span>: Flux de Darcy affecté par une perméabilité relative (Mualem). - <span class="math inline">\(\mathbf{q}\)</span>: Flux de conductivité de Fourier. - <span class="math inline">\(\mathbf{W}_{\text{sels}}\)</span>: Transport multicomposant d’advection pure et diffusion de Fick. L’air est exclu du modèle.</p>
+</section>
+<section id="équilibre-thermodynamique-glace-liquide" class="level3" data-number="18.5.3">
+<h3 data-number="18.5.3" class="anchored" data-anchor-id="équilibre-thermodynamique-glace-liquide"><span class="header-section-number">18.5.3</span> 4.3 Équilibre thermodynamique glace-liquide</h3>
+<p>La coexistence des phases fluide/solide aux tailles poreuses dépend de la balance chimique <span class="math inline">\(\mu_{l}(p_l, T, c_s) = \mu_{i}(p_i, T)\)</span>. L’abaissement du point de fusion par l’effet osmotique du chlorure de sodium est répercuté linéairement ou logarithmiquement sur l’activité de l’eau.</p>
+<hr>
+</section>
+</section>
+<section id="conditions-aux-limites-et-initiales" class="level2" data-number="18.6">
+<h2 data-number="18.6" class="anchored" data-anchor-id="conditions-aux-limites-et-initiales"><span class="header-section-number">18.6</span> 5. Conditions aux limites et initiales</h2>
+<p>L’imposition aux bords comprend classiquement des encastrements mécaniques (nœuds bloqués en <span class="math inline">\(u=0\)</span>) ou l’imposition de contraintes. Les flux thermohydriques peuvent y être restreints ou alimentés via les conditions de Dirichlet sur <code>tem</code> ou la pression hydraulique.</p>
+<hr>
+</section>
+<section id="cas-test-congélation-géométrie-sphérique" class="level2" data-number="18.7">
+<h2 data-number="18.7" class="anchored" data-anchor-id="cas-test-congélation-géométrie-sphérique"><span class="header-section-number">18.7</span> 6. Cas test : congélation géométrie sphérique</h2>
+<p>Le dossier <code>test_examples/Frostaco3d/</code> contient le fichier (<code>Frostaco3d</code>) testant l’application d’un cycle thermo-salin à la paroi d’un réservoir d’une épaisseur modélisée sur un prisme sphérique réduit.</p>
+<section id="paramètres-de-simulation" class="level3" data-number="18.7.1">
+<h3 data-number="18.7.1" class="anchored" data-anchor-id="paramètres-de-simulation"><span class="header-section-number">18.7.1</span> Paramètres de simulation</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 57%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paramètre</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Géométrie</td>
+<td><code>1 sphe</code> (Sonde 1D formulée en coordonnées sphériques). Domaine d’épaisseur 5 mm.</td>
+</tr>
+<tr class="even">
+<td>Maillage</td>
+<td>100 mailles</td>
+</tr>
+<tr class="odd">
+<td>Propriétés</td>
+<td>Algorithme de Mori-Tanaka interne pour trouver <code>Young</code> et <code>Poisson</code> limitant à partir de <span class="math inline">\(K_s=31.8\)</span> GPa, <span class="math inline">\(G_s=19.1\)</span> GPa, et Porosité = 0.2.</td>
+</tr>
+<tr class="even">
+<td>Sollicitation</td>
+<td>Application d’une augmentation de sel concentré jusqu’à <span class="math inline">\(1000 \text{ mol/m}^3\)</span> (front thermique advectif allant de 273K à 323K). Un déplacement tangentiel imposé est autorisé via <span class="math inline">\(u_1\)</span>.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="résultats-et-commentaires-physiques-du-test" class="level3" data-number="18.7.2">
+<h3 data-number="18.7.2" class="anchored" data-anchor-id="résultats-et-commentaires-physiques-du-test"><span class="header-section-number">18.7.2</span> Résultats et commentaires physiques du test</h3>
+<p>Une exécution sur l’échantillon géométrique sphérique <code>test_examples/Frostaco3d</code> illustrerait l’interaction fluide-structure sous un choc thermohydrique tel que :</p>
+<ol type="1">
+<li><strong>Cycle Thermo-Salin (Choc réchauffant et salé)</strong> : Au travers du bord 3 (extérieur), la température augmente (de 273 K à 323 K) et la base est baignée par de l’eau fortement saline qui diffuse dans le matériau par loi de Fick.</li>
+<li><strong>Dilatation et Déplacement Sphérique</strong> :
+<ul>
+<li>L’élévation de chaleur amorce un dégel profond et un re-saturage total et aqueux du milieu, relaxant les pressions macroscopiques internes <span class="math inline">\(p_i\)</span> initialement figées.</li>
+<li>Les propriétés de Biot (élasticité) converties par homogénéisation pilotent l’équation mécanique via un déplacement non-négatif imposé de <span class="math inline">\(u_1 = - b (S_l p_l) + \alpha \Delta T\)</span>.</li>
+</ul></li>
+<li><strong>Suivi des Noeuds (.t)</strong> : Le module relève en temps réel la distribution du sel <span class="math inline">\(c_s\)</span> et du mouvement solide radial <span class="math inline">\(u_x\)</span>. Le pic de sel tend à déformer chimiquement le système (pression d’osmose apparente à la limite de l’effritement). La corrélation <span class="math inline">\(u(x, t)\)</span> montre la réactivité très rapide de la déformation élastique face à la lente diffusion du front de température vers le centre du nodule sphérique.</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="discrétisation-numérique" class="level2" data-number="18.8">
+<h2 data-number="18.8" class="anchored" data-anchor-id="discrétisation-numérique"><span class="header-section-number">18.8</span> 7. Discrétisation numérique</h2>
+<p>Contrairement à Frostaco 1D, ce modèle repose intégralement sur des approches aux <strong>Éléments Finis (FEM)</strong> via la bibliothèque <code>FEM.h</code> et <code>Elasticity.h</code>. La loi de Hooke est encapsulée dans le tenseur local d’élasticité, et le calcul s’opère par points d’intégration de quadrature sur le maillage (gérant n’importe quelle brique : hexaèdre, tétraèdre). La résolution reste non-linéaire (Newton-Raphson).</p>
+<hr>
+</section>
+<section id="description-pas-à-pas-des-fichiers" class="level2" data-number="18.9">
+<h2 data-number="18.9" class="anchored" data-anchor-id="description-pas-à-pas-des-fichiers"><span class="header-section-number">18.9</span> 8. Description pas-à-pas des fichiers</h2>
+<section id="fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d" class="level3" data-number="18.9.1">
+<h3 data-number="18.9.1" class="anchored" data-anchor-id="fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d"><span class="header-section-number">18.9.1</span> 8.1 Fichier de pilotage <code>test_examples/Frostaco3d/Frostaco3d</code></h3>
+<ol type="1">
+<li><strong>Geometry &amp; Mesh</strong> : Le paramètre scalaire <code>1 sphe</code> force le solveur interne Element-Fini à considérer une projection radiale (symétrie sphérique axiale sur 1D) sur un segment allant de rayon 0 à 5 mm (pas <code>5.e-5</code> m sur 100 éléments).</li>
+<li><strong>Material (<code>Model = Frostaco3d</code>)</strong> : Intègre les traits mécaniques (<span class="math inline">\(k_s, g_s\)</span>) et la porosité. Si les données de Hooke globales ne sont pas inscrites (<code>Young</code>, <code>Poisson</code>), <em>Bil</em> va exécuter un calibrage auto (<em>Mori-Tanaka</em>) d’homogénéisation à la volée.</li>
+<li><strong>Fields et Initialization</strong> : Le milieu démarre uniformément à des conditions de gel local via les champs (ex: <span class="math inline">\(T=273\)</span> K). Le système repose dans son équilibre poroélastique pré-existant.</li>
+<li><strong>Functions &amp; Boundary Conditions</strong> : La condition fixe sur l’échantillon sollicite intensivement la base du domaine (<code>Region = 3</code>) avec une charge cyclique sur dix unités de temps (sel allant de 0 à <span class="math inline">\(1000\)</span> mol/m³, et balayage de température de 273 K à 323 K). L’autre extrémité gère une condition d’ancrage mécanique <code>Unknown = u_1</code> forcée à la valeur de la fonction de base (0).</li>
+<li><strong>Objective Variations</strong> : L’algorithme inclut le critère de tolérance additionnel <code>u_1 = 1.e-4</code> pour garantir la stabilité de l’itération élastique face aux variations thermohydriques rapides.</li>
+</ol>
+</section>
+<section id="fichier-modèle-srcmodelsmodelfilesfrostaco3d.c" class="level3" data-number="18.9.2">
+<h3 data-number="18.9.2" class="anchored" data-anchor-id="fichier-modèle-srcmodelsmodelfilesfrostaco3d.c"><span class="header-section-number">18.9.2</span> 8.2 Fichier modèle <code>src/Models/ModelFiles/Frostaco3d.c</code></h3>
+<ol type="1">
+<li><strong>Déclarations et Initialisation Mécanique (Lignes 1-550)</strong> :
+<ul>
+<li>Configure un solveur dimensionnel générique : <span class="math inline">\(3 + \text{dim}\)</span> équations.</li>
+<li>Dans <code>ReadMatProp()</code>, il génère les cibles des données poroélastiques limitantes via la fonction <code>Elasticity_ComputeStiffnessTensor()</code> qui convertit un doublet (E, <span class="math inline">\(\nu\)</span>) en tenseur de Hooke (4 rangs).</li>
+</ul></li>
+<li><strong>Évaluation Intégrale (<code>ComputeVariables</code>, <code>ComputeInitialState</code>)</strong> :
+<ul>
+<li>Bascule dans la logique d’Éléments Finis : les dérivées sont effectuées sur les <code>IntPoints</code> (les points de quadrature de Gauss Gauss-Legendre du maillage 2D/3D). L’expansion gère des variables extensives supplémentaires calculées via l’opérateur gradient en ce point (dont le module volumique <code>I_SIG</code> valant trace de matrice).</li>
+</ul></li>
+<li><strong>Matrice de Rigidité (Lignes 1620+)</strong> :
+<ul>
+<li><code>ComputeTangentCoefficients</code> ajoute spécifiquement toutes les dérivées croisées. Elle dérive les lois poromécaniques d’influence de <span class="math inline">\(10^{-4}\)</span> pour trouver <span class="math inline">\(\partial \sigma / \partial p_l\)</span>, ou the sensibilités hydriques par rapport à la déformabilité du squelette (<span class="math inline">\(\partial S_l / \partial u_x\)</span>).</li>
+</ul></li>
+<li><strong>Residu (<code>ComputeResidu</code>)</strong> :
+<ul>
+<li>Combine deux briques : l’appel à la fonction éléments finis standard <code>FEM_ComputeMassAndFluxResidu</code> pour la propagation de l’eau et de la chaleur, ainsi que <code>FEM_ComputeSolidDivergenceResidu</code> qui évalue formellement l’équilibre scalaire de Cauchy (divergence nulle de contraintes + forces volumiques) sur la masse de la structure.</li>
+</ul></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="références-bibliographiques" class="level2" data-number="18.10">
+<h2 data-number="18.10" class="anchored" data-anchor-id="références-bibliographiques"><span class="header-section-number">18.10</span> 9. Références bibliographiques</h2>
+<ul>
+<li><strong>Coussy, O.</strong> (2004). <em>Poromechanics</em>. John Wiley &amp; Sons. — Modélisation mécanique généralisée des fluides confinés par matrices déformables.</li>
+<li>Outils numériques relatifs au portage de <code>Bil</code> : <em>Tahiri &amp; Dangla</em>, Université Gustave Eiffel.</li>
+<li><strong>Mori, T., &amp; Tanaka, K.</strong> (1973). Modèle d’évaluation d’énergies pour matériaux multi-sphères.</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Frostaco_model.html" class="pagination-link" aria-label="Modèle Frostaco — Action du gel dans le béton">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Modèle Frostaco — Action du gel dans le béton</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Fick_model.html" class="pagination-link" aria-label="Modèle Fick — Seconde loi de Fick (Diffusion de soluté)">
+        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Modèle Fick — Seconde loi de Fick (Diffusion de soluté)</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Modèle Frostaco3D — Action du gel dans le béton en 3D (Couplage Poromécanique Complet)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Fichiers sources :**</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`src/Models/ModelFiles/Frostaco3d.c`</span><span class="at"> · </span><span class="in">`test_examples/Frostaco3d/Frostaco3d`</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Auteurs du modèle :** Tahiri, P. Dangla (Université Gustave Eiffel)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Table des matières</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="co">[</span><span class="ot">Contexte et objectif</span><span class="co">](#1-contexte-et-objectif)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="co">[</span><span class="ot">Hypothèses</span><span class="co">](#2-hypothèses)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span><span class="co">[</span><span class="ot">Variables et notation</span><span class="co">](#3-variables-et-notation)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span><span class="co">[</span><span class="ot">Modèle mathématique</span><span class="co">](#4-modèle-mathématique)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.1 <span class="co">[</span><span class="ot">Équations de conservation et équilibre mécanique</span><span class="co">](#41-équations-de-conservation-et-équilibre-mécanique)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.2 <span class="co">[</span><span class="ot">Lois de flux</span><span class="co">](#42-lois-de-flux)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>4.3 <span class="co">[</span><span class="ot">Équilibre thermodynamique glace-liquide</span><span class="co">](#43-équilibre-thermodynamique-glace-liquide)</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span><span class="co">[</span><span class="ot">Conditions aux limites et initiales</span><span class="co">](#5-conditions-aux-limites-et-initiales)</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span><span class="co">[</span><span class="ot">Cas test : congélation géométrie sphérique (`test_examples/Frostaco3d/`)</span><span class="co">](#6-cas-test--congélation-géométrie-sphérique)</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span><span class="co">[</span><span class="ot">Discrétisation numérique</span><span class="co">](#7-discrétisation-numérique)</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span><span class="co">[</span><span class="ot">Description pas-à-pas des fichiers</span><span class="co">](#8-description-pas-à-pas-des-fichiers)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>8.1 <span class="co">[</span><span class="ot">Fichier de pilotage `test_examples/Frostaco3d/Frostaco3d`</span><span class="co">](#81-fichier-de-pilotage-test_examplesfrostaco3dfrostaco3d)</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>8.2 <span class="co">[</span><span class="ot">Fichier modèle `src/Models/ModelFiles/Frostaco3d.c`</span><span class="co">](#82-fichier-modèle-srcmodelsmodelfilesfrostaco3dc)</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span><span class="co">[</span><span class="ot">Références bibliographiques</span><span class="co">](#9-références-bibliographiques)</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Contexte et objectif</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>Le modèle **Frostaco3d** (Frost actions in 3D concrete) est une évolution multidimensionnelle du modèle Frostaco original. Contrairement à la version 1D qui gère les contraintes mécaniques en "post-traitement", cette version intègre la résolution complète et couplée du champ tensoriel des **déplacements mécaniques** du squelette solide (parois poreuses) sous l'effet de l'expansion de la glace et de la cryoscuccion. Il conserve les transferts thermo-hydro-chimiques couplés avec activité d'un sel dissous (NaCl, CaCl₂).</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="in">```mermaid</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>graph LR</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    A[<span class="ot">"</span><span class="st">Équilibre Thermodynamique&lt;br&gt;(Glace - Eau)</span><span class="ot">"</span>] --&gt;|Tension interne| B[<span class="ot">"</span><span class="st">Couplage Mécanique&lt;br&gt;(Frostaco3D)</span><span class="ot">"</span>]</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    C[<span class="ot">"</span><span class="st">Modèle Thermohydrique&lt;br&gt;Darcy + Fourier + Sel</span><span class="ot">"</span>] --&gt;|Dilation &amp; Pression| B</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    B --&gt; D[<span class="ot">"</span><span class="st">Résolution FEM aux Noeuds &lt;br&gt; des Déplacements (u,v,w)</span><span class="ot">"</span>]</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    D --&gt;|Perméabilité affectée| C</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Hypothèses</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Représentation tridimensionnelle spatiale** (1D sphérique, 2D plan, ou 3D plein).</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Résolution active des **déplacements solides** et de l'équilibre mécanique selon la théorie de la poromécanique de Coussy.</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Le milieu est modélisé par une **matrice élastique isotrope**. Ses modules d'élasticité (Module d'Young $E$, Coefficient de Poisson $\nu$) peuvent être imposés, ou automatiquement déduis du schéma d'homogénéisation de *Mori-Tanaka* selon les propriétés en masse de la matrice fine.</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Transfert de la phase liquide régi par la loi de Darcy (sans transport interstitiel de la glace).</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Activité thermodynamique de l'eau affectée par le sel selon une loi simplifiée (dépression cryoscopique).</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Variables et notation</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>Le modèle supporte $3 + \text{dim}$ équations où $\text{dim}$ est la dimension de l'espace. En 3D, on a 6 variables primaires résolues en chaque nœud.</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="fu">### Inconnues primaires</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Symbole <span class="pp">|</span> Signification <span class="pp">|</span> Unité <span class="pp">|</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|---------------|-------|</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $u_1, u_2, u_3$ <span class="pp">|</span> Vecteur de déplacement mécanique du squelette <span class="pp">|</span> m <span class="pp">|</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $p_{l}$ (ou $p_{\max}$) <span class="pp">|</span> Pression du liquide ou pression maximale <span class="pp">|</span> Pa <span class="pp">|</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $c_s$ <span class="pp">|</span> Concentration en sel dans la solution interstitielle <span class="pp">|</span> mol/m³ <span class="pp">|</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $T$ <span class="pp">|</span> Température <span class="pp">|</span> K <span class="pp">|</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="fu">### Variables de comportement</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Symbole <span class="pp">|</span> Signification <span class="pp">|</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|---------------|</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\sigma$ <span class="pp">|</span> Tenseur des contraintes totales <span class="pp">|</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\varepsilon$ <span class="pp">|</span> Tenseur des déformations ($\nabla^s \mathbf{u}$) <span class="pp">|</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $S_l, S_i$ <span class="pp">|</span> Degrés de saturation liquide / glace <span class="pp">|</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Modèle mathématique</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.1 Équations de conservation et équilibre mécanique</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>Le modèle résout le système fortement couplé suivant :</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>**1. Équilibre mécanique vectoriel** :</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>$$\nabla \cdot \boldsymbol{\sigma} + \mathbf{f} = \mathbf{0}$$</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>avec $\boldsymbol{\sigma} = \mathbf{C} : \boldsymbol{\varepsilon} - b (S_l p_l + S_i p_i) \mathbf{I} - 3K \alpha_s (T - T_0) \mathbf{I}$, où $\mathbf{C}$ est le tenseur de rigidité élastique. La présence de glace augmente la pression apparente subie par la matrice (poroélasticité).</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>**2. Bilan de masse de l'eau totale** :</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial}{\partial t}(\phi S_l \rho_l + \phi S_i \rho_i) + \nabla \cdot \mathbf{W}_l = 0$$</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>**3. Bilan de masse du sel** :</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial}{\partial t}(\phi S_l \rho_l c_s) + \nabla \cdot \mathbf{W}_{\text{sels}} = 0$$</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>**4. Bilan d'entropie (Chaleur)** :</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial S_{\text{tot}}}{\partial t} + \nabla \cdot \left( \frac{\mathbf{q}}{T} + s_l \mathbf{W}_l \right) = 0$$</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.2 Lois de flux</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>Elles sont vectorisées nativement pour la dimension 3 :</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathbf{W}_l$: Flux de Darcy affecté par une perméabilité relative (Mualem). </span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathbf{q}$: Flux de conductivité de Fourier.</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathbf{W}_{\text{sels}}$: Transport multicomposant d'advection pure et diffusion de Fick. L'air est exclu du modèle.</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4.3 Équilibre thermodynamique glace-liquide</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>La coexistence des phases fluide/solide aux tailles poreuses dépend de la balance chimique $\mu_{l}(p_l, T, c_s) = \mu_{i}(p_i, T)$. L'abaissement du point de fusion par l'effet osmotique du chlorure de sodium est répercuté linéairement ou logarithmiquement sur l'activité de l'eau.</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Conditions aux limites et initiales</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>L'imposition aux bords comprend classiquement des encastrements mécaniques (nœuds bloqués en $u=0$) ou l'imposition de contraintes. Les flux thermohydriques peuvent y être restreints ou alimentés via les conditions de Dirichlet sur <span class="in">`tem`</span> ou la pression hydraulique.</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6. Cas test : congélation géométrie sphérique</span></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>Le dossier <span class="in">`test_examples/Frostaco3d/`</span> contient le fichier (<span class="in">`Frostaco3d`</span>) testant l'application d'un cycle thermo-salin à la paroi d'un réservoir d'une épaisseur modélisée sur un prisme sphérique réduit.</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="fu">### Paramètres de simulation</span></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paramètre <span class="pp">|</span> Valeur <span class="pp">|</span></span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a><span class="pp">|-----------|--------|</span></span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Géométrie <span class="pp">|</span> <span class="in">`1 sphe`</span> (Sonde 1D formulée en coordonnées sphériques). Domaine d'épaisseur 5 mm. <span class="pp">|</span></span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Maillage <span class="pp">|</span> 100 mailles <span class="pp">|</span></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Propriétés <span class="pp">|</span> Algorithme de Mori-Tanaka interne pour trouver <span class="in">`Young`</span> et <span class="in">`Poisson`</span> limitant à partir de $K_s=31.8$ GPa, $G_s=19.1$ GPa, et Porosité = 0.2. <span class="pp">|</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Sollicitation <span class="pp">|</span> Application d'une augmentation de sel concentré jusqu'à $1000 \text{ mol/m}^3$ (front thermique advectif allant de 273K à 323K). Un déplacement tangentiel imposé est autorisé via $u_1$. <span class="pp">|</span></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a><span class="fu">### Résultats et commentaires physiques du test</span></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>Une exécution sur l'échantillon géométrique sphérique <span class="in">`test_examples/Frostaco3d`</span> illustrerait l'interaction fluide-structure sous un choc thermohydrique tel que :</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Cycle Thermo-Salin (Choc réchauffant et salé)** : Au travers du bord 3 (extérieur), la température augmente (de 273 K à 323 K) et la base est baignée par de l'eau fortement saline qui diffuse dans le matériau par loi de Fick.</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Dilatation et Déplacement Sphérique** : </span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>L'élévation de chaleur amorce un dégel profond et un re-saturage total et aqueux du milieu, relaxant les pressions macroscopiques internes $p_i$ initialement figées.</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Les propriétés de Biot (élasticité) converties par homogénéisation pilotent l'équation mécanique via un déplacement non-négatif imposé de $u_1 = - b (S_l p_l) + \alpha \Delta T$.</span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Suivi des Noeuds (.t)** : Le module relève en temps réel la distribution du sel $c_s$ et du mouvement solide radial $u_x$. Le pic de sel tend à déformer chimiquement le système (pression d'osmose apparente à la limite de l'effritement). La corrélation $u(x, t)$ montre la réactivité très rapide de la déformation élastique face à la lente diffusion du front de température vers le centre du nodule sphérique.</span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7. Discrétisation numérique</span></span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>Contrairement à Frostaco 1D, ce modèle repose intégralement sur des approches aux **Éléments Finis (FEM)** via la bibliothèque <span class="in">`FEM.h`</span> et <span class="in">`Elasticity.h`</span>. La loi de Hooke est encapsulée dans le tenseur local d'élasticité, et le calcul s'opère par points d'intégration de quadrature sur le maillage (gérant n'importe quelle brique : hexaèdre, tétraèdre). La résolution reste non-linéaire (Newton-Raphson).</span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8. Description pas-à-pas des fichiers</span></span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1 Fichier de pilotage `test_examples/Frostaco3d/Frostaco3d`</span></span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Geometry &amp; Mesh** : Le paramètre scalaire <span class="in">`1 sphe`</span> force le solveur interne Element-Fini à considérer une projection radiale (symétrie sphérique axiale sur 1D) sur un segment allant de rayon 0 à 5 mm (pas <span class="in">`5.e-5`</span> m sur 100 éléments).</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Material (`Model = Frostaco3d`)** : Intègre les traits mécaniques ($k_s, g_s$) et la porosité. Si les données de Hooke globales ne sont pas inscrites (<span class="in">`Young`</span>, <span class="in">`Poisson`</span>), *Bil* va exécuter un calibrage auto (*Mori-Tanaka*) d'homogénéisation à la volée. </span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Fields et Initialization** : Le milieu démarre uniformément à des conditions de gel local via les champs (ex: $T=273$ K). Le système repose dans son équilibre poroélastique pré-existant. </span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Functions &amp; Boundary Conditions** : La condition fixe sur l'échantillon sollicite intensivement la base du domaine (<span class="in">`Region = 3`</span>) avec une charge cyclique sur dix unités de temps (sel allant de 0 à $1000$ mol/m³, et balayage de température de 273 K à 323 K). L'autre extrémité gère une condition d'ancrage mécanique <span class="in">`Unknown = u_1`</span> forcée à la valeur de la fonction de base (0).</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Objective Variations** : L'algorithme inclut le critère de tolérance additionnel <span class="in">`u_1 = 1.e-4`</span> pour garantir la stabilité de l'itération élastique face aux variations thermohydriques rapides.</span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.2 Fichier modèle `src/Models/ModelFiles/Frostaco3d.c`</span></span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Déclarations et Initialisation Mécanique (Lignes 1-550)** :</span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Configure un solveur dimensionnel générique : $3 + \text{dim}$ équations.</span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Dans <span class="in">`ReadMatProp()`</span>, il génère les cibles des données poroélastiques limitantes via la fonction <span class="in">`Elasticity_ComputeStiffnessTensor()`</span> qui convertit un doublet (E, $\nu$) en tenseur de Hooke (4 rangs).</span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Évaluation Intégrale (`ComputeVariables`, `ComputeInitialState`)** :</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Bascule dans la logique d'Éléments Finis : les dérivées sont effectuées sur les <span class="in">`IntPoints`</span> (les points de quadrature de Gauss Gauss-Legendre du maillage 2D/3D). L'expansion gère des variables extensives supplémentaires calculées via l'opérateur gradient en ce point (dont le module volumique <span class="in">`I_SIG`</span> valant trace de matrice).</span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Matrice de Rigidité (Lignes 1620+)** :</span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span><span class="in">`ComputeTangentCoefficients`</span> ajoute spécifiquement toutes les dérivées croisées. Elle dérive les lois poromécaniques d'influence de $10^{-4}$ pour trouver $\partial \sigma / \partial p_l$, ou the sensibilités hydriques par rapport à la déformabilité du squelette ($\partial S_l / \partial u_x$).</span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Residu (`ComputeResidu`)** :</span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Combine deux briques : l'appel à la fonction éléments finis standard <span class="in">`FEM_ComputeMassAndFluxResidu`</span> pour la propagation de l'eau et de la chaleur, ainsi que <span class="in">`FEM_ComputeSolidDivergenceResidu`</span> qui évalue formellement l'équilibre scalaire de Cauchy (divergence nulle de contraintes + forces volumiques) sur la masse de la structure.</span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9. Références bibliographiques</span></span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Coussy, O.** (2004). *Poromechanics*. John Wiley &amp; Sons. — Modélisation mécanique généralisée des fluides confinés par matrices déformables.</span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Outils numériques relatifs au portage de <span class="in">`Bil`</span> : *Tahiri &amp; Dangla*, Université Gustave Eiffel.</span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mori, T., &amp; Tanaka, K.** (1973). Modèle d'évaluation d'énergies pour matériaux multi-sphères.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Bil — Bibliothèque d’Ingénierie numérique et de Lois de comportement</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/dangla/bil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Généré avec <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
