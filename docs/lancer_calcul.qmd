@@ -1,0 +1,258 @@
+---
+title: "Lancer un calcul avec Bil"
+---
+
+## Synopsis
+
+```
+bil [options] fichier
+```
+
+Si `fichier` est fourni, Bil calcule la solution du problème décrit dans ce fichier d'entrée.
+Sans argument, la liste des options disponibles est affichée :
+
+```bash
+bil
+```
+
+---
+
+## Fichier d'entrée {#sec-input}
+
+Le fichier `fichier` fournit les données d'entrée du problème à résoudre. Une liste de **mots-clés réservés** (avec initiale majuscule) organise les données en plusieurs blocs : maillage, propriétés des matériaux, conditions aux limites, etc.
+
+> Tout contenu d'une ligne situé après `#` est considéré comme un commentaire et ignoré.
+
+### Mots-clés obligatoires
+
+| Mot-clé | Description |
+|---------|-------------|
+| `Geometry` | Dimension et symétrie du problème |
+| `Mesh` | Définition du maillage |
+| `Material` | Propriétés du matériau 1 (répété pour chaque matériau) |
+| `Fields` | Définition des champs (fonctions spatiales) |
+| `Initialization` | Conditions initiales |
+| `Functions` | Fonctions temporelles |
+| `Boundary Conditions` | Conditions aux limites |
+| `Loads` | Chargements |
+| `Points` | Points de sortie |
+| `Dates` | Dates de sortie |
+| `Objective Variations` | Variations objectives des inconnues principales |
+| `Iterative Process` | Critères de convergence du processus itératif |
+| `Time Steps` | Calcul des pas de temps |
+
+### Mots-clés optionnels
+
+| Mot-clé | Description |
+|---------|-------------|
+| `Units` | Changement d'unités |
+| `Periodicities` | Périodicités du maillage pour les problèmes périodiques |
+| `Model` | Renommage des inconnues du modèle |
+
+Une aide en ligne est disponible via :
+
+```bash
+bil -help
+```
+
+---
+
+## Fichiers de sortie {#sec-output}
+
+Chaque calcul produit **deux ensembles de fichiers de sortie**.
+
+### Fichiers `.pi` — résultats aux points
+
+```
+fichier.pi
+```
+
+`i` est un entier allant de 1 au nombre de points définis par le mot-clé `Points`.
+Ces fichiers donnent les résultats obtenus aux points spécifiés.
+La première colonne contient les temps ; les autres colonnes contiennent les quantités calculées par le modèle.
+
+### Fichiers `.ti` — résultats aux dates
+
+```
+fichier.ti
+```
+
+`i` va de 0 au nombre de dates définies par `Dates`.
+Les trois premières colonnes contiennent les coordonnées des nœuds.
+Les colonnes suivantes contiennent les mêmes quantités que dans les fichiers `.pi`.
+
+> Les lignes commentées (marquées par `#` en première colonne) indiquent la nature des quantités calculées dans les lignes suivantes.
+
+---
+
+## Autres fichiers {#sec-other-files}
+
+Bil produit et peut lire plusieurs fichiers auxiliaires dont les noms sont formés à partir du nom du fichier d'entrée.
+
+| Fichier | Description |
+|---------|-------------|
+| `fichier.ti` | Résultats à la date d'index `i` |
+| `fichier.pi` | Résultats au point d'index `i` |
+| `fichier.posi` | Vue `i` lisible par Gmsh |
+| `fichier.msh` | Fichier de maillage Gmsh |
+| `fichier.graph` | Graphe du maillage |
+| `fichier.graph.iperm` | Fichier de permutations inverses |
+| `fichier.sto` | Fichier de stockage |
+| `fichier.cont` | Fichier de reprise (sans ré-initialisation) |
+| `fichier.conti` | Fichier de reprise (avec ré-initialisation) |
+
+### Reprise de calcul
+
+Les fichiers `.cont` et `.conti` permettent de reprendre un calcul interrompu ou de continuer un calcul précédent.
+
+- **`.cont`** : la reprise n'exécute pas l'étape d'initialisation (`ComputeInitialState`) — le calcul continue comme s'il n'y avait pas eu d'interruption.
+- **`.conti`** : la reprise exécute l'initialisation — certaines variables peuvent être réinitialisées (p. ex. les variables de déformation peuvent être remises à zéro).
+
+**Procédure :**
+
+1. Copier `ancien_fichier.sto` vers `nouveau_fichier.cont` (ou `.conti`)
+2. Créer `nouveau_fichier` avec des dates supplémentaires au-delà de la dernière date du calcul précédent
+3. Lancer `bil nouveau_fichier`
+
+Les conditions aux limites peuvent également être modifiées dans `nouveau_fichier` (passage de conditions de Dirichlet à Neumann, par exemple).
+
+---
+
+## Options de calcul {#sec-options}
+
+### Renumérotation du maillage
+
+```bash
+bil -iperm fichier
+```
+
+Génère le fichier `fichier.graph.iperm` contenant la permutation inverse des nœuds (méthode HSL_MC40). Ce fichier est **essentiel** pour optimiser la largeur de bande de la matrice lors d'une factorisation de Gauss (méthode de Crout), sauf pour les problèmes 1D où les nœuds sont naturellement numérotés.
+
+::: {.callout-important}
+Il faut lancer la renumérotation **avant** le calcul pour tout problème 2D ou 3D :
+
+```bash
+bil -iperm fichier   # génère fichier.graph.iperm
+bil fichier          # calcul avec maillage optimisé
+```
+
+Pour les solveurs multi-frontaux (SuperLU, MA38) ou les méthodes de Krylov (Petsc), ce fichier n'est pas nécessaire.
+:::
+
+### Graphe du maillage
+
+```bash
+bil -graph fmt fichier
+```
+
+Génère `fichier.graph` au format `fmt` :
+
+| Format | Description |
+|--------|-------------|
+| `metis` | Pour METIS (si installé) |
+| `hsl_mc40` | Format MC40 de HSL |
+
+```bash
+bil -eordering hsl_mc43 fichier   # permutation inverse des éléments
+bil -nordering hsl_mc40 fichier   # permutation inverse des nœuds (= -iperm)
+```
+
+### Choix du solveur
+
+```bash
+bil -solver methode fichier
+```
+
+| Méthode | Description |
+|---------|-------------|
+| `crout` | Méthode de Crout (défaut) |
+| `superlu` | SuperLU séquentiel (si `libsuperlu.so` installé) |
+| `superlumt` | SuperLU multi-thread (option `-nthreads N`) |
+| `superludist` | SuperLU distribué |
+| `ma38` | MA38 de HSL (si `libblas.so` installé) |
+| `petscksp` | Solveur KSP de Petsc (si `libpetsc.so` installé) |
+
+**SuperLU multi-thread :**
+```bash
+bil -solver superlumt -nthreads 4 fichier
+```
+
+**Petsc KSP :**
+```bash
+bil -solver petscksp -ksp_type gmres -pc_type ilu fichier
+```
+
+Méthodes KSP disponibles : `richardson`, `chebyshev`, `cg`, `bicg`, `gmres`, `fgmres`, `lgmres`, `cr`, `gcr`, `cgs`, `tfqmr`, `lsqr`, `minres`, `preonly`, … (voir la [documentation Petsc](https://petsc.org)).
+
+Préconditionneurs disponibles : `none`, `jacobi`, `bjacobi`, `sor`, `icc`, `ilu`, `asm`, `gasm`, `gamg`, `lu`, `cholesky`, … (voir la [documentation Petsc](https://petsc.org)).
+
+**Facteur de remplissage :**
+```bash
+bil -solver superlu -ff 3 fichier   # facteur de remplissage = 3
+```
+
+### Module de résolution
+
+```bash
+bil -with "Monolithic N" fichier
+bil -with "SNIA N" fichier
+```
+
+| Module | Description |
+|--------|-------------|
+| `Monolithic N` | Approche monolithique (défaut : `N=2` solutions temporelles en mémoire) |
+| `SNIA N` | Approche séquentielle non-itérative (`N` = nombre de séquences) |
+
+---
+
+## Options de post-traitement
+
+```bash
+bil -post fmt fichier
+```
+
+Génère les fichiers `fichier.posi` au format `fmt` :
+
+| Format | Description |
+|--------|-------------|
+| `GmshParsed` | Format parsé Gmsh |
+| `GmshASCII` | Format ASCII Gmsh |
+
+Ces fichiers peuvent être ouverts directement dans [Gmsh](https://gmsh.info) pour le post-traitement.
+
+---
+
+## Autres options
+
+| Option | Description |
+|--------|-------------|
+| `bil -readonly fichier` | Lit et parse `fichier`, puis quitte |
+| `bil -debug geom fichier` | Affiche la structure de données géométriques |
+| `bil -debug mesh fichier` | Affiche le maillage |
+| `bil -debug mate fichier` | Affiche les propriétés des matériaux |
+| `bil -debug field fichier` | Affiche les champs |
+| `bil -debug init fichier` | Affiche les initialisations |
+| `bil -debug func fichier` | Affiche les fonctions |
+| `bil -debug bcond fichier` | Affiche les conditions aux limites |
+| `bil -debug load fichier` | Affiche les chargements |
+| `bil -debug poin fichier` | Affiche les points |
+| `bil -debug obval fichier` | Affiche les variations objectives |
+| `bil -debug iter fichier` | Affiche le processus itératif |
+| `bil -debug time fichier` | Affiche les pas de temps |
+| `bil -debug matrix fichier` | Affiche la matrice |
+| `bil -debug residu fichier` | Affiche le résidu |
+| `bil -debug all fichier` | Affiche toutes les données |
+| `bil -help` | Aide en ligne |
+| `bil -info` | Informations générales |
+| `bil -model` | Liste des modèles disponibles |
+| `bil -model monmodele` | Exemple de propriétés pour `monmodele` |
+| `bil -modules` | Liste des modules disponibles |
+
+---
+
+## Outils externes
+
+Bil ne dispose pas de générateur de maillage ni de post-traitement intégré. Il s'appuie sur :
+
+- **[Gmsh](https://gmsh.info)** — génération de maillage (fichiers `.msh`) et post-traitement (fichiers `.posi`)
+- **[Gnuplot](http://www.gnuplot.info)** — tracé des sorties 1D (fichiers `.ti`, `.pi`)

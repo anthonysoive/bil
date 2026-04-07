@@ -1,0 +1,116 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Bil"
+  subtitle: "Bibliothèque d'Ingénierie numérique et de Lois de comportement"
+  author: "P. Dangla (Université Gustave Eiffel)"
+  date: today
+  date-format: "MMMM YYYY"
+  repo-url: https://github.com/dangla/bil
+  repo-actions: [issue]
+  search: true
+  sidebar:
+    style: docked
+    search: true
+    collapse-level: 1
+  page-footer:
+    left: |
+      Bil — Bibliothèque d'Ingénierie numérique et de Lois de comportement
+    right: |
+      Généré avec [Quarto](https://quarto.org)
+  navbar:
+    background: primary
+    search: true
+
+  chapters:
+    - index.qmd
+
+    - part: "Lancement d'un calcul"
+      chapters:
+        - lancer_calcul.qmd
+
+    - part: "Écriture d'un modèle"
+      chapters:
+        - fonctionnement_bil.md
+
+    - part: "Exemples — Écoulement"
+      chapters:
+        - M1_model.md
+        - M2_model.md
+        - M5_model.md
+        - M10-1_model.md
+        - M10-2_model.md
+        - Richards-2d.md
+
+    - part: "Exemples — Mécanique"
+      chapters:
+        - Elast0_model.md
+        - Elasd_model.md
+        - Plast_model.md
+        - BBM_model.md
+        - Poroplast_model.md
+
+    - part: "Exemples — Poromécanique"
+      chapters:
+        - M7_model.md
+        - M7-1_model.md
+
+    - part: "Exemples — Gel"
+      chapters:
+        - Frostaco_model.md
+        - Frostaco3d_model.md
+
+    - part: "Exemples — Durabilité & Chimie"
+      chapters:
+        - Fick_model.md
+        - Duracem_model.md
+        - Chloricem_model.md
+        - Sulfaco_model.md
+        - Sulfuricem_model.md
+        - Sulfaconew_model.md
+        - SulfacoESA3d_model.md
+
+    - part: "Exemples — Transferts couplés"
+      chapters:
+        - DWS1_model.md
+        - Yuan1_model.md
+        - Shen_model.md
+        - usoil_model.md
+
+    - part: "Exemples — Spécialisés"
+      chapters:
+        - MechaMic_model.md
+        - M2_VoronoiFVM.md
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: [flatly, custom.scss]
+      dark: [darkly, custom-dark.scss]
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    code-link: false
+    toc: true
+    toc-depth: 3
+    toc-title: "Sur cette page"
+    number-sections: true
+    number-depth: 3
+    smooth-scroll: true
+    highlight-style: github
+    link-external-icon: true
+    link-external-newwindow: true
+    grid:
+      sidebar-width: 280px
+      body-width: 900px
+      margin-width: 200px
+    html-math-method: mathjax
+
+execute:
+  echo: true
+  warning: false
+  freeze: auto

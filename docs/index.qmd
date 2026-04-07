@@ -1,0 +1,73 @@
+---
+title: "Bil — Documentation"
+subtitle: "Bibliothèque d'Ingénierie numérique et de Lois de comportement"
+number-sections: false
+---
+
+# Bienvenue {.unnumbered}
+
+**Bil** est un framework numérique open-source conçu pour la simulation de phénomènes couplés en mécanique des milieux continus, géomécanique et durabilité des matériaux.
+
+## Présentation générale
+
+Bil adopte une **architecture plugin en C** séparant strictement le cœur de calcul générique (solveurs, assemblage, I/O) des lois de comportement physiques. Chaque modèle physique est un plugin indépendant qui implémente un contrat d'interface défini par la structure `Model_t`.
+
+Cette conception permet de :
+
+- développer de nouveaux modèles sans modifier le framework
+- combiner différentes physiques (couplages hydro-mécaniques, thermo-chimiques, …)
+- intégrer des maillages 1D, 2D et 3D avec éléments finis (FEM) et volumes finis (FVM)
+
+## Domaines d'application
+
+| Domaine | Modèles disponibles |
+|---------|-------------------|
+| **Écoulement** | Richards 1D/2D, biphasique liquide-gaz, transfert eau-air |
+| **Mécanique** | Élasticité, endommagement, élasto-plasticité (Drucker-Prager, Cam-Clay, BBM) |
+| **Poromécanique** | Consolidation de Biot, couplage hydro-mécanique |
+| **Gel/Dégel** | Action du gel en béton et sol (1D, 2D, 3D) |
+| **Durabilité** | Carbonatation, chlorures, attaque sulfatique, acide sulfurique |
+| **Transferts couplés** | Séchage-humidification-sel, mécanique multi-échelle |
+
+## Structure de la documentation
+
+La documentation est organisée en **parties thématiques** :
+
+1. **Framework** — Architecture interne, interface `Model_t`, procédure d'ajout d'un nouveau modèle
+2. **Modèles d'écoulement** — Richards, biphasique, eau-air, 2D hétérogène
+3. **Modèles mécaniques** — Élasticité, endommagement, plasticité, modèle BBM
+4. **Poromécanique** — Consolidation de Biot, exemples géotechniques
+5. **Modèles de gel** — Action du gel en béton et sol (1D → 3D)
+6. **Durabilité & Chimie** — Béton face aux agressions chimiques
+7. **Transferts couplés** — Sol non saturé, cristallisation de sel
+8. **Modèles spécialisés** — Homogénéisation multi-échelle FEM²
+9. **Implémentations Julia** — Portage vers VoronoiFVM et Ferrite.jl
+
+## Installation rapide
+
+```bash
+# Cloner le dépôt
+git clone https://github.com/dangla/bil.git
+cd bil
+
+# Compiler
+make
+
+# Lancer un calcul
+bil exemple -l          # renumérotation du maillage (optimisation bande)
+bil exemple             # calcul
+```
+
+::: {.callout-tip}
+L'option `-l` (renumérotation de Cuthill-McKee) doit être lancée **avant** le calcul pour optimiser la largeur de bande de la matrice, sauf si un solveur externe (PETSC) est utilisé.
+:::
+
+## Créer un nouveau modèle
+
+Toute loi de comportement nécessite l'implémentation de **11 fonctions** définies dans l'interface `Model_t`. Consultez le chapitre [Architecture et fonctionnement](fonctionnement_bil.md) pour une description complète du processus.
+
+## Références
+
+Pour citer Bil dans une publication :
+
+> Dangla, P. (2024). *Bil — Bibliothèque d'Ingénierie numérique et de Lois de comportement*. Université Gustave Eiffel.
