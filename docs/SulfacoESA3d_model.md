@@ -245,6 +245,8 @@ Ce cas teste la **diffusion 1D dans un cylindre de béton** (diamètre $D = 25\,
 
 La validation porte sur les mesures de Ferraris (2001) : expansion longitudinale d'éprouvettes de pâte de ciment (D25mm) immergées dans des solutions de $\text{Na}_2\text{SO}_4$ à différentes concentrations.
 
+![SulfacoESA3d - Résultats de la simulation](SulfacoESA3d_results.png)
+
 ---
 
 ## 8. Paramétrage matériel du modèle

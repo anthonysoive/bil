@@ -3,7 +3,9 @@
 > **Sources :**
 > `src/Models/Model.h` · `src/Models/Model.c` · `src/Models/Models.h`
 > `src/Models/ListOfModels.h` · `src/Models/ModelFiles/Template.c`
+> `src/Models/ModelFiles/TemplateFEM.c` · `src/Models/ModelFiles/TemplateFVM.c`
 > `src/Modules/ModuleFiles/Monolithic.c`
+> `src/Models/Methods/MaterialPointMethod.h` · `src/Models/Methods/CustomValues.h`
 
 ---
 
@@ -18,7 +20,11 @@
 7. [La boucle de calcul — `Monolithic.c`](#7-la-boucle-de-calcul--monolithicc)
 8. [Flux de données complet](#8-flux-de-données-complet)
 9. [Ajouter un nouveau modèle](#9-ajouter-un-nouveau-modèle)
-10. [Comparaison avec d'autres patterns](#10-comparaison-avec-dautres-patterns)
+10. [Interface moderne `MaterialPointMethod.h` (C++)](#10-interface-moderne-materialpointmethodh-c)
+11. [Bases de données physico-chimiques](#11-bases-de-données-physico-chimiques)
+12. [Méthode FEM² — homogénéisation numérique](#12-méthode-fem--homogénéisation-numérique)
+13. [Gestion de l'historique des solutions](#13-gestion-de-lhistorique-des-solutions)
+14. [Comparaison avec d'autres patterns](#14-comparaison-avec-dautres-patterns)
 
 ---
 
@@ -90,19 +96,23 @@ typedef int  (Model_ComputeMatrix_t)           (Element_t*, double, double, doub
 typedef int  (Model_ComputeResidu_t)           (Element_t*, double, double, double*) ;
 typedef int  (Model_ComputeLoads_t)            (Element_t*, double, double, Load_t*, double*) ;
 typedef int  (Model_ComputeOutputs_t)          (Element_t*, double, double*, Result_t*) ;
+typedef int  (Model_ComputePropertyIndex_t)    (const char*) ;
+typedef void (Model_ComputeMaterialProperties_t)(Element_t*, double) ;
 
 struct Model_t {
-  Model_SetModelProperties_t*       setmodelprop ;       /* initialise les autres pointeurs */
-  Model_ReadMaterialProperties_t*   readmatprop ;        /* lit les paramètres du fichier d'entrée */
-  Model_PrintModelProperties_t*     printmodelprop ;     /* affiche l'aide du modèle */
-  Model_DefineElementProperties_t*  defineelementprop ;  /* alloue les tableaux par élément */
-  Model_ComputeInitialState_t*      computeinitialstate ;/* calcule l'état initial */
-  Model_ComputeExplicitTerms_t*     computeexplicitterms;/* termes explicites (perméabilité…) */
-  Model_ComputeImplicitTerms_t*     computeimplicitterms;/* termes implicites (stockage, flux…) */
-  Model_ComputeMatrix_t*            computematrix ;      /* matrice de rigidité/couplage */
-  Model_ComputeResidu_t*            computeresidu ;      /* résidu de Newton-Raphson */
-  Model_ComputeLoads_t*             computeloads ;       /* vecteur de chargement */
-  Model_ComputeOutputs_t*           computeoutputs ;     /* champs de post-traitement */
+  Model_SetModelProperties_t*        setmodelprop ;        /* initialise les autres pointeurs */
+  Model_ReadMaterialProperties_t*    readmatprop ;         /* lit les paramètres du fichier d'entrée */
+  Model_PrintModelProperties_t*      printmodelprop ;      /* affiche l'aide du modèle */
+  Model_DefineElementProperties_t*   defineelementprop ;   /* alloue les tableaux par élément */
+  Model_ComputeInitialState_t*       computeinitialstate ; /* calcule l'état initial */
+  Model_ComputeExplicitTerms_t*      computeexplicitterms ;/* termes explicites (perméabilité…) */
+  Model_ComputeImplicitTerms_t*      computeimplicitterms ;/* termes implicites (stockage, flux…) */
+  Model_ComputeMatrix_t*             computematrix ;       /* matrice de rigidité/couplage */
+  Model_ComputeResidu_t*             computeresidu ;       /* résidu de Newton-Raphson */
+  Model_ComputeLoads_t*              computeloads ;        /* vecteur de chargement */
+  Model_ComputeOutputs_t*            computeoutputs ;      /* champs de post-traitement */
+  Model_ComputePropertyIndex_t*      computepropertyindex ;/* indice d'une propriété matériau */
+  Model_ComputeMaterialProperties_t* ComputeMaterialProperties ; /* propriétés au point de Gauss */
   /* + métadonnées : codename, shorttitle, authors, nbofequations, nameofequations… */
 } ;
 ```
@@ -118,27 +128,27 @@ Le framework ne manipule que des `Model_t*`. Il ignore totalement si le modèle 
 ```c
 /* src/Models/ListOfModels.h */
 
-#define ListOfModels_Nb   38
+#define ListOfModels_Nb   39
 
 #define ListOfModels_Names \
-  "BBM","BBMgas","BExM","CHMBWP","Cryspom","DWS1","Elasd","Fick", \
-  "Frostaco","Frostaco3d","Gascoal","HydrateThermoPoroplasticity", \
-  "M1","M10","M2","M7","NSFSHao","Plastold","Shen",               \
-  "Sulfaco","Sulfaco3d","SulfacoESA3d","Sulfacocl","Sulfuricem",   \
-  "TVIThermoPoroplast","Thermoporoplast","Yuan1","hydrapel","usoil",\
-  "BBMGas","Duracem","Elast","Frostsoil","MechaMic",               \
+  "BBM","BBMgas","BExM","CHMBWP","Cryspom","DWS1","Elasd","Elast","Fick", \
+  "Frostaco","Frostaco3d","Gascoal","HydrateThermoPoroplasticity",         \
+  "M1","M10","M2","M7","NSFSHao","Plastold","Shen",                        \
+  "Sulfaco","Sulfaco3d","SulfacoESA3d","Sulfacocl","Sulfuricem",            \
+  "TVIThermoPoroplast","Thermoporoplast","Yuan1","hydrapel","usoil",        \
+  "BBMGas","Chloricem","Duracem","Frostsoil","MechaMic",                    \
   "Plast","Poroplast","Richards","Sulfaconew"
 
 #define ListOfModels_Methods(m) \
-  BBM##m, BBMgas##m, BExM##m, CHMBWP##m, Cryspom##m, DWS1##m,    \
-  Elasd##m, Fick##m, Frostaco##m, Frostaco3d##m, Gascoal##m,      \
-  HydrateThermoPoroplasticity##m,                                  \
-  M1##m, M10##m, M2##m, M7##m, NSFSHao##m, Plastold##m, Shen##m,  \
-  Sulfaco##m, Sulfaco3d##m, SulfacoESA3d##m, Sulfacocl##m,         \
-  Sulfuricem##m, TVIThermoPoroplast##m, Thermoporoplast##m,        \
-  Yuan1##m, hydrapel##m, usoil##m, BBMGas##m, Duracem##m,          \
-  Elast##m, Frostsoil##m, MechaMic##m, Plast##m,                   \
-  Poroplast##m, Richards##m, Sulfaconew##m
+  BBM##m, BBMgas##m, BExM##m, CHMBWP##m, Cryspom##m, DWS1##m,             \
+  Elasd##m, Elast##m, Fick##m, Frostaco##m, Frostaco3d##m, Gascoal##m,    \
+  HydrateThermoPoroplasticity##m,                                           \
+  M1##m, M10##m, M2##m, M7##m, NSFSHao##m, Plastold##m, Shen##m,          \
+  Sulfaco##m, Sulfaco3d##m, SulfacoESA3d##m, Sulfacocl##m,                 \
+  Sulfuricem##m, TVIThermoPoroplast##m, Thermoporoplast##m,                 \
+  Yuan1##m, hydrapel##m, usoil##m, BBMGas##m, Chloricem##m, Duracem##m,    \
+  Frostsoil##m, MechaMic##m, Plast##m, Poroplast##m, Richards##m,          \
+  Sulfaconew##m
 ```
 
 **Comment fonctionne la X-macro :**
@@ -149,7 +159,7 @@ L'appel `ListOfModels_Methods(_SetModelProp)` est développé par le préprocess
 BBM_SetModelProp, BBMgas_SetModelProp, ..., M7_SetModelProp, ..., Sulfaconew_SetModelProp
 ```
 
-Ce qui permet de construire, **statiquement à la compilation**, deux tableaux parallèles indexés de 0 à 37 :
+Ce qui permet de construire, **statiquement à la compilation**, deux tableaux parallèles indexés de 0 à 38 :
 
 ```
 index │ nom (modelnames[i])             │ fonction (xModel_SetModelProperties[i])
@@ -157,9 +167,9 @@ index │ nom (modelnames[i])             │ fonction (xModel_SetModelPropertie
   0   │ "BBM"                           │ BBM_SetModelProp
   1   │ "BBMgas"                        │ BBMgas_SetModelProp
   …   │ …                               │ …
- 15   │ "M7"                            │ M7_SetModelProp
+ 16   │ "M7"                            │ M7_SetModelProp
   …   │ …                               │ …
- 37   │ "Sulfaconew"                    │ Sulfaconew_SetModelProp
+ 38   │ "Sulfaconew"                    │ Sulfaconew_SetModelProp
 ```
 
 ---
@@ -347,18 +357,18 @@ Fichier d'entrée (M7-1)
 
 La procédure est minimaliste par conception :
 
-**Étape 1** — Créer `src/Models/ModelFiles/MonModele.c` en s'appuyant sur `Template.c` ou `TemplateFEM.c`.
+**Étape 1** — Créer `src/Models/ModelFiles/MonModele.c` (ou `.cpp`) en s'appuyant sur `Template.c`, `TemplateFEM.c` ou `TemplateFVM.c`.
 
 **Étape 2** — Enregistrer le modèle dans `src/Models/ListOfModels.h` :
 
 ```c
 /* Avant */
-#define ListOfModels_Nb   38
+#define ListOfModels_Nb   39
 #define ListOfModels_Names  ..., "Sulfaconew"
 #define ListOfModels_Methods(m)  ..., Sulfaconew##m
 
 /* Après */
-#define ListOfModels_Nb   39
+#define ListOfModels_Nb   40
 #define ListOfModels_Names  ..., "Sulfaconew", "MonModele"
 #define ListOfModels_Methods(m)  ..., Sulfaconew##m, MonModele##m
 ```
@@ -373,7 +383,163 @@ Le fichier d'entrée peut maintenant utiliser `Model = MonModele`. **Aucun autre
 
 ---
 
-## 10. Comparaison avec d'autres patterns
+## 10. Interface moderne `MaterialPointMethod.h` (C++)
+
+Pour les modèles C++, Bil fournit une interface de haut niveau qui simplifie considérablement l'implémentation. Au lieu d'écrire manuellement les 11 fonctions, on dérive une classe `MPM_t` depuis `MaterialPointMethod_t`.
+
+### 10.1 Définir les variables internes avec `CustomValues.h`
+
+```cpp
+#include "CustomValues.h"
+
+template<typename T> struct ImplicitValues_t;  /* varient à chaque itération */
+template<typename T> struct ExplicitValues_t;  /* varient à chaque pas de temps */
+template<typename T> struct ConstantValues_t;  /* constantes au cours du temps */
+
+template<typename T>
+using V = CustomValues_t<T, ImplicitValues_t, ExplicitValues_t, ConstantValues_t, ...>;
+```
+
+Les trois types de variables internes correspondent aux tableaux par point de Gauss :
+
+| Type | Accès dans l'ancienne API | Quand recalculé |
+|------|--------------------------|-----------------|
+| Implicites (`NVI`) | `vi[k]` | À chaque itération de Newton |
+| Explicites (`NVE`) | `ve[k]` | Une fois par pas de temps (avec les valeurs au pas précédent) |
+| Constants (`NV0`) | `v0[k]` | Jamais après l'initialisation |
+
+### 10.2 Dériver la classe `MPM_t`
+
+```cpp
+#include "MaterialPointMethod.h"
+
+struct MPM_t : public MaterialPointMethod_t<V> {
+
+  /* Initialise val avec les inconnues nodales et leurs gradients */
+  V<double>* SetInputs(Element_t* el, double const& t, int const& p,
+                       double const* const* u, V<double>& val);
+
+  /* Initialise toutes les variables internes (état initial) */
+  V<double>* Initialize(Element_t* el, double const& t, V<double>& val);
+
+  /* Intègre la loi de comportement de t-dt à t */
+  V<double>* Integrate(Element_t* el, double const& t, double const& dt,
+                       V<double> const& val_n, V<double>& val);
+
+  /* Remplit la k-ième colonne de la matrice tangente */
+  int SetTangentMatrix(Element_t* el, double const& t, double const& dt,
+                       int const& p, V<double> const& val, V<double> const& dval,
+                       int const& k, double* c);
+
+  /* Remplit la matrice de transfert (FVM) */
+  int SetTransferMatrix(Element_t* el, double const& dt, int const& p,
+                        V<double> const& val, double* c);
+
+  /* Calcule les flux entre les nœuds i et j (FVM) */
+  V<double>* SetFluxes(Element_t* el, double const& t, int const& i, int const& j,
+                       V<double> const& grdval, V<double>* val);
+
+  /* Donne l'indice dans V de chaque inconnue primaire */
+  void SetIndexOfPrimaryVariables(Element_t* el, int* ind);
+
+  /* Donne l'incrément Δu utilisé pour les dérivées numériques */
+  void SetIncrementOfPrimaryVariables(Element_t* el, double* dui);
+};
+```
+
+### 10.3 Différentiation automatique avec `autodiff.h`
+
+La matrice tangente peut être obtenue par **différentiation automatique** plutôt que par différences finies :
+
+```cpp
+#define USE_AUTODIFF
+#include "autodiff.h"
+```
+
+Quand `USE_AUTODIFF` est défini, l'opérateur `Differentiate` calcule analytiquement la dérivée de `Integrate` par rapport aux inconnues primaires, sans implémentation manuelle du Jacobien.
+
+Sinon, la dérivée numérique est utilisée automatiquement via `SetIncrementOfPrimaryVariables` :
+
+```cpp
+void SetIncrementOfPrimaryVariables(Element_t* el, double* dui) {
+  ObVal_t* obval = Element_GetObjectiveValue(el);
+  dui[0] = 1.e-2 * ObVal_GetValue(obval + 0);  /* incrément = 1% de la variation objective */
+}
+```
+
+---
+
+## 11. Bases de données physico-chimiques
+
+Bil fournit une bibliothèque de données physico-chimiques accessible depuis n'importe quel modèle via des en-têtes d'inclusion. Ces données sont stockées dans `src/Models/DataBases/`.
+
+```c
+/* Viscosité de l'eau en fonction de la température (en K) */
+#include "WaterViscosity.h"
+double mu_w = WaterViscosity(293);   /* Pa·s à 293 K */
+
+/* Coefficient de diffusion d'un ion dans l'eau */
+#include "DiffusionCoefficientOfMoleculeInWater.h"
+double d_ca = DiffusionCoefficientOfMoleculeInWater(Ca, 293);  /* m²/s */
+
+/* Coefficient de diffusion dans l'air */
+#include "DiffusionCoefficientOfMoleculeInAir.h"
+double d_co2_air = DiffusionCoefficientOfMoleculeInAir(CO2, 293);
+```
+
+Parmi les bases disponibles :
+
+| En-tête | Contenu |
+|---------|---------|
+| `WaterViscosity.h` | Viscosité de l'eau en fonction de T |
+| `AirViscosity.h` | Viscosité de l'air |
+| `DiffusionCoefficientOfMoleculeInWater.h` | Coefficients de diffusion ionique en solution aqueuse |
+| `DiffusionCoefficientOfMoleculeInAir.h` | Coefficients de diffusion en phase gazeuse |
+| `HardenedCementChemistry.h` | Chimie des liants hydrauliques hydratés |
+| `CementSolutionChemistry.h` | Chimie de la solution interstitielle cimentaire |
+| `ElectricChargeOfIonInWater.h` | Charges électriques des ions |
+| `EquilibriumConstantOfHomogeneousReactionInWater.h` | Constantes d'équilibre des réactions en solution |
+| `IonizationConstantOfWater.h` | Constante d'ionisation de l'eau |
+| `HenrysLawConstantForSolubilityOfGasInWater.h` | Constante de Henry (solubilité des gaz) |
+| `AtmosphericPressure.h` | Pression atmosphérique de référence |
+
+---
+
+## 12. Méthode FEM² — homogénéisation numérique
+
+Bil dispose d'une capacité de **couplage multi-échelle FEM²** (ou FEM-in-FEM) : à chaque point de Gauss du maillage macro, un problème micro est résolu sur une cellule représentative.
+
+Ce module est utilisé notamment dans le modèle `MechaMic.c` pour l'homogénéisation mécanique de matériaux hétérogènes. Les conditions aux limites périodiques sur la cellule micro sont gérées via le bloc `PERIODICITIES` du fichier d'entrée :
+
+```
+PERIODICITIES
+2
+MasterRegion = 10  SlaveRegion = 11  PeriodVector = 2 0 0
+MasterRegion = 20  SlaveRegion = 21  PeriodVector = 0 2 0
+```
+
+---
+
+## 13. Gestion de l'historique des solutions
+
+Le module de résolution maintient un **historique circulaire** des solutions aux derniers instants $t_n, t_{n-1}, t_{n-2}, \ldots$ sous forme d'une liste chaînée circulaire. Cette structure permet à `ComputeExplicitTerms` d'accéder aux valeurs au pas précédent sans copie supplémentaire.
+
+```
+Avant avance temporelle :    tn-3 ← tn-2 ← tn-1 ← tn ←•
+
+Après avance tn → tn+1 :     tn-2 ← tn-1 ← tn ← tn+1 ←•
+                              (tn-3 est réutilisé pour stocker tn+1)
+```
+
+Le nombre de solutions conservées en mémoire simultanément est contrôlé par l'option :
+
+```bash
+bil -with "Monolithic N" fichier   # N = nombre de solutions en mémoire (défaut 2)
+```
+
+---
+
+## 14. Comparaison avec d'autres patterns
 
 | Concept | En C (Bil) | En C++ | En Python |
 |---------|-----------|--------|-----------|

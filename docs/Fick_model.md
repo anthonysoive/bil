@@ -110,6 +110,8 @@ Cette expérience de dessalement 1D, visualisable après calcul par les fichiers
 - À 1 jour (`.t1`), la face $x=0$ en contact vaudra 0, tandis que l'autre bout de l'échantillon à $x=3$ cm pourrait encore arborer son plateau de rétention natif à 19 moles, la vague chimique n'ayant pas atteint la profondeur limite due à la grande tortuosité du béton/roche.
 - À l'issue d'une année (`.t3`), la concentration devrait avoisiner des reliquats asymptotiques à presque 0 le long de tous les noeuds axiaux, l'intégralité du Sodium ou Potassium ayant fui par gradient entropique dans l'eau de lavage infinie de la condition de frontière (Reg 2).
 
+![Fick - Résultats de la simulation](Fick_results.png)
+
 ---
 
 ## 6. Références bibliographiques

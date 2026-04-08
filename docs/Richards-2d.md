@@ -316,3 +316,8 @@ Le modèle calcule et exporte (`Richards.cpp`, fonction `ComputeOutputs`) :
 2. **$0 < t \leq 360$ s** : la pression à la base est progressivement réduite à 0 Pa → le bas de la colonne commence à se drainer.
 3. **$t > 360$ s** : pression nulle maintenue à la base → le front de désaturation remonte dans la colonne sous l'effet de la gravité.
 4. **Effet de l'hétérogénéité** : l'inclusion centrale (10× moins perméable) ralentit localement le drainage → on observe un **retard de désaturation** dans la zone interne, phénomène caractéristique des milieux poreux hétérogènes en conditions non saturées.
+
+## Résultats de la simulation
+
+![Richards-2d - Résultats de la simulation](Richards-2d_results.png)
+*(Graphes générés automatiquement pour l'exemple Richards-2d)*

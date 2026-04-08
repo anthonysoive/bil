@@ -241,6 +241,8 @@ Les paramètres matériaux, les conditions initiales, les fonctions temporelles 
 | 8 | Concentration en $\text{SO}_4^{2-}$ |
 | 9 | Contrainte effective $S_c \cdot P_c$ vs déformation |
 
+![Sulfaconew - Résultats de la simulation](Sulfaconew_results.png)
+
 ---
 
 ## 6. Description pas-à-pas des fichiers d'entrée

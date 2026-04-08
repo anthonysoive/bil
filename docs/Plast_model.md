@@ -253,6 +253,8 @@ $$E_{11} = 10^{-3} \times f(t)$$
 
 **Résultats attendus :** Solution analytique connue pour la plasticité d'un cylindre épais (Lamé + Drucker-Prager). Le front de plastification se propage depuis le rayon interne vers l'extérieur à mesure que la pression interne augmente. On peut comparer le profil radial des contraintes $\sigma_r(r)$ et $\sigma_\theta(r)$ à la solution analytique.
 
+![Plast - Résultats de la simulation](Plast_results.png)
+
 ---
 
 ## 7. Paramétrage matériel du modèle

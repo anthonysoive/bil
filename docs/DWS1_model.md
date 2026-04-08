@@ -194,6 +194,8 @@ Le calcul (durée $\sim$ une seconde sur un poste moderne, en une centaine de pa
 - **Concentration en sel** : Partant de $c_s = 100$ mol/m³, l'évaporation de la phase liquide de solvant contraint les ions à se concentrer. En fin d'essai, elle bondit à environ $203$ mol/m³, homogènement répartie.
 - **Pressions** : Du fait de la baisse de la saturation ($S_l \sim 42.9\%$), l'effet de tension capillaire s'affole. La pression liquide chute drastiquement à $P_l \approx -92.5$ MPa. L'activité de l'eau réagit à la présence plus concentrée d'ions, montrant que les forces osmotiques renforcent le potentiel de rétention de l'eau dans le béton.
 
+![DWS1 - Résultats de la simulation](DWS1_results.png)
+
 ---
 
 ## 7. Références bibliographiques
@@ -202,3 +204,4 @@ Le calcul (durée $\sim$ une seconde sur un poste moderne, en une centaine de pa
 - **Millington, R. J. & Quirk, J. P.** (1961) Modèles de tortuosité gazeuse.
 - **Nguyen, T.Q.** & relations de **Lin & Lee** — Modèles basés sur Pitzer pour le calcul du logarithme de l'activité pour les solutions salines et idéales (`lng_TQN`, `lna_i` implémentés dans M5/DWS1). 
 - **Van Genuchten** (1980) & **Mualem** (1976) pour les relations de perméabilités relatives et succion.
+*(Graphes générés automatiquement pour l'exemple DWS1)*

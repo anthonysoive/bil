@@ -693,6 +693,8 @@ Les colonnes clés :
 
 La pente des courbes de compression change avec la succion, reflétant la variation de $\lambda(s)$.
 
+![BBM - Résultats de la simulation](BBM_results.png)
+
 ---
 
 ## 8. Discrétisation numérique

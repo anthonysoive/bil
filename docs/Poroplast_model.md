@@ -194,6 +194,8 @@ Les 4 grandeurs tracées (fichier `.gp`) sont :
 | Déformation plastique volumique | col. 20+24+28 | Trace de $\boldsymbol{\varepsilon}^p$ dans la zone endommagée |
 | Contrainte de cerclage effective $\sigma'_{\theta\theta}$ | col. 19 + $\beta$ × col. 4 | Évolution de l'état de contrainte effectif |
 
+![Poroplast - Résultats de la simulation](Poroplast_results.png)
+
 ---
 
 ## 7. Paramétrage matériel du modèle

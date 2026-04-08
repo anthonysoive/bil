@@ -251,6 +251,8 @@ La **porosité** oscille selon le bilan volumique :
 - La précipitation de CC occupe du volume → $\phi$ diminue localement.
 - Le résultat net peut mener à un **colmatage partiel** (perméabilité réduite) si la précipitation de calcite domine.
 
+![Shen - Résultats de la simulation](Shen_results.png)
+
 ---
 
 ## 7. Paramétrage matériel du modèle

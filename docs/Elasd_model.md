@@ -147,6 +147,8 @@ Ce test purement mécanique génère 11 fichiers de rendus dont les comportement
 2. Tout au long de l'élongation, la cinématique d'élévation sur $u_2$ s'immisce dans une phase purement élastique. Le vide central focalisant les lignes de force en ses pôles est et ouest, ces points-ci subissent les plus forts taux de déformations en tensions directes.
 3. Arrivé au stade final généré (`.t10` correspondant à l'instant paramétrique $0.28$), on détecte explicitement la naissance du gradient d'endommagement (activé lorsque l'énergie libérable critique à son point mort a été outrepassée par le critère d'adoucissement). Autour du plan médian flanquant le vide matriciel, la variable **Damage commence à croître au-dessus de zéro** (on y lit $d > 0.1$), démontrant une plasticité apparente due à  la rupture isotrope, relâchant la contrainte apparente de cette zone qui serait sans cela non bornée. La loi Marigo-Jirasek garantit une perte énergétique finie calquée sur les $590$ de Fracture Energy.
 
+![Elasd - Résultats de la simulation](Elasd_results.png)
+
 ---
 
 ## 7. Références bibliographiques
@@ -155,3 +157,4 @@ Ce test purement mécanique génère 11 fichiers de rendus dont les comportement
 - **Mazars, J.** (1984) — *Application de la mécanique de l'endommagement au comportement non linéaire et à la rupture du béton de structure*. Thèse d'état, Université Paris 6. (Implémenté sous forme d'élasticité endommageable isotrope).
 - **Marigo, J.-J.** (1981) — *Formulation d'une loi d'endommagement d'un matériau élastique*. C. R. Acad. Sci. Paris. 
 - **Jirásek, M.**, & Bauer, M. (2012) — *Numerical aspects of the crack band approach*. Computers & Structures. (Permettant le lissage de la dissipation énergétique via `crack_band_width`, levant la dépendance au maillage).
+*(Graphes générés automatiquement pour l'exemple Elasd)*

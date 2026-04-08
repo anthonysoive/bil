@@ -689,6 +689,8 @@ L'analyse des fichiers de sortie `Chloricem.t12` au nœud $x = 0$ (bord exposé)
 
 5. **Évolution de la porosité** : la dissolution de CH et des C-S-H sans reprécipitation crée une zone dégradée de porosité accrue en surface, accélérant progressivement le transport.
 
+![Chloricem - Résultats de la simulation](Chloricem_results.png)
+
 ---
 
 ## 8. Discrétisation numérique

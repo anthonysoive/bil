@@ -332,6 +332,8 @@ Ce transitoire représente une phase initiale à forte concentration puis une st
 
 Sur 2 jours, le front de carbonatation reste proche de la surface (< 1 mm selon l'humidité relative).
 
+![Duracem - Résultats de la simulation](Duracem_results.png)
+
 ---
 
 ## 7. Fichiers d'entrée : description pas à pas

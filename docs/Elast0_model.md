@@ -123,6 +123,8 @@ Cette modélisation retranscrit classiquement l'évolution contrainte/déformati
 - En revanche, les vecteurs **déplacement** resteront garantis continus le long du raccord en interfaçage, les éléments finis nouant ces limites d'intégrités géométriques ensemble.
 - Au bout de chaque calcul au temps ciblé, par exemple à $t=1$ l'effet d'expansion tubulaire due à la pression très haute est maximal, la paroi s'évase suivant les axes radiaux $u_1$. Au temps $t=2$, l'édifice se rétracte et, selon la topologie, peut même se replier sous l'effet des précontraintes imposées (`sig0_ij = -1 MPa`), le tout en stricte absence d'adoucissement irréversible du matériau.
 
+![Elast - Résultats de la simulation](Elast_results.png)
+
 ---
 
 ## 6. Références bibliographiques
