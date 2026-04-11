@@ -1,0 +1,2776 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A modeling platform based on finite element/volume methods">
+      
+      
+        <meta name="author" content="P. Dangla (Université Gustave Eiffel)">
+      
+      
+      
+        <link rel="prev" href="../ChloricemEla_model/">
+      
+      
+        <link rel="next" href="../Sulfaco_model/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ChloricemDLM - Bil</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#modele-chloricemdlm-transport-reactif-et-adsorption-des-chlorures-dlm" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Bil" class="md-header__button md-logo" aria-label="Bil" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Bil
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ChloricemDLM
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dangla/bil" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dangla/bil
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Introduction
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../running_bil/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Bil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../examples/" class="md-tabs__link">
+          
+  
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../fonctionnement_bil/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Internal Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../adding_a_model/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  How to Add a New Model
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Bil" class="md-nav__button md-logo" aria-label="Bil" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Bil
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dangla/bil" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dangla/bil
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../running_bil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Bil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flow
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Flow
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flow_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M1_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M2_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M5_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M10-1_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M10-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M10-2_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M10-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Richards-2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Richards 2D
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Mechanics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mechanics_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Elast0_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elast0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Elasd_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Plast_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plast
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BBM_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BBM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Poroplast_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Poroplast
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Poromechanics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Poromechanics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poromechanics_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M7_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M7
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M7-1_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M7-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Freeze-Thaw
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Freeze-Thaw
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../freezethaw_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Frostaco_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frostaco
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Frostaco3d_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frostaco3d
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Durability & Chemistry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Durability & Chemistry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../durability_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Fick_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fick
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Duracem_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Duracem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Chloricem_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chloricem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ChloricemSCM_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ChloricemSCM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ChloricemEla_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ChloricemEla
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ChloricemDLM
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ChloricemDLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-des-matieres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table des matières
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-contexte-et-objectif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Contexte et objectif
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-hypotheses-et-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hypothèses et variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Hypothèses et variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-cles-du-modele-unites-typiques-dans-bil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables clés du modèle (unités typiques dans Bil)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-modele-de-la-double-couche-diffuse-dlm-pour-ladsorption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Modèle de la double couche diffuse (DLM) pour l'adsorption
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cinetique-de-precipitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cinétique de précipitation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cas-test-penetration-dans-le-beton-test-basechloricemdlm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cas test : Pénétration dans le béton (test base/ChloricemDLM)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cas test : Pénétration dans le béton (test base/ChloricemDLM)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-geometrie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. Géométrie
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-conditions-initiales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. Conditions Initiales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-conditions-aux-limites-immersion-en-eau-de-mer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3. Conditions aux Limites (immersion en eau de mer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-profil-des-chlorures-resultats-a-10-ans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4. Profil des chlorures (Résultats à 10 ans)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-description-pas-a-pas-du-parametrage-materiel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Description pas-à-pas du paramétrage matériel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-references-bibliographiques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Références bibliographiques
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Sulfaco_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sulfaco
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Sulfuricem_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sulfuricem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Sulfaconew_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sulfaconew
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SulfacoESA3d_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SulfacoESA3d
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coupled Transfers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Coupled Transfers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coupledtransfers_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DWS1_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DWS1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Yuan1_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Yuan1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Shen_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usoil_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    usoil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specialized
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specialized
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specialized_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MechaMic_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MechaMic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../M2_VoronoiFVM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M2 VoronoiFVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fonctionnement_bil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internal Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding_a_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Add a New Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-des-matieres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table des matières
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-contexte-et-objectif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Contexte et objectif
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-hypotheses-et-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hypothèses et variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Hypothèses et variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-cles-du-modele-unites-typiques-dans-bil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables clés du modèle (unités typiques dans Bil)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-modele-de-la-double-couche-diffuse-dlm-pour-ladsorption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Modèle de la double couche diffuse (DLM) pour l'adsorption
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cinetique-de-precipitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cinétique de précipitation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cas-test-penetration-dans-le-beton-test-basechloricemdlm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cas test : Pénétration dans le béton (test base/ChloricemDLM)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cas test : Pénétration dans le béton (test base/ChloricemDLM)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-geometrie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. Géométrie
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-conditions-initiales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. Conditions Initiales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-conditions-aux-limites-immersion-en-eau-de-mer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3. Conditions aux Limites (immersion en eau de mer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-profil-des-chlorures-resultats-a-10-ans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4. Profil des chlorures (Résultats à 10 ans)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-description-pas-a-pas-du-parametrage-materiel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Description pas-à-pas du paramétrage matériel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-references-bibliographiques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Références bibliographiques
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="modele-chloricemdlm-transport-reactif-et-adsorption-des-chlorures-dlm">Modèle ChloricemDLM — Transport Réactif et Adsorption des Chlorures (DLM)</h1>
+<blockquote>
+<p><strong>Fichiers sources :</strong>
+<code>src/Models/ModelFiles/ChloricemDLM.cpp</code> · <code>base/ChloricemDLM/ChloricemDLM</code></p>
+</blockquote>
+<hr />
+<h2 id="table-des-matieres">Table des matières</h2>
+<ol>
+<li><a href="#1-contexte-et-objectif">Contexte et objectif</a></li>
+<li><a href="#2-hypothèses-et-variables">Hypothèses et variables</a></li>
+<li><a href="#3-modèle-de-la-double-couche-diffuse-dlm-pour-ladsorption">Modèle de la double couche diffuse (DLM) pour l'adsorption</a></li>
+<li><a href="#4-cinétique-de-précipitation">Cinétique de précipitation</a></li>
+<li><a href="#5-cas-test--pénétration-dans-le-béton-test-basechloricemdlm">Cas test : Pénétration dans le béton (test <code>base/ChloricemDLM</code>)</a></li>
+<li><a href="#6-description-pas-à-pas-du-paramétrage-matériel">Description pas-à-pas du paramétrage matériel</a></li>
+<li><a href="#7-références-bibliographiques">Références bibliographiques</a></li>
+</ol>
+<hr />
+<h2 id="1-contexte-et-objectif">1. Contexte et objectif</h2>
+<p>Le modèle <strong>ChloricemDLM</strong> modélise la pénétration, la diffusion et l'interaction chimique des ions chlorures (<span class="arithmatex">\(\text{Cl}^-\)</span>) dans la matrice poreuse d'un matériau cimentaire (béton). L'exposition aux chlorures (provenant de l'eau de mer ou de l'application de sels de déverglaçage) est l'une des causes majeures de corrosion des armatures en acier.</p>
+<p>Contrairement à des modèles simplifiés d'adsorption par des isothermes empiriques ou des capacités fixes, ce modèle introduit une chimie de surface avancée. Il décrit rigoureusement l'adsorption des ions sur les sites silanols (<span class="arithmatex">\(\text{SiOH}\)</span>) des hydrates de silicate de calcium (C-S-H) en utilisant le Modèle de la Couche Diffuse (<strong>Diffuse Layer Model - DLM</strong>). De plus, ce processus est couplé à la reprécipitation simultanément compétitive d'une phase solide : le <strong>Sel de Friedel</strong>.</p>
+<hr />
+<h2 id="2-hypotheses-et-variables">2. Hypothèses et variables</h2>
+<p>Le transport réactif obéit à plusieurs principes multi-physiques :
+1. <strong>Diffusion Multi-espèces</strong> : Déplacement de plusieurs ions inter-dépendants (<span class="arithmatex">\(\text{Cl}^-\)</span>, <span class="arithmatex">\(\text{Ca}^{2+}\)</span>, <span class="arithmatex">\(\text{OH}^-\)</span>, <span class="arithmatex">\(\text{Na}^+\)</span>, <span class="arithmatex">\(\text{K}^+\)</span>) dans la phase liquide interstitielle.
+2. <strong>Couplage d'électroneutralité</strong> : Gestion du gradient du potentiel électrique et de la mobilité différentielle des espèces par le potentiel de membrane.
+3. <strong>Réactions locales</strong> : Les concentrations en solution se convertissent via équilibres thermodynamiques et thermocinétiques en fractions adsorbées et solides.</p>
+<h3 id="variables-cles-du-modele-unites-typiques-dans-bil">Variables clés du modèle (unités typiques dans <code>Bil</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Symbole code BIL</th>
+<th>Signification Physique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c_cl_l</code></td>
+<td>Concentration libre en ions chlorures dans l'eau de pores (<span class="arithmatex">\(\text{mol}/\text{L}_{\text{eau}}\)</span>)</td>
+</tr>
+<tr>
+<td><code>adsorbed chloride</code></td>
+<td>Moles de chlorures fixés électrostatiquement sur le réseau poreux C-S-H</td>
+</tr>
+<tr>
+<td><code>n_friedelsalt</code></td>
+<td>Moles de gisement minéral précipitées sous forme cristallisée</td>
+</tr>
+<tr>
+<td><code>n_Cl</code></td>
+<td>Chlorures totaux accumulés (somme des trois précédents états partiels du tissu matériel)</td>
+</tr>
+<tr>
+<td><code>psi</code></td>
+<td>Potentiel micro-électrostatique de surface <span class="arithmatex">\(\Psi_0\)</span> lié à la double couche</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-modele-de-la-double-couche-diffuse-dlm-pour-ladsorption">3. Modèle de la double couche diffuse (DLM) pour l'adsorption</h2>
+<p>Le modèle thermodynamique retranscrit l'ensemble des réactions de complexation de surface du C-S-H extraites de la base de données thermodynamique (<code>thermodatabase.out</code>, format PHREEQC). Il incorpore un facteur de correction de Boltzmann <span class="arithmatex">\(\beta = \exp\left(-\frac{F \, \Psi_0}{R \, T}\right)\)</span> propre à l'énergie de Gouy-Chapman :</p>
+<div class="arithmatex">\[
+\begin{align}
+\equiv \text{SiOH} &amp;\rightleftharpoons \equiv \text{SiO}^- + \text{H}^+  &amp; (K_{a1})\\
+\equiv \text{SiO}^- + \text{Ca}^{2+} &amp;\rightleftharpoons \equiv \text{SiOCa}^+  &amp; (K_{\text{Ca}})\\
+\equiv \text{SiOCa}^+ + \text{Cl}^- &amp;\rightleftharpoons \equiv \text{SiOCaCl}^0 &amp; (K_{\text{Cl}})\\
+\equiv \text{SiOH} + \text{Cl}^- &amp;\rightleftharpoons \equiv \text{SiOHCl}^- &amp; (K_{\text{OHCl}})\\
+\equiv \text{SiO}^- + \text{Na}^+ &amp;\rightleftharpoons \equiv \text{SiONa}^0 &amp; (K_{\text{Na}})\\
+\equiv \text{SiO}^- + \text{K}^+ &amp;\rightleftharpoons \equiv \text{SiOK}^0 &amp; (K_{\text{K}})
+\end{align}
+\]</div>
+<p>La réaction (4) représente l'adsorption en sphère externe de <span class="arithmatex">\(\text{Cl}^-\)</span> directement sur le site neutre <span class="arithmatex">\(\equiv\text{SiOH}\)</span> (sans déprotonation préalable). Les réactions (5) et (6) modélisent la compétition de <span class="arithmatex">\(\text{Na}^+\)</span> et <span class="arithmatex">\(\text{K}^+\)</span> pour les sites <span class="arithmatex">\(\equiv\text{SiO}^-\)</span> ; ces espèces neutres n'ont pas de correction électrostatique mais réduisent les sites disponibles pour <span class="arithmatex">\(\text{Cl}^-\)</span>.</p>
+<p>La charge nette de surface et la concentration adsorbée s'écrivent avec <span class="arithmatex">\(A = K_{a1}/c_h\)</span>, <span class="arithmatex">\(B = K_{Ca} c_{Ca}\)</span>, <span class="arithmatex">\(C = K_{Cl} c_{Cl}\)</span>, <span class="arithmatex">\(D_{Cl} = K_{OHCl} c_{Cl}\)</span>, <span class="arithmatex">\(E = K_{Na} c_{Na}\)</span>, <span class="arithmatex">\(G = K_K c_K\)</span> :</p>
+<div class="arithmatex">\[
+\text{Den} = 1 + \frac{A}{\beta} + A B \beta + A B C + \frac{D_{Cl}}{\beta} + A E + A G
+\]</div>
+<div class="arithmatex">\[
+\Gamma_{Cl} = \Gamma_{max} \, \frac{A B C + D_{Cl}/\beta}{\text{Den}}
+\]</div>
+<div class="arithmatex">\[
+\sigma_{surf} = \frac{F \Gamma_{max}}{a_s} \cdot \frac{A B \beta - A/\beta - D_{Cl}/\beta}{\text{Den}}
+\]</div>
+<p>Le potentiel <span class="arithmatex">\(\Psi_0\)</span> (via <span class="arithmatex">\(\beta\)</span>) est résolu par Newton-Raphson en égalisant <span class="arithmatex">\(\sigma_{surf}\)</span> à la charge de la couche diffuse de Gouy-Chapman <span class="arithmatex">\(\sigma_{GC} = \sqrt{8 \varepsilon_0 \varepsilon_r R T I}\,\sinh(F\Psi_0/2RT)\)</span>.</p>
+<hr />
+<h2 id="4-cinetique-de-precipitation">4. Cinétique de précipitation</h2>
+<p>En parallèle du piégeage surfacique par la couche diffuse, une fixation irréversible s'opère dans la masse sous forme de co-précipitation minérale appelée "Sel de Friedel" (<span class="arithmatex">\(3\text{CaO}\cdot\text{Al}_2\text{O}_3\cdot\text{CaCl}_2\cdot10\text{H}_2\text{O}\)</span>) :</p>
+<div class="arithmatex">\[
+3\text{CaO}\cdot\text{Al}_2\text{O}_3 + \text{Ca}^{2+} + 2\text{Cl}^- + \dots \rightleftharpoons \text{Sel de Friedel}
+\]</div>
+<p>Les <strong>chlorures totaux</strong> mesurables (par exemple par perte au feu ou titrage expérimental) sont analytiquement la somme des chlorures dissous libres (aqueux), des chlorures adsorbés à court terme (C-S-H), et des chlorures cristallisés (Sel de Friedel).</p>
+<hr />
+<h2 id="5-cas-test-penetration-dans-le-beton-test-basechloricemdlm">5. Cas test : Pénétration dans le béton (test <code>base/ChloricemDLM</code>)</h2>
+<p>Ce cas de référence simule un milieu cimentaire (béton) soumis à un milieu marin extérieur. Le modèle thermodynamique capture la lente diffusion réactive dans la paroi, avec résolution des potentiels électriques à chaque étape.</p>
+<h3 id="51-geometrie">5.1. Géométrie</h3>
+<p>Le domaine est modélisé par un maillage 1D d'une épaisseur totale de <strong>5 cm (0.5 dm)</strong>, divisé en 100 éléments spatiaux de taille finie régulière (pas de <span class="arithmatex">\(0.5\text{ mm}\)</span>).
+- La face en <span class="arithmatex">\(x = 0\)</span> est exposée continuellement aux conditions extérieures.
+- La face en <span class="arithmatex">\(x = 5\text{ cm}\)</span> est considérée étanche vers l'intérieur (limite à flux nul).</p>
+<h3 id="52-conditions-initiales">5.2. Conditions Initiales</h3>
+<p>Le réseau cimentaire est chimiquement à l'équilibre métastable et quasi-vierge de chlorures :
+- <strong>Minéralogie solide</strong> : Présence nominale de Portlandite (<code>1.64</code> mol) et de gel C-S-H (<code>0.635</code> mol).
+- <strong>Solution interstitielle</strong> : La concentration initiale des électrolytes cibles au sein du liquide poreux y est réduite à l'état de traces (<span class="arithmatex">\(\log_{10} c_{\text{cl}} = -4.0\)</span>, soit <span class="arithmatex">\(0.1\ \text{mmol/L}\)</span>).</p>
+<h3 id="53-conditions-aux-limites-immersion-en-eau-de-mer">5.3. Conditions aux Limites (immersion en eau de mer)</h3>
+<p>L'exposition externe simule l'aspersion à une concentration saline typiquement océanique de manière continue pendant une décennie. Une rampe mathématique (via les <code>Functions</code> BIL) bascule à l'interface les valeurs imposées en solution :
+- <strong>Chlorures <span class="arithmatex">\(\text{Cl}^-\)</span> limites</strong> : Fixation à <span class="arithmatex">\(\approx \mathbf{0.55\text{ mol/L}}\)</span> (<span class="arithmatex">\(\log_{10} c_{\text{cl}} = -0.260\)</span>), ce qui correspond chimiquement aux abondances standards de l'eau de mer (environ ~19.5 g/L massique).
+- Les alcalins et le pH sont forcés, et le profil électrique de surface répond à la méthode Nernst-Planck.</p>
+<p>La simulation s'étend sur une durée totale de <strong>10 ans (<span class="arithmatex">\(3.15 \times 10^8\)</span> s)</strong> par incrémentations d'intervalles annuels réguliers.</p>
+<h3 id="54-profil-des-chlorures-resultats-a-10-ans">5.4. Profil des chlorures (Résultats à 10 ans)</h3>
+<p>Afin d'illustrer la composition interne des phases chimiques stockant le chlore après 10 années d'accumulation ininterrompue, on extrait le gradient multi-component :</p>
+<p><img alt="Profil de chlorures totaux cumulatif à 10 ans" src="../ChloricemDLM_results.png" /></p>
+<p><em>(L'empilement successif des chlorures aqueux libres en bleu, chimisorbés électriquement (via modèle interfacial DLM) en vert, et fixés par précipitation minéralogique (Sel de Friedel) en rouge brique, montre l'ampleur absolue du tamponnage de chlorures vis-à-vis du liquide poral. Cette combinaison forme la barrière ralentissant la progression corrosive aux armatures).</em></p>
+<hr />
+<h2 id="6-description-pas-a-pas-du-parametrage-materiel">6. Description pas-à-pas du paramétrage matériel</h2>
+<p>Dans le fichier d'entrée (<code>bil/base/ChloricemDLM/ChloricemDLM</code>) on précise l'architecture géochimique :</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Curves = AdDLM  x = Range{...} gamma_max=0.056 k_a1=2.0e-13 k_ca=2000. k_cl=0.40 a_s=25500.
+</code></pre></div>
+C'est le profil renseignant la routine Elakneswaran-DLM. Les constantes sont dérivées de la base de données thermodynamique <code>thermodatabase.out</code> (format PHREEQC) :</p>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Valeur</th>
+<th>Dérivation depuis la base</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gamma_max = 0.056</code></td>
+<td><span class="arithmatex">\(0.056\ \text{mol/mol}_\text{CSH}\)</span></td>
+<td>Capacité asymptotique totale des sites silanols</td>
+</tr>
+<tr>
+<td><code>k_a1 = 2.0e-13</code></td>
+<td><span class="arithmatex">\(K_{a1} = 10^{-12.7}\ \text{mol/L}\)</span></td>
+<td><code>CSH_O-</code> : <span class="arithmatex">\(\log K_\text{net} = -12.7\)</span></td>
+</tr>
+<tr>
+<td><code>k_ca = 2000.</code></td>
+<td><span class="arithmatex">\(K_{Ca} = 10^{3.3}\ \text{L/mol}\)</span></td>
+<td><code>CSH_OCa+</code> : <span class="arithmatex">\(\log K_\text{net}=-9.4 \Rightarrow K_{Ca} = 10^{3.3}\)</span></td>
+</tr>
+<tr>
+<td><code>k_cl = 0.40</code></td>
+<td><span class="arithmatex">\(K_{Cl} = 10^{-0.4}\ \text{L/mol}\)</span></td>
+<td><code>CSH_OCaCl</code> : <span class="arithmatex">\(\log K_\text{net}=-9.8 \Rightarrow K_{Cl} = 10^{-0.4}\)</span></td>
+</tr>
+<tr>
+<td><code>k_ohcl = 0.447</code></td>
+<td><span class="arithmatex">\(K_{OHCl} = 10^{-0.35}\ \text{L/mol}\)</span></td>
+<td><code>CSH_OHCl-</code> : <span class="arithmatex">\(\log K_\text{diss}=+0.35 \Rightarrow K_{OHCl} = 10^{-0.35}\)</span> (formation, sphère externe)</td>
+</tr>
+<tr>
+<td><code>k_na = 0.090</code></td>
+<td><span class="arithmatex">\(K_{Na} = 10^{-1.045}\ \text{L/mol}\)</span></td>
+<td><code>CSH_ONa</code> : <span class="arithmatex">\(\log K_\text{net}=-13.745 \Rightarrow K_{Na} = 10^{-1.045}\)</span></td>
+</tr>
+<tr>
+<td><code>k_k = 0.090</code></td>
+<td><span class="arithmatex">\(K_K = 10^{-1.045}\ \text{L/mol}\)</span></td>
+<td><code>CSH_OK</code> : <span class="arithmatex">\(\log K_\text{net}=-13.745 \Rightarrow K_K = 10^{-1.045}\)</span></td>
+</tr>
+<tr>
+<td><code>a_s = 25500</code></td>
+<td><span class="arithmatex">\(25500\ \text{m}^2/\text{mol}_\text{CSH}\)</span></td>
+<td><span class="arithmatex">\(S_\text{BET} = 150\ \text{m}^2/\text{g}\)</span>, <span class="arithmatex">\(M_\text{CSH} = 170\ \text{g/mol}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>TOUGHREACT stocke des <strong>constantes intrinsèques de dissociation</strong> (complexe → composants primaires), sans correction électrostatique (celle-ci est appliquée à l'exécution via le facteur β). La constante de <em>formation</em> utilisée dans le code est l'inverse : <span class="arithmatex">\(K_{ion}(\text{form}) = 10^{-\log K_\text{diss}}\)</span>.</p>
+<p>Pour les espèces avec échange de H⁺ : <span class="arithmatex">\(K_{diss} = 1/(K_{a1} \times K_{ion})\)</span>, d'où <span class="arithmatex">\(K_{ion} = 10^{-\log K_\text{diss}} / K_{a1}\)</span>.</p>
+<p><strong>Pour <code>CSH_OHCl-</code> (sans H⁺) :</strong> la dissociation est ≡SiOHCl⁻ → ≡SiOH + Cl⁻ avec <span class="arithmatex">\(\log K_\text{diss} = +0.35\)</span>, donc <span class="arithmatex">\(K_{OHCl}(\text{formation}) = 10^{-0.35} \approx 0.447\ \text{L/mol}\)</span>. Utiliser directement <span class="arithmatex">\(10^{+0.35}\)</span> serait une erreur de signe.</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>PrecipitationRate_calcite = 1.e-6
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>PrecipitationRate_friedelsalt = 1.e-6
+</code></pre></div>
+Dicte la cinétique. En fonction du design, ce taux d'hydratation retarde l'avancée de la quantité destructrice "libre" au prix de l'envasement prématuré de la surface de C-S-H.</p>
+<hr />
+<h2 id="7-references-bibliographiques">7. Références bibliographiques</h2>
+<ul>
+<li><strong>Elakneswaran, Y., Nawa, T., Kurumisawa, K.</strong> (2009). <em>Electrokinetic potential of hydrated cement in relation to solid–liquid interfacial phenomena</em>. Cement and Concrete Research, 39(4), 340-344. — Fondatrice de l'intégration des potentiels <span class="arithmatex">\(\Psi_0\)</span> de la théorie électrochimique DLM.</li>
+<li><strong>Nilsson, L. O. et al.</strong> (1996). <em>Models for Chloride Penetration in concrete</em>. — Études des seuils de corrosion et description formelle physique de la mise à l'équilibre en double phase solvant/granulo-porosité.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../ChloricemEla_model/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ChloricemEla">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                ChloricemEla
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../Sulfaco_model/" class="md-footer__link md-footer__link--next" aria-label="Next: Sulfaco">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Sulfaco
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

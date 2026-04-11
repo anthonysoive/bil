@@ -1,0 +1,125 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Bil"
+  subtitle: "A modeling platform based on finite element/volume methods"
+  author: "P. Dangla (Université Gustave Eiffel)"
+  date: today
+  date-format: "MMMM YYYY"
+  repo-url: https://github.com/dangla/bil
+  repo-actions: [issue]
+  search: true
+  sidebar:
+    style: docked
+    search: true
+    collapse-level: 1
+  page-footer:
+    left: |
+      Bil — A modeling platform based on finite element/volume methods
+    right: |
+      Built with [Quarto](https://quarto.org)
+  navbar:
+    background: primary
+    search: true
+
+  chapters:
+    - index.qmd
+
+    - lancer_calcul.qmd
+
+    - examples.qmd
+
+    - part: "Examples — Flow"
+      chapters:
+        - flow_examples.qmd
+        - M1_model.md
+        - M2_model.md
+        - M5_model.md
+        - M10-1_model.md
+        - M10-2_model.md
+        - Richards-2d.md
+
+    - part: "Examples — Mechanics"
+      chapters:
+        - mechanics_examples.qmd
+        - Elast0_model.md
+        - Elasd_model.md
+        - Plast_model.md
+        - BBM_model.md
+        - Poroplast_model.md
+
+    - part: "Examples — Poromechanics"
+      chapters:
+        - poromechanics_examples.qmd
+        - M7_model.md
+        - M7-1_model.md
+
+    - part: "Examples — Freeze-Thaw"
+      chapters:
+        - freezethaw_examples.qmd
+        - Frostaco_model.md
+        - Frostaco3d_model.md
+
+    - part: "Examples — Durability & Chemistry"
+      chapters:
+        - durability_examples.qmd
+        - Fick_model.md
+        - Duracem_model.md
+        - Chloricem_model.md
+        - ChloricemSCM_model.md
+        - ChloricemEla_model.md
+        - ChloricemDLM_model.md
+        - Sulfaco_model.md
+        - Sulfuricem_model.md
+        - Sulfaconew_model.md
+        - SulfacoESA3d_model.md
+
+    - part: "Examples — Coupled Transfers"
+      chapters:
+        - coupledtransfers_examples.qmd
+        - DWS1_model.md
+        - Yuan1_model.md
+        - Shen_model.md
+        - usoil_model.md
+
+    - part: "Examples — Specialized"
+      chapters:
+        - specialized_examples.qmd
+        - MechaMic_model.md
+        - M2_VoronoiFVM.md
+
+    - fonctionnement_bil.md
+
+    - adding_a_model.md
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: [flatly, custom.scss]
+      dark: [darkly, custom-dark.scss]
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    code-link: false
+    toc: true
+    toc-depth: 3
+    toc-title: "On this page"
+    number-sections: false
+    smooth-scroll: true
+    highlight-style: github
+    link-external-icon: true
+    link-external-newwindow: true
+    grid:
+      sidebar-width: 280px
+      body-width: 900px
+      margin-width: 200px
+    html-math-method: mathjax
+
+execute:
+  echo: true
+  warning: false
+  freeze: auto

@@ -1,0 +1,15 @@
+---
+title: "Examples"
+---
+
+This chapter presents annotated examples for each model available in Bil, organized by application domain. Each section provides the governing equations and a commented input file.
+
+| Domain | Models |
+|--------|--------|
+| [Flow](flow_examples.qmd) | M1, M2, M5, M10, Richards 2D |
+| [Mechanics](mechanics_examples.qmd) | Elast0, Elasd, Plast, BBM, Poroplast |
+| [Poromechanics](poromechanics_examples.qmd) | M7, M7-1 |
+| [Freeze-Thaw](freezethaw_examples.qmd) | Frostaco, Frostaco3d |
+| [Durability & Chemistry](durability_examples.qmd) | Fick, Duracem, Chloricem, Sulfaco, Sulfuricem, Sulfaconew, SulfacoESA3d |
+| [Coupled Transfers](coupledtransfers_examples.qmd) | DWS1, Yuan1, Shen, usoil |
+| [Specialized](specialized_examples.qmd) | MechaMic (FEM²), M2 VoronoiFVM |

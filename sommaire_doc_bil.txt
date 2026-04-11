@@ -1,0 +1,22 @@
+1. Introduction  <- 1. (Welcome, General presentation, Application areas, Installation, Documentation structure)
+(Application areas)
+        Flows: Richards equations, Second Fick's law, Two-phase flows
+        Mechanics: Elasticity, Elasticity with damage, Hardening plasticity
+        Poromechanics: Biot's poroelasticity and Poroplasticity
+        Phase change: Freeze-thaw in soils and concrete
+        Durability & chemistry: Chemical attack of concrete
+        Coupled flows: Unsaturated soils
+        Special models: Multi-scale mechanics by FEM^2
+
+2. Running Bil <- 2.
+3. Examples <- 4.-31. (equations and input examples)
+4. Internal architecture of Bil <- 3.
+5. How to add a new model in Bil
+    5.1 Where and how <- 3.5, 3.10
+    5.2 The internal values
+    5.3 The 11 basic functions of models <- 3.7
+    5.4 The MaterialPointMethod.h interface <- 3.11
+    5.5 Physico-chemical databases (header files) <- 3.12
+    5.6 Learning from some existing models
+           Flow problems
+           Coupled mechanical problems
