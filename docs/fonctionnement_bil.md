@@ -1,6 +1,6 @@
-# Architecture et fonctionnement de Bil
+# Internal Architecture of Bil
 
-> **Sources :**
+> **Sources:**
 > `src/Models/Model.h` · `src/Models/Model.c` · `src/Models/Models.h`
 > `src/Models/ListOfModels.h` · `src/Models/ModelFiles/Template.c`
 > `src/Models/ModelFiles/TemplateFEM.c` · `src/Models/ModelFiles/TemplateFVM.c`
@@ -9,43 +9,39 @@
 
 ---
 
-## Table des matières
+## Table of contents
 
-1. [Vue d'ensemble](#1-vue-densemble)
-2. [Principe fondamental : architecture plugin en C](#2-principe-fondamental--architecture-plugin-en-c)
-3. [L'interface `Model_t` — la vtable en C](#3-linterface-model_t--la-vtable-en-c)
-4. [Le registre de modèles — `ListOfModels.h`](#4-le-registre-de-modèles--listofmodelsh)
-5. [Résolution au démarrage — `Model_Initialize`](#5-résolution-au-démarrage--model_initialize)
-6. [Ce que doit implémenter un modèle physique](#6-ce-que-doit-implémenter-un-modèle-physique)
-7. [La boucle de calcul — `Monolithic.c`](#7-la-boucle-de-calcul--monolithicc)
-8. [Flux de données complet](#8-flux-de-données-complet)
-9. [Ajouter un nouveau modèle](#9-ajouter-un-nouveau-modèle)
-10. [Interface moderne `MaterialPointMethod.h` (C++)](#10-interface-moderne-materialpointmethodh-c)
-11. [Bases de données physico-chimiques](#11-bases-de-données-physico-chimiques)
-12. [Méthode FEM² — homogénéisation numérique](#12-méthode-fem--homogénéisation-numérique)
-13. [Gestion de l'historique des solutions](#13-gestion-de-lhistorique-des-solutions)
-14. [Comparaison avec d'autres patterns](#14-comparaison-avec-dautres-patterns)
+1. [Overview](#1-overview)
+2. [Fundamental principle: plugin architecture in C](#2-fundamental-principle-plugin-architecture-in-c)
+3. [The `Model_t` interface — the vtable in C](#3-the-model_t-interface--the-vtable-in-c)
+4. [The model registry — `ListOfModels.h`](#4-the-model-registry--listofmodelsh)
+5. [Startup resolution — `Model_Initialize`](#5-startup-resolution--model_initialize)
+6. [What a physical model must implement](#6-what-a-physical-model-must-implement)
+7. [The computation loop — `Monolithic.c`](#7-the-computation-loop--monolithicc)
+8. [Complete data flow](#8-complete-data-flow)
+9. [Solution history management](#9-solution-history-management)
+10. [Comparison with other patterns](#10-comparison-with-other-patterns)
 
 ---
 
-## 1. Vue d'ensemble
+## 1. Overview
 
-Bil est organisé en **deux couches strictement séparées** :
+Bil is organized into **two strictly separated layers**:
 
-| Couche | Fichiers | Rôle |
-|--------|----------|------|
-| **Framework générique** | `Monolithic.c`, `SNIA.c`, `Solver.c`, `FEM.c`, `Model.c`… | Boucle temporelle, assemblage de la matrice globale, résolution du système linéaire, I/O — **ne sait rien de la physique** |
-| **Plugin physique** | `M7.c`, `BBM.c`, `Richards.c`, `Fick.c`… | Implémente les équations : termes implicites, matrice tangente, résidu, sorties — **ne sait rien du solveur** |
+| Layer | Files | Role |
+|-------|-------|------|
+| **Generic framework** | `Monolithic.c`, `SNIA.c`, `Solver.c`, `FEM.c`, `Model.c`… | Time loop, global matrix assembly, linear system solver, I/O — **knows nothing about physics** |
+| **Physical plugin** | `M7.c`, `BBM.c`, `Richards.c`, `Fick.c`… | Implements the equations: implicit terms, tangent matrix, residual, outputs — **knows nothing about the solver** |
 
-Le lien entre les deux est un **contrat d'interface** matérialisé par le struct `Model_t`, qui est une table de pointeurs de fonctions (équivalent C d'une *vtable* C++).
+The link between the two is an **interface contract** materialized by the `Model_t` struct, which is a table of function pointers (C equivalent of a C++ *vtable*).
 
 ---
 
-## 2. Principe fondamental : architecture plugin en C
+## 2. Fundamental principle: plugin architecture in C
 
-La question naturelle est : « puisque chaque simulation correspond à un fichier `.c` différent, où est la généricité ? »
+The natural question is: "since each simulation corresponds to a different `.c` file, where is the genericity?"
 
-La réponse est que **la généricité est dans le framework**, pas dans les modèles. Le framework appelle toujours les mêmes signatures de fonctions, peu importe la physique :
+The answer is that **the genericity is in the framework**, not in the models. The framework always calls the same function signatures, regardless of the physics:
 
 ```
 framework → model->computematrix(el, t, dt, K)
@@ -53,37 +49,37 @@ framework → model->computeimplicitterms(el, t, dt)
 framework → model->computeresidu(el, t, dt, r)
 ```
 
-C'est exactement le même mécanisme qu'une interface en Java ou une classe abstraite en C++, mais réalisé en C pur avec des pointeurs de fonctions.
+This is exactly the same mechanism as an interface in Java or an abstract class in C++, but implemented in pure C with function pointers.
 
 ```
                  ┌─────────────────────────────────────┐
-                 │         Framework générique          │
+                 │         Generic Framework            │
                  │  Monolithic.c  ·  SNIA.c  ·  FEM.c  │
                  │                                     │
                  │   Mesh_ComputeMatrix(mesh, ...)      │
                  │   Mesh_ComputeResidu(mesh, ...)      │
                  │   Solver_Solve(solver, ...)          │
                  └──────────────┬──────────────────────┘
-                                │ appels via pointeurs de fonctions
-                                │ (Model_t comme interface)
+                                │ calls via function pointers
+                                │ (Model_t as interface)
           ┌─────────────────────┼──────────────────────────┐
           │                     │                          │
    ┌──────▼──────┐      ┌───────▼──────┐      ┌───────────▼──────┐
    │    M7.c     │      │   BBM.c      │      │   Richards.c     │
-   │ Poroélas-   │      │ Barcelone    │      │ Écoulement non   │
-   │ ticité non  │      │ Basic Model  │      │ saturé (Darcy)   │
-   │ saturée     │      │ (plasticité) │      │                  │
+   │ Unsaturated │      │ Barcelona    │      │ Unsaturated flow │
+   │ poroelas-   │      │ Basic Model  │      │ (Darcy)          │
+   │ ticity      │      │ (plasticity) │      │                  │
    └─────────────┘      └──────────────┘      └──────────────────┘
 ```
 
 ---
 
-## 3. L'interface `Model_t` — la vtable en C
+## 3. The `Model_t` interface — the vtable in C
 
-Défini dans `src/Models/Model.h`, le struct `Model_t` contient **exclusivement des pointeurs de fonctions** :
+Defined in `src/Models/Model.h`, the `Model_t` struct contains **exclusively function pointers**:
 
 ```c
-/* src/Models/Model.h — signatures des méthodes de l'interface */
+/* src/Models/Model.h — method signatures of the interface */
 
 typedef int  (Model_SetModelProperties_t)      (Model_t*) ;
 typedef int  (Model_ReadMaterialProperties_t)  (Material_t*, DataFile_t*) ;
@@ -100,30 +96,30 @@ typedef int  (Model_ComputePropertyIndex_t)    (const char*) ;
 typedef void (Model_ComputeMaterialProperties_t)(Element_t*, double) ;
 
 struct Model_t {
-  Model_SetModelProperties_t*        setmodelprop ;        /* initialise les autres pointeurs */
-  Model_ReadMaterialProperties_t*    readmatprop ;         /* lit les paramètres du fichier d'entrée */
-  Model_PrintModelProperties_t*      printmodelprop ;      /* affiche l'aide du modèle */
-  Model_DefineElementProperties_t*   defineelementprop ;   /* alloue les tableaux par élément */
-  Model_ComputeInitialState_t*       computeinitialstate ; /* calcule l'état initial */
-  Model_ComputeExplicitTerms_t*      computeexplicitterms ;/* termes explicites (perméabilité…) */
-  Model_ComputeImplicitTerms_t*      computeimplicitterms ;/* termes implicites (stockage, flux…) */
-  Model_ComputeMatrix_t*             computematrix ;       /* matrice de rigidité/couplage */
-  Model_ComputeResidu_t*             computeresidu ;       /* résidu de Newton-Raphson */
-  Model_ComputeLoads_t*              computeloads ;        /* vecteur de chargement */
-  Model_ComputeOutputs_t*            computeoutputs ;      /* champs de post-traitement */
-  Model_ComputePropertyIndex_t*      computepropertyindex ;/* indice d'une propriété matériau */
-  Model_ComputeMaterialProperties_t* ComputeMaterialProperties ; /* propriétés au point de Gauss */
-  /* + métadonnées : codename, shorttitle, authors, nbofequations, nameofequations… */
+  Model_SetModelProperties_t*        setmodelprop ;        /* initializes all other pointers */
+  Model_ReadMaterialProperties_t*    readmatprop ;         /* reads parameters from input file */
+  Model_PrintModelProperties_t*      printmodelprop ;      /* displays model help */
+  Model_DefineElementProperties_t*   defineelementprop ;   /* allocates per-element arrays */
+  Model_ComputeInitialState_t*       computeinitialstate ; /* computes the initial state */
+  Model_ComputeExplicitTerms_t*      computeexplicitterms ;/* explicit terms (permeability…) */
+  Model_ComputeImplicitTerms_t*      computeimplicitterms ;/* implicit terms (storage, flux…) */
+  Model_ComputeMatrix_t*             computematrix ;       /* stiffness/coupling matrix */
+  Model_ComputeResidu_t*             computeresidu ;       /* Newton-Raphson residual */
+  Model_ComputeLoads_t*              computeloads ;        /* load vector */
+  Model_ComputeOutputs_t*            computeoutputs ;      /* post-processing fields */
+  Model_ComputePropertyIndex_t*      computepropertyindex ;/* index of a material property */
+  Model_ComputeMaterialProperties_t* ComputeMaterialProperties ; /* properties at Gauss point */
+  /* + metadata: codename, shorttitle, authors, nbofequations, nameofequations… */
 } ;
 ```
 
-Le framework ne manipule que des `Model_t*`. Il ignore totalement si le modèle derrière est M7, BBM ou un modèle personnalisé.
+The framework only manipulates `Model_t*`. It is completely unaware of whether the model behind it is M7, BBM, or a custom model.
 
 ---
 
-## 4. Le registre de modèles — `ListOfModels.h`
+## 4. The model registry — `ListOfModels.h`
 
-`src/Models/ListOfModels.h` est le **fichier de déclaration de tous les modèles compilés**. Il utilise la technique de la **X-macro** pour générer à la fois la liste des noms et la liste des pointeurs de fonctions à partir d'une seule source de vérité :
+`src/Models/ListOfModels.h` is the **declaration file for all compiled models**. It uses the **X-macro** technique to generate both the name list and the function pointer list from a single source of truth:
 
 ```c
 /* src/Models/ListOfModels.h */
@@ -151,18 +147,18 @@ Le framework ne manipule que des `Model_t*`. Il ignore totalement si le modèle 
   Sulfaconew##m
 ```
 
-**Comment fonctionne la X-macro :**
+**How the X-macro works:**
 
-L'appel `ListOfModels_Methods(_SetModelProp)` est développé par le préprocesseur en :
+The call `ListOfModels_Methods(_SetModelProp)` is expanded by the preprocessor to:
 
 ```c
 BBM_SetModelProp, BBMgas_SetModelProp, ..., M7_SetModelProp, ..., Sulfaconew_SetModelProp
 ```
 
-Ce qui permet de construire, **statiquement à la compilation**, deux tableaux parallèles indexés de 0 à 38 :
+This allows the construction, **statically at compile time**, of two parallel arrays indexed from 0 to 38:
 
 ```
-index │ nom (modelnames[i])             │ fonction (xModel_SetModelProperties[i])
+index │ name (modelnames[i])            │ function (xModel_SetModelProperties[i])
 ──────┼─────────────────────────────────┼─────────────────────────────────────────
   0   │ "BBM"                           │ BBM_SetModelProp
   1   │ "BBMgas"                        │ BBMgas_SetModelProp
@@ -174,12 +170,12 @@ index │ nom (modelnames[i])             │ fonction (xModel_SetModelPropertie
 
 ---
 
-## 5. Résolution au démarrage — `Model_Initialize`
+## 5. Startup resolution — `Model_Initialize`
 
-Lorsque Bil lit `Model = M7` dans le fichier d'entrée, il appelle `Model_Initialize` (`src/Models/Model.c`) :
+When Bil reads `Model = M7` in the input file, it calls `Model_Initialize` (`src/Models/Model.c`):
 
 ```c
-/* src/Models/Model.c — simplifié */
+/* src/Models/Model.c — simplified */
 
 Model_t* Model_Initialize(Model_t* model, const char* codename, ...)
 {
@@ -189,47 +185,47 @@ Model_t* Model_Initialize(Model_t* model, const char* codename, ...)
                               {Models_ListOfSetModelProp} ;        // {BBM_SetModelProp,...,M7_SetModelProp,...}
 
   int i = 0 ;
-  while(i < n_models && strcmp(modelnames[i], codename)) i++ ;   // cherche "M7" → i=15
+  while(i < n_models && strcmp(modelnames[i], codename)) i++ ;   // search "M7" → i=15
 
-  Model_GetSetModelProperties(model) = xModel_SetModelProperties[i] ; // assigne M7_SetModelProp
-  Model_SetModelProperties(model) ;   // appelle M7_SetModelProp(model)
-                                      // → peuple TOUS les autres pointeurs de Model_t
+  Model_GetSetModelProperties(model) = xModel_SetModelProperties[i] ; // assign M7_SetModelProp
+  Model_SetModelProperties(model) ;   // call M7_SetModelProp(model)
+                                      // → populates ALL other Model_t pointers
 
   return(model) ;
 }
 ```
 
-Après cet appel, `model->computematrix` pointe vers `k7`, `model->computeresidu` vers `c7`, etc. — toutes les fonctions de `M7.c`.
+After this call, `model->computematrix` points to `k7`, `model->computeresidu` to `c7`, etc. — all functions from `M7.c`.
 
 ---
 
-## 6. Ce que doit implémenter un modèle physique
+## 6. What a physical model must implement
 
-Chaque fichier modèle doit fournir une fonction `SetModelProp` et plusieurs fonctions de calcul. Voici le squelette minimal tiré de `src/Models/ModelFiles/Template.c` :
+Each model file must provide a `SetModelProp` function and several computation functions. Here is the minimal skeleton from `src/Models/ModelFiles/Template.c`:
 
 ```c
-/* MonModele.c */
+/* MyModel.c */
 #include "CommonModel.h"
-#include "FEM.h"                 /* ou "FVM.h" selon la discrétisation */
+#include "FEM.h"                 /* or "FVM.h" depending on the discretization */
 
-#define TITLE   "Nom du modèle"
-#define AUTHORS "Auteur"
+#define TITLE   "Model name"
+#define AUTHORS "Author"
 
-#include "PredefinedModelMethods.h"  /* macro qui déclare SetModelProp automatiquement */
+#include "PredefinedModelMethods.h"  /* macro that declares SetModelProp automatically */
 
-#define NEQ  2   /* nombre d'équations = nombre d'inconnues nodales */
-#define NVI  9   /* termes implicites par point de Gauss */
-#define NVE  2   /* termes explicites par point de Gauss */
+#define NEQ  2   /* number of equations = number of nodal unknowns */
+#define NVI  9   /* implicit terms per Gauss point */
+#define NVE  2   /* explicit terms per Gauss point */
 
-/* --- 1. Registre des paramètres matériaux --- */
+/* --- 1. Material property registry --- */
 int pm(const char* s)
 {
   if(strcmp(s,"young")   == 0) return 0 ;
   if(strcmp(s,"poisson") == 0) return 1 ;
-  return -1 ;  /* paramètre inconnu */
+  return -1 ;  /* unknown parameter */
 }
 
-/* --- 2. Propriétés du modèle (peuple Model_t) --- */
+/* --- 2. Model properties (populate Model_t) --- */
 int SetModelProp(Model_t* model)
 {
   Model_GetNbOfEquations(model) = NEQ ;
@@ -240,93 +236,93 @@ int SetModelProp(Model_t* model)
   return 0 ;
 }
 
-/* --- 3. Lecture des paramètres du fichier d'entrée --- */
+/* --- 3. Read parameters from input file --- */
 int ReadMatProp(Material_t* mat, DataFile_t* datafile)
 {
   Material_ScanProperties(mat, datafile, pm) ;
-  return 2 ;  /* nb de paramètres scalaires */
+  return 2 ;  /* number of scalar parameters */
 }
 
-/* --- 4. Termes explicites : calculés avec les valeurs au pas précédent --- */
+/* --- 4. Explicit terms: computed from values at previous step --- */
 int ComputeExplicitTerms(Element_t* el, double t) { ... }
 
-/* --- 5. Termes implicites : stockage, flux, contraintes… --- */
+/* --- 5. Implicit terms: storage, flux, stresses… --- */
 int ComputeImplicitTerms(Element_t* el, double t, double dt) { ... }
 
-/* --- 6. Matrice de rigidité tangente --- */
+/* --- 6. Tangent stiffness matrix --- */
 int ComputeMatrix(Element_t* el, double t, double dt, double* k) { ... }
 
-/* --- 7. Résidu pour Newton-Raphson --- */
+/* --- 7. Residual for Newton-Raphson --- */
 int ComputeResidu(Element_t* el, double t, double dt, double* r) { ... }
 
-/* --- 8. Post-traitement : champs de sortie --- */
+/* --- 8. Post-processing: output fields --- */
 int ComputeOutputs(Element_t* el, double t, double* s, Result_t* r) { ... }
 ```
 
-**Correspondance avec les noms historiques de M7.c** (interface ancienne via `OldMethods.h`) :
+**Correspondence with historical names in M7.c** (legacy API via `OldMethods.h`):
 
-| Méthode interface moderne | Nom dans M7.c (ancienne API) | Rôle |
-|---------------------------|------------------------------|------|
-| `SetModelProp`            | `dm7` + initialisation       | Déclare les équations et inconnues |
-| `ComputeImplicitTerms`    | `mxnd`                       | Calcule $M_l$, $W_l$, $\sigma$, $\phi$ aux points de Gauss |
-| `ComputeMatrix`           | `k7`                         | Assemble la matrice de rigidité $K$ |
-| `ComputeResidu`           | `c7`                         | Calcule le résidu $R = F_\text{ext} - F_\text{int}$ |
-| `ComputeInitialState`     | `rsnd`                       | Initialise les champs au temps $t=0$ |
-| `ComputeOutputs`          | `so7` (via `Views`)          | Produit les champs de post-traitement |
+| Modern interface method | Name in M7.c (old API) | Role |
+|------------------------|------------------------|------|
+| `SetModelProp`         | `dm7` + initialization | Declares equations and unknowns |
+| `ComputeImplicitTerms` | `mxnd`                 | Computes $M_l$, $W_l$, $\sigma$, $\phi$ at Gauss points |
+| `ComputeMatrix`        | `k7`                   | Assembles the stiffness matrix $K$ |
+| `ComputeResidu`        | `c7`                   | Computes residual $R = F_\text{ext} - F_\text{int}$ |
+| `ComputeInitialState`  | `rsnd`                 | Initializes fields at time $t=0$ |
+| `ComputeOutputs`       | `so7` (via `Views`)    | Produces post-processing fields |
 
 ---
 
-## 7. La boucle de calcul — `Monolithic.c`
+## 7. The computation loop — `Monolithic.c`
 
-Le module `src/Modules/ModuleFiles/Monolithic.c` est le chef d'orchestre. Sa boucle interne (simplifiée) est :
+The module `src/Modules/ModuleFiles/Monolithic.c` is the orchestrator. Its inner loop (simplified) is:
 
 ```
-Pour chaque pas de temps [t_n → t_{n+1}] :
+For each time step [t_n → t_{n+1}]:
 │
 ├── Mesh_ComputeExplicitTerms(mesh, t_n)
-│     └── pour chaque élément : model->computeexplicitterms(el, t_n)
-│         [calcule perméabilité, saturation… à partir du pas précédent]
+│     └── for each element: model->computeexplicitterms(el, t_n)
+│         [computes permeability, saturation… from previous step values]
 │
-├── Itérations de Newton-Raphson :
+├── Newton-Raphson iterations:
 │   │
 │   ├── Mesh_ComputeImplicitTerms(mesh, t_{n+1}, dt)
-│   │     └── pour chaque élément : model->computeimplicitterms(el, t, dt)
-│   │         [calcule flux, stockage, contraintes avec les inconnues courantes]
+│   │     └── for each element: model->computeimplicitterms(el, t, dt)
+│   │         [computes flux, storage, stresses with current unknowns]
 │   │
 │   ├── Mesh_ComputeMatrix(mesh, a, t_{n+1}, dt)
-│   │     └── pour chaque élément : model->computematrix(el, t, dt, K_e)
-│   │         [assemble la matrice tangente élémentaire K_e dans K_global]
+│   │     └── for each element: model->computematrix(el, t, dt, K_e)
+│   │         [assembles tangent matrix K_e into K_global]
 │   │
 │   ├── Mesh_ComputeResidu(mesh, r, loads, t_{n+1}, dt)
-│   │     └── pour chaque élément : model->computeresidu(el, t, dt, r_e)
-│   │         [assemble le résidu r_global = F_ext - F_int]
+│   │     └── for each element: model->computeresidu(el, t, dt, r_e)
+│   │         [assembles r_global = F_ext - F_int]
 │   │
 │   ├── Solver_Solve(solver, K_global, r_global, du)
-│   │     [résout K · Δu = r par SuperLU / PETSc / Crout…]
+│   │     [solves K · Δu = r via SuperLU / PETSc / Crout…]
 │   │
-│   └── Mise à jour des inconnues : u ← u + Δu
-│       Vérification de convergence (||Δu|| / ||u|| < tol)
+│   └── Update unknowns: u ← u + Δu
+│       Check convergence (||Δu|| / ||u|| < tol)
 │
-└── Si convergence : avance t_n ← t_{n+1}, écrit les sorties si t ∈ Dates
+└── If convergence: advance t_n ← t_{n+1}, write outputs if t ∈ Dates
 ```
 
-À **aucun moment** `Monolithic.c` ne référence `M7`, `BBM` ou tout autre nom de modèle. Il ne passe que par les pointeurs de `Model_t`.
+At **no point** does `Monolithic.c` reference `M7`, `BBM`, or any other model name. It only operates through the `Model_t` pointers.
 
 ---
 
-## 8. Flux de données complet
+## 8. Complete data flow
 
 ```
-Fichier d'entrée (M7-1)
+Input file (M7-1)
   "Model = M7"
         │
         ▼
   Parser (Flex/Bison)
-        │ lit la chaîne "M7"
+        │ reads the string "M7"
         ▼
   Model_Initialize("M7")                    [Model.c]
-        │ recherche linéaire dans modelnames[]
-        │ assigne xModel_SetModelProperties[15] = M7_SetModelProp
+        │ linear search in modelnames[]
+        │ assigns xModel_SetModelProperties[15] = M7_SetModelProp
         │
         ▼
   M7_SetModelProp(model)                    [M7.c]
@@ -338,215 +334,48 @@ Fichier d'entrée (M7-1)
         │ model->computeoutputs       = so7
         │
         ▼
-  Monolithic.c — boucle temporelle
-        │ appelle model->computeexplicitterms(el, t)  → physique M7
-        │ appelle model->computeimplicitterms(el,t,dt)→ physique M7
-        │ appelle model->computematrix(el, t, dt, K)  → physique M7
-        │ appelle model->computeresidu(el, t, dt, r)  → physique M7
+  Monolithic.c — time loop
+        │ calls model->computeexplicitterms(el, t)   → M7 physics
+        │ calls model->computeimplicitterms(el, t, dt)→ M7 physics
+        │ calls model->computematrix(el, t, dt, K)   → M7 physics
+        │ calls model->computeresidu(el, t, dt, r)   → M7 physics
         │
         ▼
-  Solver.c — résolution K·Δu = r           [SuperLU / PETSc / …]
+  Solver.c — solve K·Δu = r              [SuperLU / PETSc / …]
         │
         ▼
-  Fichiers de résultats (.t0, .t1, …)
+  Result files (.t0, .t1, …)
 ```
 
 ---
 
-## 9. Ajouter un nouveau modèle
+## 9. Solution history management
 
-La procédure est minimaliste par conception :
+The solver module maintains a **circular history** of solutions at the last instants $t_n, t_{n-1}, t_{n-2}, \ldots$ as a circular linked list. This structure allows `ComputeExplicitTerms` to access values at the previous step without extra copying.
 
-**Étape 1** — Créer `src/Models/ModelFiles/MonModele.c` (ou `.cpp`) en s'appuyant sur `Template.c`, `TemplateFEM.c` ou `TemplateFVM.c`.
+```
+Before time advance:    tn-3 ← tn-2 ← tn-1 ← tn ←•
 
-**Étape 2** — Enregistrer le modèle dans `src/Models/ListOfModels.h` :
-
-```c
-/* Avant */
-#define ListOfModels_Nb   39
-#define ListOfModels_Names  ..., "Sulfaconew"
-#define ListOfModels_Methods(m)  ..., Sulfaconew##m
-
-/* Après */
-#define ListOfModels_Nb   40
-#define ListOfModels_Names  ..., "Sulfaconew", "MonModele"
-#define ListOfModels_Methods(m)  ..., Sulfaconew##m, MonModele##m
+After advance tn → tn+1: tn-2 ← tn-1 ← tn ← tn+1 ←•
+                          (tn-3 is reused to store tn+1)
 ```
 
-**Étape 3** — Recompiler :
+The number of solutions kept simultaneously in memory is controlled by the option:
 
 ```bash
-cd build && make
-```
-
-Le fichier d'entrée peut maintenant utiliser `Model = MonModele`. **Aucun autre fichier du framework n'est modifié.**
-
----
-
-## 10. Interface moderne `MaterialPointMethod.h` (C++)
-
-Pour les modèles C++, Bil fournit une interface de haut niveau qui simplifie considérablement l'implémentation. Au lieu d'écrire manuellement les 11 fonctions, on dérive une classe `MPM_t` depuis `MaterialPointMethod_t`.
-
-### 10.1 Définir les variables internes avec `CustomValues.h`
-
-```cpp
-#include "CustomValues.h"
-
-template<typename T> struct ImplicitValues_t;  /* varient à chaque itération */
-template<typename T> struct ExplicitValues_t;  /* varient à chaque pas de temps */
-template<typename T> struct ConstantValues_t;  /* constantes au cours du temps */
-
-template<typename T>
-using V = CustomValues_t<T, ImplicitValues_t, ExplicitValues_t, ConstantValues_t, ...>;
-```
-
-Les trois types de variables internes correspondent aux tableaux par point de Gauss :
-
-| Type | Accès dans l'ancienne API | Quand recalculé |
-|------|--------------------------|-----------------|
-| Implicites (`NVI`) | `vi[k]` | À chaque itération de Newton |
-| Explicites (`NVE`) | `ve[k]` | Une fois par pas de temps (avec les valeurs au pas précédent) |
-| Constants (`NV0`) | `v0[k]` | Jamais après l'initialisation |
-
-### 10.2 Dériver la classe `MPM_t`
-
-```cpp
-#include "MaterialPointMethod.h"
-
-struct MPM_t : public MaterialPointMethod_t<V> {
-
-  /* Initialise val avec les inconnues nodales et leurs gradients */
-  V<double>* SetInputs(Element_t* el, double const& t, int const& p,
-                       double const* const* u, V<double>& val);
-
-  /* Initialise toutes les variables internes (état initial) */
-  V<double>* Initialize(Element_t* el, double const& t, V<double>& val);
-
-  /* Intègre la loi de comportement de t-dt à t */
-  V<double>* Integrate(Element_t* el, double const& t, double const& dt,
-                       V<double> const& val_n, V<double>& val);
-
-  /* Remplit la k-ième colonne de la matrice tangente */
-  int SetTangentMatrix(Element_t* el, double const& t, double const& dt,
-                       int const& p, V<double> const& val, V<double> const& dval,
-                       int const& k, double* c);
-
-  /* Remplit la matrice de transfert (FVM) */
-  int SetTransferMatrix(Element_t* el, double const& dt, int const& p,
-                        V<double> const& val, double* c);
-
-  /* Calcule les flux entre les nœuds i et j (FVM) */
-  V<double>* SetFluxes(Element_t* el, double const& t, int const& i, int const& j,
-                       V<double> const& grdval, V<double>* val);
-
-  /* Donne l'indice dans V de chaque inconnue primaire */
-  void SetIndexOfPrimaryVariables(Element_t* el, int* ind);
-
-  /* Donne l'incrément Δu utilisé pour les dérivées numériques */
-  void SetIncrementOfPrimaryVariables(Element_t* el, double* dui);
-};
-```
-
-### 10.3 Différentiation automatique avec `autodiff.h`
-
-La matrice tangente peut être obtenue par **différentiation automatique** plutôt que par différences finies :
-
-```cpp
-#define USE_AUTODIFF
-#include "autodiff.h"
-```
-
-Quand `USE_AUTODIFF` est défini, l'opérateur `Differentiate` calcule analytiquement la dérivée de `Integrate` par rapport aux inconnues primaires, sans implémentation manuelle du Jacobien.
-
-Sinon, la dérivée numérique est utilisée automatiquement via `SetIncrementOfPrimaryVariables` :
-
-```cpp
-void SetIncrementOfPrimaryVariables(Element_t* el, double* dui) {
-  ObVal_t* obval = Element_GetObjectiveValue(el);
-  dui[0] = 1.e-2 * ObVal_GetValue(obval + 0);  /* incrément = 1% de la variation objective */
-}
+bil -with "Monolithic N" my_file   # N = number of solutions in memory (default 2)
 ```
 
 ---
 
-## 11. Bases de données physico-chimiques
+## 10. Comparison with other patterns
 
-Bil fournit une bibliothèque de données physico-chimiques accessible depuis n'importe quel modèle via des en-têtes d'inclusion. Ces données sont stockées dans `src/Models/DataBases/`.
-
-```c
-/* Viscosité de l'eau en fonction de la température (en K) */
-#include "WaterViscosity.h"
-double mu_w = WaterViscosity(293);   /* Pa·s à 293 K */
-
-/* Coefficient de diffusion d'un ion dans l'eau */
-#include "DiffusionCoefficientOfMoleculeInWater.h"
-double d_ca = DiffusionCoefficientOfMoleculeInWater(Ca, 293);  /* m²/s */
-
-/* Coefficient de diffusion dans l'air */
-#include "DiffusionCoefficientOfMoleculeInAir.h"
-double d_co2_air = DiffusionCoefficientOfMoleculeInAir(CO2, 293);
-```
-
-Parmi les bases disponibles :
-
-| En-tête | Contenu |
-|---------|---------|
-| `WaterViscosity.h` | Viscosité de l'eau en fonction de T |
-| `AirViscosity.h` | Viscosité de l'air |
-| `DiffusionCoefficientOfMoleculeInWater.h` | Coefficients de diffusion ionique en solution aqueuse |
-| `DiffusionCoefficientOfMoleculeInAir.h` | Coefficients de diffusion en phase gazeuse |
-| `HardenedCementChemistry.h` | Chimie des liants hydrauliques hydratés |
-| `CementSolutionChemistry.h` | Chimie de la solution interstitielle cimentaire |
-| `ElectricChargeOfIonInWater.h` | Charges électriques des ions |
-| `EquilibriumConstantOfHomogeneousReactionInWater.h` | Constantes d'équilibre des réactions en solution |
-| `IonizationConstantOfWater.h` | Constante d'ionisation de l'eau |
-| `HenrysLawConstantForSolubilityOfGasInWater.h` | Constante de Henry (solubilité des gaz) |
-| `AtmosphericPressure.h` | Pression atmosphérique de référence |
-
----
-
-## 12. Méthode FEM² — homogénéisation numérique
-
-Bil dispose d'une capacité de **couplage multi-échelle FEM²** (ou FEM-in-FEM) : à chaque point de Gauss du maillage macro, un problème micro est résolu sur une cellule représentative.
-
-Ce module est utilisé notamment dans le modèle `MechaMic.c` pour l'homogénéisation mécanique de matériaux hétérogènes. Les conditions aux limites périodiques sur la cellule micro sont gérées via le bloc `PERIODICITIES` du fichier d'entrée :
-
-```
-PERIODICITIES
-2
-MasterRegion = 10  SlaveRegion = 11  PeriodVector = 2 0 0
-MasterRegion = 20  SlaveRegion = 21  PeriodVector = 0 2 0
-```
-
----
-
-## 13. Gestion de l'historique des solutions
-
-Le module de résolution maintient un **historique circulaire** des solutions aux derniers instants $t_n, t_{n-1}, t_{n-2}, \ldots$ sous forme d'une liste chaînée circulaire. Cette structure permet à `ComputeExplicitTerms` d'accéder aux valeurs au pas précédent sans copie supplémentaire.
-
-```
-Avant avance temporelle :    tn-3 ← tn-2 ← tn-1 ← tn ←•
-
-Après avance tn → tn+1 :     tn-2 ← tn-1 ← tn ← tn+1 ←•
-                              (tn-3 est réutilisé pour stocker tn+1)
-```
-
-Le nombre de solutions conservées en mémoire simultanément est contrôlé par l'option :
-
-```bash
-bil -with "Monolithic N" fichier   # N = nombre de solutions en mémoire (défaut 2)
-```
-
----
-
-## 14. Comparaison avec d'autres patterns
-
-| Concept | En C (Bil) | En C++ | En Python |
+| Concept | In C (Bil) | In C++ | In Python |
 |---------|-----------|--------|-----------|
-| Interface / contrat | `struct Model_t` avec pointeurs de fonctions | Classe abstraite avec méthodes `virtual` | Classe de base avec méthodes à redéfinir |
-| Implémentation | Fonctions C libres assignées dans `SetModelProp` | Sous-classe qui override les méthodes virtuelles | Sous-classe qui redéfinit les méthodes |
-| Registre | `ListOfModels.h` (X-macro, statique, compile-time) | Factory pattern, map de `std::string` → constructeur | Dictionnaire nom → classe |
-| Dispatch | Appel via pointeur de fonction `model->computematrix(...)` | Dispatch via vtable C++ (automatique) | Dispatch via MRO Python |
-| Découverte | Déclaration manuelle dans `ListOfModels.h` | Idem ou RTTI | Idem ou `importlib` dynamique |
+| Interface / contract | `struct Model_t` with function pointers | Abstract class with `virtual` methods | Base class with methods to override |
+| Implementation | Free C functions assigned in `SetModelProp` | Subclass overriding virtual methods | Subclass redefining methods |
+| Registry | `ListOfModels.h` (X-macro, static, compile-time) | Factory pattern, `std::string` → constructor map | Name → class dictionary |
+| Dispatch | Call via function pointer `model->computematrix(...)` | Dispatch via C++ vtable (automatic) | Dispatch via Python MRO |
+| Discovery | Manual declaration in `ListOfModels.h` | Same or RTTI | Same or `importlib` dynamic |
 
-Le choix du C avec X-macros garantit **zéro overhead à l'exécution** (pas de lookup dynamique) et une compatibilité maximale avec les compilateurs C89/C++17 utilisés par le projet.
+The choice of C with X-macros guarantees **zero runtime overhead** (no dynamic lookup) and maximum compatibility with C89/C++17 compilers used by the project.

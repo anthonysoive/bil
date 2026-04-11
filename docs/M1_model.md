@@ -1,3 +1,8 @@
+---
+title: "Modèle M1"
+number-sections: false
+---
+
 # Modèle M1 — Équation de Richards (Écoulement liquide 1D)
 
 > **Fichiers sources :**
@@ -29,7 +34,7 @@
 
 Le modèle **M1** résout l'équation classique de **Richards** unidimensionnelle. Cette équation différentielle partielle non-linéaire représente le mouvement de l'eau dans un milieu poreux non saturé, sous l'action de la gravité et des forces capillaires, en supposant que la phase gazeuse (l'air) est à pression atmosphérique constante.
 
-Ce modèle est extrêmement utilisé en hydrologie, hydrogéologie et génie civil pour prédire l’infiltration de la pluie dans les sols, le drainage ou la remontée capillaire.
+Ce modèle est extrêmement utilisé en hydrologie, hydrogéologie et génie civil pour prédire l'infiltration de la pluie dans les sols, le drainage ou la remontée capillaire.
 
 ```mermaid
 graph TD

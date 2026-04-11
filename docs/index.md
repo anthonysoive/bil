@@ -1,10 +1,4 @@
----
-title: "Bil — Documentation"
-subtitle: "A modeling platform based on finite element/volume methods"
-number-sections: false
----
-
-# Welcome {.unnumbered}
+# Bil — Documentation
 
 **Bil** is an open-source software framework based on finite element/volume methods, designed for the simulation of coupled phenomena in continuum mechanics, geomechanics, environmental engineering, and materials science. Bil is distributed under the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) (GPL v3).
 
@@ -48,25 +42,24 @@ cd bil
 make
 
 # Run a calculation
-bil my_file -l         # node renumbering (bandwidth optimization)
+bil -iperm my_file     # node renumbering (bandwidth optimization)
 bil my_file            # run the calculation
 ```
 
-::: {.callout-tip}
-The `-l` option (Cuthill-McKee renumbering) should be run **before** the calculation to optimize the matrix bandwidth when using Crout factorization. It is not needed for multi-frontal (SuperLU, MA38) or Krylov space (PETSc) solvers.
-:::
+!!! tip
+    The `-iperm` option (Cuthill-McKee renumbering) should be run **before** the calculation
+    to optimize matrix bandwidth when using Crout factorization. Not needed for multi-frontal
+    (SuperLU, MA38) or Krylov space (PETSc) solvers.
 
 ## Documentation structure
 
-The documentation is organized as follows:
-
-1. **Running Bil** — Command-line options, input file format, output files, solvers
-2. **Examples** — Equations and annotated input files for each model
-3. **Internal architecture** — Plugin architecture, `Model_t` interface, computation loop
-4. **How to add a new model** — Step-by-step guide, the 11 model functions, `MaterialPointMethod.h`, physico-chemical databases
+| Chapter | Content |
+|---------|---------|
+| **Running Bil** | Command-line options, input file format, output files, solvers |
+| **Examples** | Equations and annotated input files for each model |
+| **Internal Architecture** | Plugin architecture, `Model_t` interface, computation loop |
+| **How to Add a New Model** | Step-by-step guide, the 11 model functions, `MaterialPointMethod.h`, databases |
 
 ## Citation
-
-To cite Bil in a publication:
 
 > Dangla, P. (2024). *Bil — A modeling platform based on finite element/volume methods*. Université Gustave Eiffel.

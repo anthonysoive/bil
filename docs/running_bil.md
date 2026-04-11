@@ -1,6 +1,4 @@
----
-title: "Running Bil"
----
+# Running Bil
 
 ## Synopsis
 
@@ -17,7 +15,7 @@ bil
 
 ---
 
-## Input file {#sec-input}
+## Input file
 
 The file `my_file` provides the input data for the problem to be solved. A list of **reserved keywords** (with an upper-case first letter) organizes the data into several groups: mesh, material properties, boundary conditions, etc.
 
@@ -95,22 +93,22 @@ Boundary Conditions
 Region = 1 Unknown = p_l Field = 2 Function = 0   # p_l = 1e5 at bottom
 
 Loads
-0                               # no load
+0
 
 Points
-0                               # no output points
+0
 
 Dates
 2
-0. 1800000                      # t0 = 0 and t1 = 1800000 s
+0. 1800000                      # t0 = 0 s, t1 = 1800000 s
 
 Objective Variations
 p_l = 1000                      # objective variation Δp_l = 1000 Pa
 
 Iterative Process
-Iterations = 20                 # maximum iterations
-Tolerance = 1e-10               # convergence tolerance
-Repetitions = 0                 # no repetition
+Iterations = 20
+Tolerance = 1e-10
+Repetitions = 0
 
 Time Steps
 Dtini = 1                       # initial time step = 1 s
@@ -119,37 +117,25 @@ Dtmax = 3600                    # maximum time step = 3600 s
 
 ---
 
-## Output files {#sec-output}
+## Output files
 
 Each run produces **two sets of output files**.
 
 ### Point files `.pi` — results at points
 
-```
-my_file.pi
-```
-
-`i` is an integer from 1 to the number of points defined by `Points`.
-These files give the results at the specified points.
-The first column contains the times; other columns contain the quantities computed by the model.
+`my_file.pi` where `i` ranges from 1 to the number of points defined by `Points`.
+These files give the results at the specified points. The first column contains the times; other columns contain the model quantities.
 
 ### Date files `.ti` — results at dates
 
-```
-my_file.ti
-```
+`my_file.ti` where `i` ranges from 0 to the number of dates defined by `Dates`.
+The first three columns contain the node coordinates. The following columns contain the same quantities as in the `.pi` files.
 
-`i` ranges from 0 to the number of dates defined by `Dates`.
-The first three columns contain the node coordinates.
-The following columns contain the same quantities as in the `.pi` files.
-
-> Lines commented with `#` in the first column indicate the nature of the computed quantities in the following lines.
+> Lines commented with `#` in the first column indicate the nature of the computed quantities.
 
 ---
 
-## Other files {#sec-other-files}
-
-Bil produces and can read several auxiliary files named from the input file base name.
+## Other files
 
 | File | Description |
 |------|-------------|
@@ -165,10 +151,8 @@ Bil produces and can read several auxiliary files named from the input file base
 
 ### Resuming a calculation
 
-The `.cont` and `.conti` files allow resuming an interrupted calculation or continuing a previous one.
-
-- **`.cont`**: the restart does not execute the initialization step (`ComputeInitialState`) — the calculation continues as if there had been no interruption.
-- **`.conti`**: the restart executes the initialization — some variables may be re-initialized (e.g. strain variables can be reset to zero).
+- **`.cont`**: restart without executing the initialization step — the calculation continues as if there had been no interruption.
+- **`.conti`**: restart with re-initialization — some variables can be reset (e.g. strain variables).
 
 **Procedure:**
 
@@ -176,11 +160,9 @@ The `.cont` and `.conti` files allow resuming an interrupted calculation or cont
 2. Create `new_file` with additional dates beyond the last date of the previous run
 3. Run `bil new_file`
 
-Boundary conditions can also be modified in `new_file` (e.g. switching from Dirichlet to Neumann conditions).
-
 ---
 
-## Calculation options {#sec-options}
+## Calculation options
 
 ### Node renumbering
 
@@ -188,36 +170,17 @@ Boundary conditions can also be modified in `new_file` (e.g. switching from Diri
 bil -iperm my_file
 ```
 
-Generates `my_file.graph.iperm` containing the inverse node permutation (HSL_MC40 method). This file is **essential** for optimizing the matrix bandwidth in Gauss elimination (Crout method) for 2D and 3D problems.
+Generates `my_file.graph.iperm` with the inverse node permutation (HSL_MC40 method).
 
-::: {.callout-important}
-Run renumbering **before** the calculation for any 2D or 3D problem:
+!!! warning "Important for 2D/3D problems"
+    Run renumbering **before** the calculation for any 2D or 3D problem:
 
-```bash
-bil -iperm my_file    # generates my_file.graph.iperm
-bil my_file           # calculation with optimized mesh
-```
+    ```bash
+    bil -iperm my_file    # generates my_file.graph.iperm
+    bil my_file           # calculation with optimized mesh
+    ```
 
-For multi-frontal solvers (SuperLU, MA38) or Krylov space methods (PETSc), this file is not needed.
-:::
-
-### Mesh graph
-
-```bash
-bil -graph fmt my_file
-```
-
-Generates `my_file.graph` in format `fmt`:
-
-| Format | Description |
-|--------|-------------|
-| `metis` | For METIS (if installed) |
-| `hsl_mc40` | MC40 format from HSL |
-
-```bash
-bil -eordering hsl_mc43 my_file   # inverse element permutation
-bil -nordering hsl_mc40 my_file   # inverse node permutation (= -iperm)
-```
+    For multi-frontal solvers (SuperLU, MA38) or Krylov space methods (PETSc), this file is not needed.
 
 ### Solver selection
 
@@ -235,52 +198,32 @@ bil -solver method my_file
 | `petscksp` | PETSc KSP solver (requires `libpetsc.so`) |
 
 **Multi-threaded SuperLU:**
+
 ```bash
 bil -solver superlumt -nthreads 4 my_file
 ```
 
 **PETSc KSP:**
+
 ```bash
 bil -solver petscksp -ksp_type gmres -pc_type ilu my_file
-```
-
-Available KSP methods: `richardson`, `chebyshev`, `cg`, `bicg`, `gmres`, `fgmres`, `lgmres`, `cr`, `gcr`, `cgs`, `tfqmr`, `lsqr`, `minres`, `preonly`, … (see [PETSc documentation](https://petsc.org)).
-
-Available preconditioners: `none`, `jacobi`, `bjacobi`, `sor`, `icc`, `ilu`, `asm`, `gasm`, `gamg`, `lu`, `cholesky`, … (see [PETSc documentation](https://petsc.org)).
-
-**Fill factor:**
-```bash
-bil -solver superlu -ff 3 my_file   # fill factor = 3
 ```
 
 ### Resolution module
 
 ```bash
-bil -with "Monolithic N" my_file
-bil -with "SNIA N" my_file
+bil -with "Monolithic N" my_file   # N = number of time solutions kept in memory (default 2)
+bil -with "SNIA N" my_file         # Sequential non-iterative approach
 ```
-
-| Module | Description |
-|--------|-------------|
-| `Monolithic N` | Monolithic approach (default: `N=2` time solutions kept in memory) |
-| `SNIA N` | Sequential non-iterative approach (`N` = number of sequences) |
 
 ---
 
 ## Post-processing options
 
 ```bash
-bil -post fmt my_file
+bil -post GmshParsed my_file   # generates .posi files in Gmsh parsed format
+bil -post GmshASCII  my_file   # generates .posi files in Gmsh ASCII format
 ```
-
-Generates `my_file.posi` files in format `fmt`:
-
-| Format | Description |
-|--------|-------------|
-| `GmshParsed` | Gmsh parsed format |
-| `GmshASCII` | Gmsh ASCII format |
-
-These files can be opened directly in [Gmsh](https://gmsh.info) for post-processing.
 
 ---
 
@@ -288,24 +231,8 @@ These files can be opened directly in [Gmsh](https://gmsh.info) for post-process
 
 | Option | Description |
 |--------|-------------|
-| `bil -readonly my_file` | Read and parse `my_file`, then quit |
-| `bil -debug geom my_file` | Display geometry data structure |
-| `bil -debug mesh my_file` | Display mesh |
-| `bil -debug mate my_file` | Display material properties |
-| `bil -debug field my_file` | Display fields |
-| `bil -debug init my_file` | Display initializations |
-| `bil -debug func my_file` | Display functions |
-| `bil -debug bcond my_file` | Display boundary conditions |
-| `bil -debug load my_file` | Display loads |
-| `bil -debug poin my_file` | Display points |
-| `bil -debug obval my_file` | Display objective variations |
-| `bil -debug iter my_file` | Display iterative process |
-| `bil -debug time my_file` | Display time steps |
-| `bil -debug matrix my_file` | Display matrix |
-| `bil -debug residu my_file` | Display residual |
-| `bil -debug all my_file` | Display all data |
 | `bil -help` | On-line help |
-| `bil -info` | General information |
 | `bil -model` | List available models |
 | `bil -model mymodel` | Show example properties for `mymodel` |
-| `bil -modules` | List available modules |
+| `bil -readonly my_file` | Parse input file, then quit |
+| `bil -debug all my_file` | Display all parsed data structures |

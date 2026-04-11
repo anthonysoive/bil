@@ -44,6 +44,17 @@ include/bil.h
 build
 __pycache__
 
+# Documentation build output (generated — do not commit)
+site/
+docs/_book/
+doc/oxygen/html/
+doc/oxygen/xml/
+doc/edition/bil.html
+doc/edition/bil.info
+doc/edition/bil.txt
+doc/edition/edition.texi
+doc/edition/version.texi
+
 # Specific files
 ._sync_*
 
